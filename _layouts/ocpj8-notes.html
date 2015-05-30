@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>{{ page.title }}</title>
+    {% if page.description %}
+    <meta name="description" content="{{ page.description }}">
+    {% else %}
+    <meta name="description" content="{{ site.description }}">
+    {% endif %}
+    <meta name="author" content="Esteban Herrera">
+    <link href="{{ site.url }}{{ page.url | remove: "index.html" }}" rel="canonical">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="alternate" type="application/rss+xml" title="{{ site.name }}" href="{{ site.url }}/feed.xml">
+    <link href="http://fonts.googleapis.com/css?family=Open+Sans:400,700" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/fluidbox/1.3.1/jquery.fluidbox.css">
+    <link rel="stylesheet" href="{{ site.url }}/css/monokai_sublime.css">
+    <link rel="stylesheet" href="{{ site.url }}/css/slidebars.min.css">
+    <link rel="stylesheet" href="{{ site.url }}/css/custom.slidebars.css">
+    <link rel="stylesheet" href="{{ site.url }}/css/style.css">
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/fluidbox/1.3.1/jquery.fluidbox.min.js"></script>
+    <script src="{{ site.url }}/js/slidebars.min.js"></script>
+  </head>
+
+  <body>
+	<header class="fixed-top sb-slide">
+		<div class="sb-toggle-left navbar-left">
+			<div class="navicon-line"></div>
+			<div class="navicon-line"></div>
+			<div class="navicon-line"></div>
+		</div>
+		<div class="container">
+			<a href="/" class="logo"><img src="{{ site.url }}/images/logo.png" alt="Esteban Herrera" class="site-logo"></a>
+
+			<nav role="navigiation">
+			  <ul class="site-nav">
+				<li><a href="/about/">About</a>
+				<li><a href="/blog/">Blog</a>
+				<li><a href="/books/">Books</a>
+				<li><a href="/projects/">Projects</a>
+			  </ul>
+			</nav>
+		</div>
+	</header>
+		
+	<div id="sb-site" class="top-padding">
+
+		<div class="site-content">
+		  <div class="container">
+			{{ content }}
+		  </div>
+		</div>
+
+		<footer class="site-footer">
+		  <div class="container">
+			&copy; Esteban Herrera {{ site.time | date: "%-Y" }}
+		  </div>
+		</footer>
+	</div>
+	
+	<div class="sb-slidebar sb-left">
+		<h2>Content</h2>
+		<h4><a href="{{ site.url }}/ocpj8-notes/">Introduction</h4>
+		<h4><a href="{{ site.url }}/ocpj8-notes/01-java-class-design.html">Java Class Design</h4>
+		<ul>
+			<li><a href="{{ site.url }}/ocpj8-notes/01-java-class-design.html#">Implement encapsulation</a></li>
+			<li><a href="{{ site.url }}/ocpj8-notes/01-java-class-design.html#">Implement inheritance including visibility modifiers and composition</a></li>
+			<li><a href="{{ site.url }}/ocpj8-notes/01-java-class-design.html#">Implement polymorphism</a></li>
+			<li><a href="{{ site.url }}/ocpj8-notes/01-java-class-design.html#">Override hashCode, equals, and toString methods from Object class</a></li>
+			<li><a href="{{ site.url }}/ocpj8-notes/01-java-class-design.html#">Create and use singleton classes and immutable classes</a></li>
+			<li><a href="{{ site.url }}/ocpj8-notes/01-java-class-design.html#">Develop code that uses static keyword on initialize blocks, variables, methods, and classes</a></li>
+		</ul>
+		<h4><a href="{{ site.url }}/ocpj8-notes/02-advanced-java-class-design.html">Advanced Java Class Design</h4>
+		<ul>
+			<li><a href="{{ site.url }}/ocpj8-notes/02-advanced-java-class-design.html#">Develop code that uses abstract classes and methods</a></li>
+			<li><a href="{{ site.url }}/ocpj8-notes/02-advanced-java-class-design.html#">Develop code that uses final keyword</a></li>
+			<li><a href="{{ site.url }}/ocpj8-notes/02-advanced-java-class-design.html#">Create inner classes including static inner class, local class, nested class, and anonymous inner class</a></li>
+			<li><a href="{{ site.url }}/ocpj8-notes/02-advanced-java-class-design.html#">Use enumerated types including methods, and constructors in an enum type</a></li>
+			<li><a href="{{ site.url }}/ocpj8-notes/02-advanced-java-class-design.html#">Develop code that declares, implements and/or extends interfaces and use the atOverride annotation</a></li>
+			<li><a href="{{ site.url }}/ocpj8-notes/02-advanced-java-class-design.html#">Create and use Lambda expressions</a></li>
+		</ul>
+		<h4><a href="{{ site.url }}/ocpj8-notes/03-generics-and-collections.html">Generics and Collections</h4>
+		<ul>
+			<li><a href="{{ site.url }}/ocpj8-notes/03-generics-and-collections.html#">Create and use a generic class</a></li>
+			<li><a href="{{ site.url }}/ocpj8-notes/03-generics-and-collections.html#">Create and use ArrayList, TreeSet, TreeMap, and ArrayDeque objects</a></li>
+			<li><a href="{{ site.url }}/ocpj8-notes/03-generics-and-collections.html#">Use java.util.Comparator and java.lang.Comparable interfaces</a></li>
+			<li><a href="{{ site.url }}/ocpj8-notes/03-generics-and-collections.html#">Collections Streams and Filters</a></li>
+			<li><a href="{{ site.url }}/ocpj8-notes/03-generics-and-collections.html#">Iterate using forEach methods of Streams and List</a></li>
+			<li><a href="{{ site.url }}/ocpj8-notes/03-generics-and-collections.html#">Describe Stream interface and Stream pipeline</a></li>
+			<li><a href="{{ site.url }}/ocpj8-notes/03-generics-and-collections.html#">Filter a collection by using lambda expressions</a></li>
+			<li><a href="{{ site.url }}/ocpj8-notes/03-generics-and-collections.html#">Use method references with Streams</a></li>
+		</ul>
+		<h4><a href="{{ site.url }}/ocpj8-notes/04-lambda-built-in-functional-interfaces.html">Lambda Built-in Functional Interfaces</h4>
+		<ul>
+			<li><a href="{{ site.url }}/ocpj8-notes/04-lambda-built-in-functional-interfaces.html#">Use  the built-in interfaces included in the java.util.function package such as Predicate, Consumer, Function, and Supplier</a></li>
+			<li><a href="{{ site.url }}/ocpj8-notes/04-lambda-built-in-functional-interfaces.html#">Develop code that uses primitive versions of functional interfaces</a></li>
+			<li><a href="{{ site.url }}/ocpj8-notes/04-lambda-built-in-functional-interfaces.html#">Develop code that uses binary versions of functional interfaces</a></li>
+			<li><a href="{{ site.url }}/ocpj8-notes/04-lambda-built-in-functional-interfaces.html#">Develop code that uses the UnaryOperator interface</a></li>
+		</ul>
+		<h4><a href="{{ site.url }}/ocpj8-notes/05-java-stream-api.html">Java Stream API</h4>
+		<ul>
+			<li><a href="{{ site.url }}/ocpj8-notes/05-java-stream-api.html#">Develop code to extract data from an object using peek() and map() methods including primitive versions of the map() method</a></li>
+			<li><a href="{{ site.url }}/ocpj8-notes/05-java-stream-api.html#">Search for data by using search methods of the Stream classes including findFirst, findAny, anyMatch, allMatch, noneMatch</a></li>
+			<li><a href="{{ site.url }}/ocpj8-notes/05-java-stream-api.html#">Develop code that uses the Optional class</a></li>
+			<li><a href="{{ site.url }}/ocpj8-notes/05-java-stream-api.html#">Develop code that uses Stream data methods and calculation methods</a></li>
+			<li><a href="{{ site.url }}/ocpj8-notes/05-java-stream-api.html#">Sort a collection using Stream API</a></li>
+			<li><a href="{{ site.url }}/ocpj8-notes/05-java-stream-api.html#">Save results to a collection using the collect method and group/partition data using the Collectors class</a></li>
+			<li><a href="{{ site.url }}/ocpj8-notes/05-java-stream-api.html#">Use of merge() and flatMap() methods of the Stream API</a></li>
+		</ul>
+		<h4><a href="{{ site.url }}/ocpj8-notes/">Advanced Java Class Design</h4>
+		<ul>
+			<li><a href="#">Develop code that uses abstract classes and methods</a></li>
+			<li><a href="#">Develop code that uses final keyword</a></li>
+			<li><a href="#">Create inner classes including static inner class, local class, nested class, and anonymous inner class</a></li>
+			<li><a href="#">Use enumerated types including methods, and constructors in an enum type</a></li>
+			<li><a href="#">Develop code that declares, implements and/or extends interfaces and use the atOverride annotation</a></li>
+			<li><a href="#">Create and use Lambda expressions</a></li>
+		</ul>
+		<h4><a href="{{ site.url }}/ocpj8-notes/">Advanced Java Class Design</h4>
+		<ul>
+			<li><a href="#">Develop code that uses abstract classes and methods</a></li>
+			<li><a href="#">Develop code that uses final keyword</a></li>
+			<li><a href="#">Create inner classes including static inner class, local class, nested class, and anonymous inner class</a></li>
+			<li><a href="#">Use enumerated types including methods, and constructors in an enum type</a></li>
+			<li><a href="#">Develop code that declares, implements and/or extends interfaces and use the atOverride annotation</a></li>
+			<li><a href="#">Create and use Lambda expressions</a></li>
+		</ul>
+		<h4><a href="{{ site.url }}/ocpj8-notes/">Advanced Java Class Design</h4>
+		<ul>
+			<li><a href="#">Develop code that uses abstract classes and methods</a></li>
+			<li><a href="#">Develop code that uses final keyword</a></li>
+			<li><a href="#">Create inner classes including static inner class, local class, nested class, and anonymous inner class</a></li>
+			<li><a href="#">Use enumerated types including methods, and constructors in an enum type</a></li>
+			<li><a href="#">Develop code that declares, implements and/or extends interfaces and use the atOverride annotation</a></li>
+			<li><a href="#">Create and use Lambda expressions</a></li>
+		</ul>
+		<h4><a href="{{ site.url }}/ocpj8-notes/">Advanced Java Class Design</h4>
+		<ul>
+			<li><a href="#">Develop code that uses abstract classes and methods</a></li>
+			<li><a href="#">Develop code that uses final keyword</a></li>
+			<li><a href="#">Create inner classes including static inner class, local class, nested class, and anonymous inner class</a></li>
+			<li><a href="#">Use enumerated types including methods, and constructors in an enum type</a></li>
+			<li><a href="#">Develop code that declares, implements and/or extends interfaces and use the atOverride annotation</a></li>
+			<li><a href="#">Create and use Lambda expressions</a></li>
+		</ul>
+		<h4><a href="{{ site.url }}/ocpj8-notes/">Advanced Java Class Design</h4>
+		<ul>
+			<li><a href="#">Develop code that uses abstract classes and methods</a></li>
+			<li><a href="#">Develop code that uses final keyword</a></li>
+			<li><a href="#">Create inner classes including static inner class, local class, nested class, and anonymous inner class</a></li>
+			<li><a href="#">Use enumerated types including methods, and constructors in an enum type</a></li>
+			<li><a href="#">Develop code that declares, implements and/or extends interfaces and use the atOverride annotation</a></li>
+			<li><a href="#">Create and use Lambda expressions</a></li>
+		</ul>
+		<h4><a href="{{ site.url }}/ocpj8-notes/">Advanced Java Class Design</h4>
+		<ul>
+			<li><a href="#">Develop code that uses abstract classes and methods</a></li>
+			<li><a href="#">Develop code that uses final keyword</a></li>
+			<li><a href="#">Create inner classes including static inner class, local class, nested class, and anonymous inner class</a></li>
+			<li><a href="#">Use enumerated types including methods, and constructors in an enum type</a></li>
+			<li><a href="#">Develop code that declares, implements and/or extends interfaces and use the atOverride annotation</a></li>
+			<li><a href="#">Create and use Lambda expressions</a></li>
+		</ul>
+		<h4><a href="{{ site.url }}/ocpj8-notes/">Advanced Java Class Design</h4>
+		<ul>
+			<li><a href="#">Develop code that uses abstract classes and methods</a></li>
+			<li><a href="#">Develop code that uses final keyword</a></li>
+			<li><a href="#">Create inner classes including static inner class, local class, nested class, and anonymous inner class</a></li>
+			<li><a href="#">Use enumerated types including methods, and constructors in an enum type</a></li>
+			<li><a href="#">Develop code that declares, implements and/or extends interfaces and use the atOverride annotation</a></li>
+			<li><a href="#">Create and use Lambda expressions</a></li>
+		</ul>
+
+    </div>
+	
+    <script>
+      /*(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+       (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+       m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+       })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA', '1');
+      ga('send', 'pageview');*/
+    </script>
+
+    <script>
+		$(function() {
+			$('a[data-fluidbox]').fluidbox();
+		});
+		(function($) {
+			$(document).ready(function() {
+			  $.slidebars();
+			});
+		}) (jQuery);
+		$('a[href="#"]').click(function(e) { 
+			e.preventDefault ? e.preventDefault() : e.returnValue = false; 
+		});
+    </script>
+  </body>
+</html>

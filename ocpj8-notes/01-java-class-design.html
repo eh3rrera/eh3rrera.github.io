@@ -1,0 +1,78 @@
+---
+layout: ocpj8-notes
+title: Java SE 8 Programmer II
+---
+<h1>Java Class Design</h1>
+<p class="post-meta" style="text-align: left;">
+<small>
+<a href="#implement-encapsulation">- Implement encapsulation</a><br/>
+<a href="#">- Implement inheritance including visibility modifiers and composition</a><br/>
+<a href="#">- Implement polymorphism</a><br/>
+<a href="#">- Override hashCode, equals, and toString methods from Object class</a><br/>
+<a href="#">- Create and use singleton classes and immutable classes</a><br/>
+<a href="#">- Develop code that uses static keyword on initialize blocks, variables, methods, and classes</a><br/>
+</small>
+</p>
+
+<h2 name="implement-encapsulation">Implement encapsulation</h2>
+<p>Encapsulation means keeping the internal workings of your code safe from other programs that use it, allowing only what you choose to be accessed. This makes the code that uses the encapsulated code much simpler and easier to maintain since much of the complexity of the latter is hidden.</p>
+<p>The main benefit of encapsulation is that it protects a class from being used in a way that it wasn&#39;t meant to be. By controlling the way the code is used, it can only ever do what you want it to do. </p>
+<p>For example, if we set variables like this:</p>
+<pre><code class="hljs java">car.model = 2015;
+</code></pre><p>We can&#39;t prevent something invalid like this:</p>
+<pre><code class="hljs java">car.model = 2343242;
+</code></pre><p>To implement encapsulation, we set up the class so only its methods can refer to its instance variables. External code will access these private instance variables only through public get/set methods. This is a convention used in reusable components called JavaBeans. The rules are:</p>
+<ul>
+<li>Instance variables are <em>private</em></li>
+<li>Getter methods begin with <em>get</em> if the property is not a <em>boolean</em>, otherwise, they begin with <em>is</em></li>
+<li>Setter methods begin with <em>set</em></li>
+<li>The method name starts with get/is/set followed by the name of the instance variable with its first letter in uppercase</li>
+</ul>
+<p>So if we have a class like the following:</p>
+<pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Car</span> </span>{
+  <span class="hljs-keyword">int</span> model;
+  String name;
+  String color;
+}
+</code></pre>
+<p>The encapsulated version would look like this:</p>
+<pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Car</span> </span>{
+  <span class="hljs-keyword">private</span> <span class="hljs-keyword">int</span> model;
+  <span class="hljs-keyword">private</span> String name;
+  <span class="hljs-keyword">private</span> String color;
+
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">int</span> <span class="hljs-title">getModel</span><span class="hljs-params">()</span> </span>{
+    <span class="hljs-keyword">return</span> model;
+  }
+  <span class="hljs-function"><span class="hljs-keyword">public</span> String <span class="hljs-title">getName</span><span class="hljs-params">()</span> </span>{
+    <span class="hljs-keyword">return</span> name;
+  }
+  <span class="hljs-function"><span class="hljs-keyword">public</span> String <span class="hljs-title">getColor</span><span class="hljs-params">()</span> </span>{
+    <span class="hljs-keyword">return</span> color;
+  }
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">setModel</span><span class="hljs-params">(<span class="hljs-keyword">int</span> model)</span> </span>{
+    <span class="hljs-keyword">this</span>.model = model;
+  }
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">setName</span><span class="hljs-params">(<span class="hljs-keyword">int</span> name)</span> </span>{
+    <span class="hljs-keyword">this</span>.name = name;
+  }
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">setColor</span><span class="hljs-params">(<span class="hljs-keyword">int</span> color)</span> </span>{
+    <span class="hljs-keyword">this</span>.color = color;
+  }
+}
+</code></pre>
+<p>Notice the use of <code>this</code> in the setter methods. The parameter name can be anything, but if it&#39;s the same as the instance variable&#39;s name, <code>this</code> (that references the instance) must be used to differentiate between them.</p>
+<p>Of course, just like that, in the surface this code does the same as the non-encapsulated version, but by using a method instead of getting/setting the instance variable directly, we can add something like a validation without breaking the external code:</p>
+<pre><code class="hljs java"><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">setModel</span><span class="hljs-params">(<span class="hljs-keyword">int</span> model)</span> </span>{
+  <span class="hljs-keyword">if</span>(model &gt;= <span class="hljs-number">2000</span> &amp;&amp; model &lt;= <span class="hljs-number">2015</span>) {
+    <span class="hljs-keyword">this</span>.model = model;
+  } <span class="hljs-keyword">else</span> {
+    <span class="hljs-keyword">this</span>.model = <span class="hljs-number">2000</span>;
+  }
+}
+</code></pre>
+<p>Now, if we set an invalid value:</p>
+<pre><code class="hljs java">car.setModel(<span class="hljs-number">2343242</span>);
+</code></pre>
+<p>We&#39;ll get a default and valid value that will protect the class from being used in a way it wasn&#39;t meant to be.</p>
+<p>Encapsulation  can be also used with constructors and methods of a class. The key thing is to restrict the access to any member of the class that can break things when something changes or that doesn&#39;t want to be exposed.</p>
