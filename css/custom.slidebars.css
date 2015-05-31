@@ -52,3 +52,11 @@ header .sb-toggle-left {
 	border-bottom: 1px solid #e2e1e4;
 	padding-bottom: 8px;
 }
+
+h2[id]:before { 
+  display: block; 
+  content: " "; 
+  margin-top: -100px; 
+  height: 100px; 
+  visibility: hidden; 
+}

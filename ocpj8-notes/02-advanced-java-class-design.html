@@ -1,0 +1,464 @@
+---
+layout: ocpj8-notes
+title: Java SE 8 Programmer II - Advanced Java Class Design
+---
+<h1>Advanced Java Class Design</h1>
+<p class="post-meta" style="text-align: left;">
+<small>
+<a href="#develop-code-that-uses-abstract">- Develop code that uses abstract classes and methods</a><br/>
+<a href="#develop-code-that-uses-final-keyword">- Develop code that uses final keyword</a><br/>
+<a href="#create-inner-classes">- Create inner classes including static inner class, local class, nested class, and anonymous inner class</a><br/>
+<a href="#use-enumerated-types">- Use enumerated types including methods, and constructors in an enum type</a><br/>
+<a href="#develop-code-that-declares">- Develop code that declares, implements and/or extends interfaces and use the atOverride annotation</a><br/>
+<a href="#create-and-use-lambda-expressions">- Create and use Lambda expressions</a><br/>
+</small>
+</p>
+
+<h2 id="develop-code-that-uses-abstract">Develop code that uses abstract classes and methods</h2>
+<p>An abstract class is a class that is declared <code>abstract</code>. Abstract classes cannot be instantiated, only subclassed.</p>
+<pre><code class="hljs java"><span class="hljs-keyword">abstract</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Animal</span> </span>{
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">eat</span><span class="hljs-params">()</span> </span>{}
+}
+</code></pre>
+<p>An abstract method is a method that is declared without an implementation, like this:</p>
+<pre><code class="hljs java"><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> <span class="hljs-keyword">void</span> <span class="hljs-title">method</span><span class="hljs-params">(<span class="hljs-keyword">int</span> arg)</span></span>;
+</code></pre>
+<p>If a class includes an abstract method, it has to be declared abstract. When an abstract class is subclassed, if the subclass doesn&#39;t provide an implementation for the inherited abstract methods, it has to be declared abstract as well.</p>
+<pre><code class="hljs java"><span class="hljs-keyword">abstract</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Animal</span> </span>{
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">eat</span><span class="hljs-params">()</span> </span>{
+   <span class="hljs-javadoc">/** Do something */</span>
+  }
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">abstract</span> <span class="hljs-title">makeSound</span><span class="hljs-params">()</span></span>;
+}
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Dog</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Animal</span> </span>{
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">makeSound</span><span class="hljs-params">()</span> </span>{
+    System.out.println(<span class="hljs-string">"Bark"</span>);
+  }
+}
+</code></pre>
+<p>If an abstract class has static members, you can use them with a class reference (AbstractClass.staticMethod()) as you would with any other class.</p>
+<p>Abstract classes are similar to interfaces. However, with abstract classes, you can declare fields that are not static and final, and define public, protected, and private concrete methods. With interfaces, all fields are automatically public, static, and final, and all methods that you declare or define are public. In addition, you can extend only one class, whether or not it is abstract, whereas you can implement any number of interfaces.</p>
+<p>Use abstract classes when:</p>
+<ul>
+<li>You want to share code among several closely related classes.</li>
+<li>You expect that classes that extend your abstract class have many common methods or fields, or require access modifiers other than public (such as protected and private).</li>
+<li>You want to declare non-static or non-final fields. This enables you to define methods that can access and modify the state of the object to which they belong.</li>
+</ul>
+<p>Use interfaces when:</p>
+<ul>
+<li>You expect that unrelated classes would implement your interface. For example, the interfaces <em>Comparable</em> and <em>Cloneable</em> are implemented by many unrelated classes.</li>
+<li>You want to specify the behavior of a particular data type, but not concerned about who implements its behavior.</li>
+<li>You want to take advantage of multiple inheritance of type.</li>
+</ul>
+<p>&nbsp;</p>
+
+
+
+<h2 id="develop-code-that-uses-final-keyword">Develop code that uses final keyword</h2>
+<p>The final keyword can be used in variables, methods and classes.</p>
+<h3 id="final-variable">Final Variable</h3>
+<p>If you make a variable final, you cannot change the value of final variable (sort of a constant) after is initialized. It can only be initialized in the constructor or when it&#39;s declared. If it&#39;s static, it will be initialized in a static block or when it&#39;s declared.</p>
+<p>If the variable holds an object, it cannot be assigned to other objects, but the attributes of that object can be changed.</p>
+<pre><code class="hljs java"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Car</span> </span>{  
+ <span class="hljs-keyword">final</span> <span class="hljs-keyword">int</span> speed = <span class="hljs-number">70</span>; 
+ <span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">speedUp</span><span class="hljs-params">()</span></span>{  
+  speed = <span class="hljs-number">90</span>;  <span class="hljs-comment">//Compile-time error</span>
+ }
+</code></pre>
+<h3 id="final-method">Final Method</h3>
+<p>If you make a method of a class final, a subclass cannot override that method when inherited.</p>
+<pre><code class="hljs java"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Animal</span> </span>{  
+  <span class="hljs-function"><span class="hljs-keyword">final</span> <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">eat</span><span class="hljs-params">()</span> </span>{
+    System.out.println(<span class="hljs-string">"eating"</span>);
+  }  
+}  
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Dog</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Animal</span> </span>{  
+  <span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">eat</span><span class="hljs-params">()</span> </span>{ <span class="hljs-comment">//Compile-time error</span>
+    System.out.println(<span class="hljs-string">"eating"</span>);
+  }  
+}
+</code></pre>
+<h3 id="final-class">Final Class</h3>
+<p>If you make any class final, you cannot extend it.</p>
+<pre><code class="hljs java"><span class="hljs-keyword">final</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Animal</span> </span>{  
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">eat</span><span class="hljs-params">()</span> </span>{
+    System.out.println(<span class="hljs-string">"eating"</span>);
+  }  
+}  
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Dog</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Animal</span> </span>{ <span class="hljs-comment">//Compile-time error  </span>
+}
+</code></pre>
+<p>&nbsp;</p>
+
+
+
+
+<h2 id="create-inner-classes">Create inner classes including static inner class, local class, nested class, and anonymous inner class</h2>
+<p>An inner class is a class declared inside another class.</p>
+<h3 id="static-inner-class">Static Inner Class</h3>
+<p>A inner class declared with the static keyword becomes a static inner class, for example:</p>
+<pre><code class="hljs java"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">OuterClass</span> </span>{
+   <span class="hljs-comment">// Static nested class</span>
+   <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">NestedStaticClass</span> </span>{
+       <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">print</span><span class="hljs-params">()</span> </span>{ 
+         System.out.println(<span class="hljs-string">"Message from nested static class"</span>); 
+       }
+    }
+} 
+
+<span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Test</span> </span>{
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String args[])</span></span>{
+       <span class="hljs-comment">// create instance of nested Static class</span>
+       OuterClass.NestedStaticClass sc = <span class="hljs-keyword">new</span> OuterClass.NestedStaticClass();
+
+       <span class="hljs-comment">// call non static method of nested static class</span>
+       sc.print();
+    }
+}
+</code></pre>
+<p>The rules of a static nested class are:</p>
+<ul>
+<li>Nested static classes don&#39;t need a reference of their outer class (the enclosing class)</li>
+<li>Only static members of the outer class are accessible in a nested static class</li>
+</ul>
+<h3 id="local-inner-class">Local Inner Class</h3>
+<p>A class created inside a method or a block is called local inner class. If you want to use a local inner class, you must instantiate it inside the method or block.</p>
+<pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">LocalClass</span></span>{  
+ <span class="hljs-keyword">private</span> <span class="hljs-keyword">int</span> n = <span class="hljs-number">5</span>;
+
+ <span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">result</span><span class="hljs-params">()</span></span>{  
+   <span class="hljs-comment">// Local inner class</span>
+   <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Cube</span> </span>{  
+     <span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">calc</span><span class="hljs-params">()</span> </span>{
+        <span class="hljs-keyword">return</span> n*n*n;
+     }  
+   }
+
+   Cube c = <span class="hljs-keyword">new</span> Cube();  
+   System.out.println(c.calc());  
+ }  
+
+ <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String args[])</span> </span>{  
+    LocalClass lc = <span class="hljs-keyword">new</span> LocalClass();  
+    lc.result();  
+ }  
+}
+</code></pre>
+<p>The rules of a local inner class are:</p>
+<ul>
+<li>Local inner class cannot be invoked from outside the method.</li>
+<li>Since java 8, it&#39;s possible to access the non-final local variables in a local inner class.</li>
+</ul>
+<h3 id="nested-class">Nested class</h3>
+<p>A nested class or member inner class is a non-static class that is created inside a class but outside a method.</p>
+<pre><code class="hljs java"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">OuterClass</span> </span>{
+   <span class="hljs-comment">// Nested class</span>
+   <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">NestedClass</span> </span>{
+       <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">print</span><span class="hljs-params">()</span> </span>{ 
+         System.out.println(<span class="hljs-string">"Message from nested class"</span>); 
+       }
+    }
+} 
+
+<span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Test</span> </span>{
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String args[])</span></span>{
+       <span class="hljs-comment">// create instance of outer class</span>
+       OuterClass oc = <span class="hljs-keyword">new</span> OuterClass();
+       <span class="hljs-comment">// create instance of nested Static class</span>
+       OuterClass.NestedClass nc = oc.<span class="hljs-keyword">new</span> NestedClass();
+
+       <span class="hljs-comment">// call non static method of nested static class</span>
+       sc.print();
+    }
+}
+</code></pre>
+<p>The rules of a nested class are:</p>
+<ul>
+<li>Nested  classes need a reference of their outer class</li>
+<li>Static and non-static members of the outer class are accessible in a nested  class</li>
+<li>If the nested class is used inside the class that defines it, the keyword this can be used to create an instance of the nested class (for example <code>OuterClass.NestedClass nc = this.new NestedClass();</code>)</li>
+</ul>
+<p>There&#39;s also a concept named shadowing. If a declaration of a type (such as a member variable or a parameter name) in a particular scope (such as an inner class or a method definition) has the same name as another declaration in the enclosing scope, then the declaration shadows the declaration of the enclosing scope, for example:</p>
+<pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Test</span> </span>{
+    <span class="hljs-keyword">public</span> <span class="hljs-keyword">int</span> x = <span class="hljs-number">10</span>;
+
+    <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Inner</span> </span>{
+        <span class="hljs-keyword">public</span> <span class="hljs-keyword">int</span> x = <span class="hljs-number">1</span>;
+        <span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">m</span><span class="hljs-params">(<span class="hljs-keyword">int</span> x)</span> </span>{
+            System.out.println(<span class="hljs-string">"x = "</span> + x);
+            System.out.println(<span class="hljs-string">"this.x = "</span> + <span class="hljs-keyword">this</span>.x);
+            System.out.println(<span class="hljs-string">"Test.this.x = "</span> + Test.<span class="hljs-keyword">this</span>.x);
+        }
+    }
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String... args)</span> </span>{
+        Test t = <span class="hljs-keyword">new</span> Test();
+        Test.Inner i = t.<span class="hljs-keyword">new</span> Ineer();
+        i.m(<span class="hljs-number">5</span>);
+    }
+}
+</code></pre>
+<p>This example defines three variables named x, the member variable of the class Test, the member variable of the inner class Inner, and the parameter in the method m. The variable x defined as a parameter of the method shadows the variable of the inner class. So, when you use the variable x in the method m, it refers to the method parameter. To refer to the member variable of the inner class Inner, use the keyword this to represent the enclosing scope. To refer to member variables that enclose larger scopes, use the class name to which they belong. The output of the example is:</p>
+<pre><code>x = 5
+this.x = 1
+Test.this.x = 10
+</code></pre><h3 id="anonymous-inner-class">Anonymous Inner Class</h3>
+<p>Anonymous Inner classes are classes without name (but not without type) used to override a method of class or interface. They can&#39;y have constructors.</p>
+<pre><code class="hljs java"><span class="hljs-class"><span class="hljs-keyword">interface</span> <span class="hljs-title">Animal</span> </span>{  
+  <span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">eat</span><span class="hljs-params">()</span></span>;  
+}  
+<span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Test</span> </span>{  
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String args[])</span></span>{  
+    Animal a = <span class="hljs-keyword">new</span> Animal(){  
+      <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">eat</span><span class="hljs-params">()</span> </span>{ System.out.println(<span class="hljs-string">"eat"</span>); }  
+    };  
+    a.eat();  
+  }  
+}
+</code></pre>
+<p>The code:</p>
+<pre><code class="hljs java">    Animal a = <span class="hljs-keyword">new</span> Animal() { <span class="hljs-comment">//This is the only case where you can use the keyword 'new' with an interface</span>
+      <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">eat</span><span class="hljs-params">()</span> </span>{ System.out.println(<span class="hljs-string">"eat"</span>); }  
+    };
+</code></pre>
+<p>Represents:</p>
+<ul>
+<li>A class that is created but have its name decided by the compiler</li>
+<li>The class implements the <em>Animal</em> interface and provides the implementation of the <em>eat</em> method.</li>
+<li>An object is created and referred by the <em>a</em> variable of <em>Animal</em> type.</li>
+</ul>
+<p>The rules to access variables in anonymous classes are:</p>
+<ul>
+<li>An anonymous class has access to the members of its enclosing class.</li>
+<li>An anonymous class cannot access local variables in its enclosing scope that are not declared as final or effectively final.</li>
+<li>Like a nested class, a declaration of a variable in an anonymous class shadows any other declarations in the enclosing scope that have the same name. </li>
+</ul>
+<p>&nbsp;</p>
+
+
+
+<h2 id="use-enumerated-types">Use enumerated types including methods, and constructors in an enum type</h2>
+<p>Enumerated types (or enums) are classes that can be used to define a set of constants. They are type-safe, meaning that you cannot assign anything else other than the predefined constants to an enum variable.</p>
+<p>Here&#39;s an example:</p>
+<pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">enum</span> Colors {
+    RED,
+    BLUE,
+    BLACK
+}
+</code></pre>
+<p>You can refer to the constants in the enum like this:</p>
+<pre><code class="hljs java">Colors color = Colors.BLUE;
+</code></pre>
+<p>Enums extend from <code>java.lang.Enum</code> implicitly, so they cannot extend another class. But they can implement an interface and override any method like normal class.</p>
+<p>You can specify values of enum constants at the creation time, but you need to define a constructor for this and, optionally, a method to get these values, for example:</p>
+<pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">enum</span> Colors {
+    RED(<span class="hljs-string">"#ff0000"</span>),
+    BLUE(<span class="hljs-string">"#3366cc"</span>),
+    BLACK(<span class="hljs-string">"#000000"</span>);
+
+    <span class="hljs-keyword">private</span> String hexValue;
+
+    <span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-title">Colors</span><span class="hljs-params">(String hexValue)</span> </span>{
+      <span class="hljs-keyword">this</span>.hexValue = hexValue;
+    }
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> String <span class="hljs-title">getHexValue</span><span class="hljs-params">()</span> </span>{
+      <span class="hljs-keyword">return</span> value;
+    }
+}
+</code></pre>
+<p>And the method is used like this:</p>
+<pre><code class="hljs java">String value = Colors.BLUE.getHexValue();
+</code></pre>
+<p>If an enum contains attributes and methods, their definition  must always come after the list of constants in the enum and the list of constants must be terminated by a semicolon.</p>
+<p>The constructor of an enum must be private, any other access modifier will result in compilation error. For this reason, you cannot create an instance of an enum by using the <em>new</em> operator.</p>
+<p>Enums can be used in if statements in this way:</p>
+<pre><code class="hljs java">Colors color = Colors.BLUE;
+
+<span class="hljs-keyword">if</span>( color == Colors.RED) {
+  <span class="hljs-javadoc">/** Do something */</span>
+} <span class="hljs-function"><span class="hljs-keyword">else</span> <span class="hljs-title">if</span><span class="hljs-params">( color == Colors.BLUE)</span> </span>{
+  <span class="hljs-javadoc">/** Do something */</span>
+} <span class="hljs-function"><span class="hljs-keyword">else</span> <span class="hljs-title">if</span><span class="hljs-params">( color == Colors.BLACK)</span> </span>{
+  <span class="hljs-javadoc">/** Do something */</span>
+}
+</code></pre>
+<p>And in switch statements like this:</p>
+<pre><code class="hljs java">Colors color = Colors.BLUE;
+
+<span class="hljs-keyword">switch</span> (color) {
+    <span class="hljs-keyword">case</span> RED: <span class="hljs-javadoc">/** Do something */</span>; <span class="hljs-keyword">break</span>;
+    <span class="hljs-keyword">case</span> BLUE: <span class="hljs-javadoc">/** Do something */</span>; <span class="hljs-keyword">break</span>;
+    <span class="hljs-keyword">case</span> BLACK: <span class="hljs-javadoc">/** Do something */</span>; <span class="hljs-keyword">break</span>;
+}
+</code></pre>
+<p>You can also get all the possible values of an enum type by calling the static <code>values()</code> method:</p>
+<pre><code class="hljs java"><span class="hljs-keyword">for</span> (Colors c : Colors.values()) {
+    System.out.println(c);
+}
+</code></pre>
+<p>The order of the values is exactly the same in which they were defined.</p>
+<p>&nbsp;</p>
+
+
+
+<h2 id="develop-code-that-declares">Develop code that declares, implements and/or extends interfaces and use the atOverride annotation</h2>
+<h3 id="interfaces">Interfaces</h3>
+<p>An interface is like an abstract class, except that it cannot contain an implementation of the methods, only their signature (return type, name, parameters and exceptions).</p>
+<p>An interface is declared using the interface keyword. Just like classes, an interface can be declared public or with package scope (no access modifier).</p>
+<pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">interface</span> <span class="hljs-title">Vehicle</span> </span>{
+    <span class="hljs-keyword">public</span> String serie = <span class="hljs-string">"XXX"</span>;
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">start</span><span class="hljs-params">()</span></span>;
+}
+</code></pre>
+<p>The variables declared in an interface are public, static and final by default. The methods are public and abstract by default.</p>
+<p>Before you can use an interface, it must be implemented by some class:</p>
+<pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Truck</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">Vehicle</span> </span>{
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">start</span><span class="hljs-params">()</span> </span>{
+        System.out.println(<span class="hljs-string">"Starting truck..."</span>);
+    }
+}
+</code></pre>
+<p>A class that implements an interface must implement all the methods declared in the interface. The only exception is default methods. Java 8 introduces this feature, which provides the flexibility to allow an interface to define an implementation which will be used as default in the situation where a class fails to provide an implementation for that method.</p>
+<p>This is made by adding the keyword <code>default</code> before the method&#39;s access modifier and adding the implementation inside interface:</p>
+<pre><code class="hljs java"><span class="hljs-class"><span class="hljs-keyword">interface</span> <span class="hljs-title">Vehicle</span> </span>{
+    <span class="hljs-function"><span class="hljs-keyword">default</span> <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">start</span><span class="hljs-params">()</span> </span>{
+        System.out.println(<span class="hljs-string">"Default start"</span>);
+    }
+}
+
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Car</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">Vehicle</span> </span>{
+    <span class="hljs-comment">// valid in Java 8</span>
+}
+</code></pre>
+<p>Once a class implements an interface, an instance of that class can be assigned to a reference of the interface type:</p>
+<pre><code class="hljs java">Vehicle truck = <span class="hljs-keyword">new</span> Truck();
+</code></pre>
+<p>A class can implement multiple interfaces. In that case, the class must implement all the methods declared in all the interfaces implemented:</p>
+<pre><code class="hljs java"><span class="hljs-class"><span class="hljs-keyword">interface</span> <span class="hljs-title">Run</span> </span>{
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">run</span><span class="hljs-params">()</span></span>;
+}
+<span class="hljs-class"><span class="hljs-keyword">interface</span> <span class="hljs-title">Sleep</span> </span>{
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">sleep</span><span class="hljs-params">()</span></span>;
+}
+<span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Man</span>
+    <span class="hljs-keyword">implements</span> <span class="hljs-title">Run</span>, <span class="hljs-title">Sleep</span> </span>{
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">run</span><span class="hljs-params">()</span> </span>{
+        System.out.println(<span class="hljs-string">"run"</span>);
+    }
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">sleep</span><span class="hljs-params">()</span> </span>{
+        System.out.println(<span class="hljs-string">"sleep"</span>);
+    }
+}
+</code></pre>
+<p>An interface cannot extend from another class or implement another interface. It can only extend another interface(s):</p>
+<pre><code class="hljs java"><span class="hljs-class"><span class="hljs-keyword">interface</span> <span class="hljs-title">Run</span> </span>{
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">run</span><span class="hljs-params">()</span></span>;
+}
+<span class="hljs-class"><span class="hljs-keyword">interface</span> <span class="hljs-title">Sleep</span> </span>{
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">sleep</span><span class="hljs-params">()</span></span>;
+}
+<span class="hljs-class"><span class="hljs-keyword">interface</span> <span class="hljs-title">Behavior</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Run</span>, <span class="hljs-title">Sleep</span> </span>{
+}
+
+<span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Man</span>
+    <span class="hljs-keyword">implements</span> <span class="hljs-title">Behavior</span> </span>{
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">run</span><span class="hljs-params">()</span> </span>{
+        System.out.println(<span class="hljs-string">"run"</span>);
+    }
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">sleep</span><span class="hljs-params">()</span> </span>{
+        System.out.println(<span class="hljs-string">"sleep"</span>);
+    }
+}
+</code></pre>
+<p>If a class implements <em>Behavior</em>, it has to implement all methods defined in both <em>Run</em> and <em>Sleep</em> interfaces.</p>
+<h3 id="atoverride-annotation">atOverride Annotation</h3>
+<p>When you use the <code>@Override</code> annotation, the compiler checks to make sure you&#39;re actually overriding a method. For example, if you misspell the method name or not match the parameters correctly, you will be warned that you&#39;re not actually overriding a method of the superclass.  </p>
+<p>The most common use case for <code>@Override</code> is with <em>Object</em> methods:</p>
+<pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Test</span> </span>{
+  <span class="hljs-annotation">@Override</span>
+  <span class="hljs-function"><span class="hljs-keyword">public</span> String <span class="hljs-title">toString</span><span class="hljs-params">()</span> </span>{
+    <span class="hljs-javadoc">/** Do something */</span>
+  }
+  <span class="hljs-annotation">@Override</span>
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">boolean</span> <span class="hljs-title">equals</span><span class="hljs-params">(Object)</span> </span>{
+    <span class="hljs-javadoc">/** Do something */</span>
+  }
+  <span class="hljs-annotation">@Override</span>
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">int</span> <span class="hljs-title">hashCode</span><span class="hljs-params">()</span> </span>{
+    <span class="hljs-javadoc">/** Do something */</span>
+  }
+}
+</code></pre>
+<p>&nbsp;</p>
+
+
+<h2 id="create-and-use-lambda-expressions">Create and use Lambda expressions</h2>
+<p>Think about an interface with one method, like the one used to create threads:</p>
+<pre><code class="hljs java"><span class="hljs-function"><span class="hljs-keyword">public</span> interface <span class="hljs-title">Runnable</span><span class="hljs-params">()</span> </span>{
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">run</span><span class="hljs-params">()</span></span>;
+}
+</code></pre>
+<p>You can use an anonymous class to implement that interface:</p>
+<pre><code class="hljs java"><span class="hljs-keyword">new</span> Thread(<span class="hljs-keyword">new</span> Runnable() {
+    <span class="hljs-annotation">@Override</span>
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">run</span><span class="hljs-params">()</span> </span>{
+        System.out.println(<span class="hljs-string">"run"</span>);
+    }
+}).start();
+</code></pre>
+<p>Lambda expressions can be used in cases like this, where you have what is called a functional interface, an interface with just one method declared in it.</p>
+<p>A lambda expression has the following syntax:</p>
+<pre><code>parameter -&gt; expression body
+</code></pre><ul>
+<li>The type declaration is optional.  Compiler can inference the same from value of the parameter.</li>
+<li>Parentheses around the parameter are optional. The parentheses are required only for multiple parameters.</li>
+<li>Curly braces in the expression body are optional. - The braces are required only if the expression body contains more than one statement.</li>
+<li>A return keyword in the expression body is optional. The compiler automatically returns a value if the expression body has a single expression to return the value. </li>
+</ul>
+<p>Here are some examples of Lambda expressions.</p>
+<pre><code class="hljs java">(<span class="hljs-keyword">int</span> a, <span class="hljs-keyword">int</span> b) -&gt; {  <span class="hljs-keyword">return</span> a * b; }
+() -&gt; System.out.println(<span class="hljs-string">"Hi"</span>);
+String s -&gt; { System.out.println(s); }
+(a) -&gt; a
+() -&gt; <span class="hljs-keyword">return</span> <span class="hljs-number">100</span>;
+</code></pre>
+<p>Using a lambda expression, a thread can be started in this way:</p>
+<pre><code class="hljs java"><span class="hljs-keyword">new</span> Thread(
+    () -&gt; System.out.println(<span class="hljs-string">"run"</span>);
+).start();
+</code></pre>
+<p>In this case, the lambda expression replaces the method <code>run()</code>. Since this method has no parameters, the parentheses have no content in between. That is to signal that the lambda takes no parameters. Also, with lambda expressions, the type can be inferred from the surrounding code, so there is no need to reference the <em>Runnable</em> interface.</p>
+<p>Lambda expressions are objects. You can assign a lambda expression to a variable and pass it around like this:</p>
+<pre><code class="hljs java">Runnable r = () -&gt; System.out.println(<span class="hljs-string">"run"</span>);
+<span class="hljs-keyword">new</span> Thread(r).start();
+</code></pre>
+<p>So lambda expressions only work with one-method interfaces (called functional interfaces). There&#39;s even an annotation to make the compiler check if an interface has more than one method:</p>
+<pre><code class="hljs java"><span class="hljs-annotation">@FunctionalInterface</span>
+<span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">interface</span> <span class="hljs-title">FuncInterface</span> </span>{ <span class="hljs-comment">//Generates a compile-time error</span>
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">doSomething</span><span class="hljs-params">()</span></span>;
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">doMoreSomething</span><span class="hljs-params">()</span></span>;
+}
+</code></pre>
+<p>Here&#39;s another example of the use of a lambda expression:</p>
+<pre><code class="hljs java"><span class="hljs-annotation">@FunctionalInterface</span>
+<span class="hljs-class"><span class="hljs-keyword">interface</span> <span class="hljs-title">MathFunction</span> </span>{
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">operation</span><span class="hljs-params">(<span class="hljs-keyword">int</span> a, <span class="hljs-keyword">int</span> b)</span></span>;
+}
+
+<span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Test</span> </span>{
+   <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String args[])</span> </span>{
+      MathFunction multiply = (a, b) -&gt; a * b;
+      MathFunction divide = (a, b) -&gt; a / b;
+
+      System.out.println(<span class="hljs-string">"4 * 2 = "</span> + multiply.operation(<span class="hljs-number">4</span>, <span class="hljs-number">2</span>));       
+      System.out.println(<span class="hljs-string">"4 / 2 = "</span> + divide.operation(<span class="hljs-number">4</span>, <span class="hljs-number">2</span>));  
+   }
+}
+</code></pre>
+<p>In summary, lambda expressions are basically used to define an implementation of a functional interface instead of using an anonymous class.</p>
+<p>&nbsp;</p>

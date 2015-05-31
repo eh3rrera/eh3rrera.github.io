@@ -411,18 +411,15 @@ optgroup {
 /* Tables
    ========================================================================== */
 
-/**
- * Remove most spacing between table cells.
- */
-
 table {
   border-collapse: collapse;
   border-spacing: 0;
+  font-size: 90%
 }
 
 td,
 th {
-  padding: 0;
+  padding: 0.4rem;
 }
 
 /*! end normalize.css */
@@ -484,7 +481,7 @@ th {
   margin-right: 1em;
 }
 
-pre, h1, h2, h3, h4, h5, h6, p, .posts, .posts-archive, .posts-archive__date {
+pre, h1, h2, h3, h4, h5, h6, p, table, .posts, .posts-archive, .posts-archive__date {
   margin-bottom: 1.5rem; }
 
 * {
@@ -522,6 +519,7 @@ pre {
   border: 1px solid #e4e4e4;*/
   border-radius: 3px;
   /*background: #fafafa;*/
+
   font-size: 0.87rem;
   line-height: 1.71; }
 
