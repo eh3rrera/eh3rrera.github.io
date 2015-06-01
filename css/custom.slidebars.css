@@ -32,12 +32,15 @@ header .sb-toggle-left {
 
 .sb-slidebar {
 	color: white;
+}
+
+.sb-slidebar h2 {
 	padding: 1rem 0.5rem;
+	margin-bottom: 0;
 }
 
 .sb-slidebar ul {
 	font-size: 85%;
-	margin-bottom: 2rem;
 }
 
 .sb-slidebar ul li{

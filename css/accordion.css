@@ -1,0 +1,48 @@
+/*Basic reset*/
+* {margin: 0; padding: 0;}
+
+#accordian {
+	color: white;
+}
+/*heading styles*/
+#accordian h3 {
+	font-size: 1.0rem;
+	line-height: 2.5rem;
+	padding: 0 10px;
+	cursor: pointer;
+	border-bottom:1px white solid;
+	margin-bottom:0;
+}
+/*heading hover effect*/
+#accordian h3:hover {
+	text-shadow: 0 0 1px rgba(255, 255, 255, 0.7);
+}
+#accordian h3 a {
+	text-decoration: none;
+}
+/*list items*/
+#accordian li {
+	list-style-type: none;
+}
+/*links*/
+#accordian ul ul li a {
+	text-decoration: none;
+	font-size: 0.6rem;
+	line-height: 1.2rem;
+	display: block;
+	padding: 0 1.0rem;
+	/*transition for smooth hover animation*/
+	transition: all 0.15s;
+}
+/*hover effect on links*/
+#accordian ul ul li a:hover {
+	background: #1c1819;
+	border-left: 2px solid #ff380a;
+}
+/*Lets hide the non active LIs by default*/
+#accordian ul ul {
+	display: none;
+}
+#accordian li.active ul {
+	display: block;
+}
