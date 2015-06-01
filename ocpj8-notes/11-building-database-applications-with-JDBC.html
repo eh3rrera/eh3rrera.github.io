@@ -1,0 +1,117 @@
+---
+layout: ocpj8-notes
+title: Java SE 8 Programmer II - Building Database Applications with JDBC
+---
+<h1>Building Database Applications with JDBC</h1>
+<p class="post-meta" style="text-align: left;">
+<small>
+<a href="#describe-the-interfaces-that-make-up">- Describe the interfaces that make up the core of the JDBC API including the Driver, Connection, Statement, and ResultSet interfaces and their relationship to provider implementations</a><br/>
+<a href="#identify-the-components">- Identify the components required to connect to a database using the DriverManager class including the JDBC URL</a><br/>
+<a href="#submit-queries-and-read-results">- Submit queries and read results from the database including creating statements, returning result sets, iterating through the results, and properly closing result sets, statements, and connections</a><br/>
+</small>
+</p>
+
+
+<h2 id="describe-the-interfaces-that-make-up">Describe the interfaces that make up the core of the JDBC API including the Driver, Connection, Statement, and ResultSet interfaces and their relationship to provider implementations</h2>
+<p><a href="https://docs.oracle.com/javase/8/docs/api/java/sql/Driver.html">Driver</a>.  Provides the API for registering and connecting drivers based on JDBC (every driver class must implement it). Generally used only by the DriverManager class</p>
+<p><a href="https://docs.oracle.com/javase/8/docs/api/java/sql/DriverManager.html">DriverManager</a>. To makes a connection with a driver.</p>
+<p><a href="https://docs.oracle.com/javase/8/docs/api/java/sql/Connection.html">Connection</a>. Provides methods for creating statements and managing connections with a data source and their properties.</p>
+<p><a href="https://docs.oracle.com/javase/8/docs/api/java/sql/Statement.html">Statement</a>. Object used for executing a static SQL statement and returning the results it produces.</p>
+<p><a href="https://docs.oracle.com/javase/8/docs/api/java/sql/ResultSet.html">ResultSet</a>. Object used for retrieving and updating the results of a query.</p>
+<p>To use the JDBC API with a particular DBMS, you need a JDBC driver to establish the communication between Java and the database. JDBC drivers are divided into four types:</p>
+<p>Type 1: JDBC-ODBC (Open Database Connectivity) Bridge<br>Type 2: Native-API, partly Java driver<br>Type 3: Network-protocol, all-Java driver<br>Type 4: Native-protocol, all-Java driver</p>
+<p>All JDBC drivers implement four JDBC interfaces: </p>
+<ul>
+<li>Driver</li>
+<li>Connection</li>
+<li>Statement</li>
+<li>ResultSet.</li>
+</ul>
+<p>The DriverManager class tracks the loaded JDBC drivers and creates the database connections. Before JDBC 4.0, the Driver class was loaded with this code:</p>
+<pre><code class="hljs java">Class.forName(<span class="hljs-string">"com.jw.client.JWDriver"</span>);
+</code></pre>
+<p>From JDBC 4.0 this is done automatically. This registers the driver with the DriverManager. This way, when a program creates a database connection with the <code>DriverManager.getConnection()</code> method, the DriverManager in turn calls the <code>Driver.connect()</code> method. Every JDBC driver must implement the java.sql.Driver interface. So, the JDBC driver&#39;s <code>connect()</code> method checks whether the driver URL is correct, and then, returns the Connection within its <code>connect()</code> method.</p>
+<p>&nbsp;</p>
+
+
+<h2 id="identify-the-components">Identify the components required to connect to a database using the DriverManager class including the JDBC URL</h2>
+<p>When working with JDBC, the first thing you need to do is to establish a connection with a data source (like a DBMS). One way to this is to use the class <a href="https://docs.oracle.com/javase/8/docs/api/java/sql/DriverManager.html">DriverManager</a>.</p>
+<p>DriverManager connects an application to a data source by using a database URL. When this class first attempts to establish a connection, it automatically loads any JDBC 4.0 drivers found within the class path.</p>
+<p>A database URL varies depending on the DBMS used. For example, for MySQL it looks like this:</p>
+<pre><code>jdbc:mysql://localhost:3306/data
+</code></pre><p>Where localhost is the name of the server that is hosting the database, 3306 is the port number and data is the name of the database.</p>
+<p>In previous versions of JDBC, to get a connection, you first had to initialize the JDBC driver by calling the method <code>Class.forName()</code>. Since JDBC 4.0, drivers that are found in your class path are automatically loaded. </p>
+<p>To connect to a data source using DriverManager, we need to get a <a href="https://docs.oracle.com/javase/8/docs/api/java/sql/Connection.html">Connection</a> object with something like the following snippet:</p>
+<pre><code class="hljs java">Properties props = <span class="hljs-keyword">new</span> Properties();
+props.put(<span class="hljs-string">"user"</span>, userName);
+props.put(<span class="hljs-string">"password"</span>, password);
+
+Connection conn = DriverManager.getConnection(<span class="hljs-string">"jdbc:mysql://localhost:3306/data"</span>);
+</code></pre>
+<p>&nbsp;</p>
+
+
+
+<h2 id="submit-queries-and-read-results">Submit queries and read results from the database including creating statements, returning result sets, iterating through the results, and properly closing result sets, statements, and connections</h2>
+<p>To process a SQL statement with JDBC you have to:</p>
+<ol>
+<li>Establishing a connection.</li>
+<li>Create a statement.</li>
+<li>Execute the query.</li>
+<li>Process the ResultSet object.</li>
+<li>Close the connection.</li>
+</ol>
+<p>In code, it looks like this:</p>
+<pre><code class="hljs java">String sql = <span class="hljs-string">"SELECT id, name FROM users WHERE id = ?"</span>;
+List&lt;User&gt; users = <span class="hljs-keyword">new</span> ArrayList&lt;&gt;();
+<span class="hljs-keyword">try</span> (Connection con = DriverManager.getConnection(<span class="hljs-string">"jdbc:mysql://localhost/test?user=admin&amp;password=admin12345"</span>);
+     PreparedStatement ps = con.prepareStatement(sql);) {
+    ps.setInt(<span class="hljs-number">1</span>, <span class="hljs-number">1001</span>);
+    <span class="hljs-keyword">try</span> (ResultSet rs = ps.executeQuery();) {
+        <span class="hljs-keyword">while</span>(rs.next()) {
+            users.add(<span class="hljs-keyword">new</span> User(rs.getInt(<span class="hljs-string">"id"</span>), rs.getString(<span class="hljs-string">"name"</span>)));
+        }
+    }
+} <span class="hljs-keyword">catch</span> (SQLException e) {
+    e.printStackTrace();
+}
+</code></pre>
+<p>First, a connection with a MySQL database is established.</p>
+<p>With a Connection object, you create a Statement object. There are three different kinds of statements:</p>
+<ul>
+<li><a href="https://docs.oracle.com/javase/8/docs/api/java/sql/Statement.html">Statement</a>. Used to implement simple SQL statements with no parameters.</li>
+<li><a href="https://docs.oracle.com/javase/8/docs/api/java/sql/PreparedStatement.html">PreparedStatement</a>. Used for precompiling SQL statements that might contain input parameters. It extends Statement.</li>
+<li><a href="https://docs.oracle.com/javase/8/docs/api/java/sql/CallableStatement.html">CallableStatement</a>. Used to execute stored procedures that may contain both input and output parameters. It extends PreparedStatement.</li>
+</ul>
+<p>To execute a query, call an execute method from Statement such as:</p>
+<ul>
+<li><code>execute()</code>. Returns true if the first object that the query returns is a ResultSet object. Use this method if the query could return one or more ResultSet objects. Retrieve the ResultSet objects returned from the query by repeatedly calling Statement.getResultSet.</li>
+<li><code>executeQuery()</code>. Returns one ResultSet object.</li>
+<li><code>executeUpdate()</code>. Returns an integer representing the number of rows affected by the SQL statement. Use this method if you are using INSERT, DELETE, or UPDATE SQL statements.</li>
+</ul>
+<p>With a ResultSet object, you can access the data. It acts like a cursor, pointing  to one row of data and positioned before the first row at the beginning. Then you call for example, the method <code>next()</code> to move the cursor forward by one row and you can get the data with getter methods that either take the column index (the first column is 1) or the column name. There are getter methods for a lot of types, for example:</p>
+<pre><code class="hljs java"><span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">getInt</span><span class="hljs-params">(<span class="hljs-keyword">int</span> columnIndex)</span></span>;
+<span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">getInt</span><span class="hljs-params">(String columnName)</span></span>;
+
+<span class="hljs-function"><span class="hljs-keyword">long</span> <span class="hljs-title">getLong</span><span class="hljs-params">(<span class="hljs-keyword">int</span> columnIndex)</span></span>;
+<span class="hljs-function"><span class="hljs-keyword">long</span> <span class="hljs-title">getLong</span><span class="hljs-params">(String columnName)</span></span>;
+
+<span class="hljs-function">String <span class="hljs-title">getString</span><span class="hljs-params">(<span class="hljs-keyword">int</span> columnIndex)</span></span>;
+<span class="hljs-function">String <span class="hljs-title">getString</span><span class="hljs-params">(String columnName)</span></span>;
+
+<span class="hljs-function">BigDecimal <span class="hljs-title">getBigDecimal</span><span class="hljs-params">(<span class="hljs-keyword">int</span> columnIndex)</span></span>;
+<span class="hljs-function">BigDecimal <span class="hljs-title">getBigDecimal</span><span class="hljs-params">(String columnName)</span></span>;
+</code></pre>
+<p>When you are finished,, call the method <code>Statement.close()</code> to immediately release the resources it&#39;s using. When you call this method, its ResultSet objects are also closed. If you&#39;re not going to need the connection anymore, you should also close the connection with <code>Connection.close()</code>. You can use a try-with-resources statement to automatically close Connection, Statement, and ResultSet objects, regardless of whether a SQLException has been thrown. Or you can close them manually in the finally block like this:</p>
+<pre><code class="hljs java"><span class="hljs-keyword">try</span> {
+  Connection con = ...
+  Statement stmt = ...
+  <span class="hljs-comment">// Do something with stmt</span>
+} <span class="hljs-keyword">catch</span>(Exception e) {
+  e.printStackTrace();
+} <span class="hljs-keyword">finally</span> {
+    <span class="hljs-keyword">if</span> (stmt != <span class="hljs-keyword">null</span>) { stmt.close(); }
+    <span class="hljs-keyword">if</span> (con != <span class="hljs-keyword">null</span>) { con.close(); }
+}
+</code></pre>
+<p>&nbsp;</p>

@@ -1,0 +1,349 @@
+---
+layout: ocpj8-notes
+title: Java SE 8 Programmer II - Java Stream API
+---
+<h1>Java Stream API</h1>
+<p class="post-meta" style="text-align: left;">
+<small>
+<a href="#develop-code-to-extract-data">- Develop code to extract data from an object using peek() and map() methods including primitive versions of the map() method</a><br/>
+<a href="#search-for-data">- Search for data by using search methods of the Stream classes including findFirst, findAny, anyMatch, allMatch, noneMatch</a><br/>
+<a href="#develop-code-that-uses-the-optional-class">- Develop code that uses the Optional class</a><br/>
+<a href="#develop-code-that-uses-stream-data">- Develop code that uses Stream data methods and calculation methods</a><br/>
+<a href="#sort-a-collection-using-stream-api">- Sort a collection using Stream API</a><br/>
+<a href="#save-results-to-a-collection">- Save results to a collection using the collect method and group/partition data using the Collectors class</a><br/>
+<a href="#use-of-merge-and-flatmap">- Use of merge() and flatMap() methods of the Stream API</a><br/>
+</small>
+</p>
+
+
+<h2 id="develop-code-to-extract-data">Develop code to extract data from an object using peek() and map() methods including primitive versions of the map() method</h2>
+<h3 id="peek-">peek()</h3>
+<pre><code class="hljs java"><span class="hljs-function">Stream&lt;T&gt; <span class="hljs-title">peek</span><span class="hljs-params">(Consumer&lt;? <span class="hljs-keyword">super</span> T&gt; action)</span></span>
+</code></pre>
+<p>Peek is an intermediate operation that returns a stream consisting of the elements of the original stream, and performing the provided action on each element.</p>
+<p>According to the <a href="https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html#peek-java.util.function.Consumer-">API</a>, This method exists mainly to support debugging, where you want to see the elements as they flow past a certain point in a pipeline:</p>
+<pre><code class="hljs java">Stream.of(<span class="hljs-string">"the"</span>, <span class="hljs-string">"good"</span>, <span class="hljs-string">"bad"</span>, <span class="hljs-string">"ugly"</span>)
+   .filter(e -&gt; e.length() &gt; <span class="hljs-number">3</span>)
+   .peek(e -&gt; System.out.println(<span class="hljs-string">"Filtered value: "</span> + e))
+   .map(String::toUpperCase)
+   .peek(e -&gt; System.out.println(<span class="hljs-string">"Mapped value: "</span> + e))
+   .collect(Collectors.toList());
+</code></pre>
+<h3 id="map-">map()</h3>
+<pre><code class="hljs java">&lt;R&gt; <span class="hljs-function">Stream&lt;R&gt; <span class="hljs-title">map</span><span class="hljs-params">(Function&lt;? <span class="hljs-keyword">super</span> T,? extends R&gt; mapper)</span></span>
+</code></pre>
+<p>Map is an intermediate operation that returns a stream consisting of the results of applying the given function to the elements of this stream. Since we&#39;re talking about a <em>Function</em>, it&#39;s possible to convert the items in the stream to other objects. In other words, for each item you create a new object based on that item.</p>
+<p>For example, to convert all strings in the stream to uppercase:</p>
+<pre><code class="hljs java">Stream.of(<span class="hljs-string">"a"</span>, <span class="hljs-string">"b"</span>, <span class="hljs-string">"c"</span>, <span class="hljs-string">"d"</span>).map(s -&gt; s.toUpperCase()).forEach(s -&gt; System.out.print(s));
+</code></pre>
+<p>Just like a <em>Function</em>, map() include primitive versions:</p>
+<pre><code class="hljs java"><span class="hljs-function">IntStream <span class="hljs-title">mapToInt</span><span class="hljs-params">(ToIntFunction&lt;? <span class="hljs-keyword">super</span> T&gt; mapper)</span>
+LongStream <span class="hljs-title">mapToLong</span><span class="hljs-params">(ToLongFunction&lt;? <span class="hljs-keyword">super</span> T&gt; mapper)</span>
+DoubleStream <span class="hljs-title">mapToDouble</span><span class="hljs-params">(ToDoubleFunction&lt;? <span class="hljs-keyword">super</span> T&gt; mapper)</span></span>
+</code></pre>
+<p>These methods can be used when you want a stream of these primitive types. For example, consider a stream of elements of this type:</p>
+<pre><code class="hljs java"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Employee</span> </span>{
+  <span class="hljs-keyword">private</span> <span class="hljs-keyword">int</span> id;
+  <span class="hljs-keyword">private</span> String name;
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">int</span> <span class="hljs-title">getId</span><span class="hljs-params">()</span> </span>{
+    <span class="hljs-keyword">return</span> id;
+  }
+  <span class="hljs-function"><span class="hljs-keyword">public</span> String <span class="hljs-title">getName</span><span class="hljs-params">()</span> </span>{
+    <span class="hljs-keyword">return</span> name;
+  }
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">setId</span><span class="hljs-params">(<span class="hljs-keyword">int</span> id)</span> </span>{
+    <span class="hljs-keyword">this</span>.id = id;
+  }
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">setName</span><span class="hljs-params">(String name)</span> </span>{
+    <span class="hljs-keyword">this</span>.name = name;
+  }
+}
+</code></pre>
+<p>We can extract the employee ids directly to a stream of <code>int</code> in this way:</p>
+<pre><code class="hljs java">List&lt;Integer&gt; employeeIds = employees.stream().mapToInt(e -&gt; e.getId()).collect(Collectors.toList());
+</code></pre>
+<p>This works because <code>getInt()</code> returns an <code>int</code>, the type expected by <code>mapToInt()</code>.</p>
+<p>&nbsp;</p>
+
+
+
+<h2 id="search-for-data">Search for data by using search methods of the Stream classes including findFirst, findAny, anyMatch, allMatch, noneMatch</h2>
+<p>We hava two types of methods in the Stream API to search for data:</p>
+<ul>
+<li>findXXX methods. Take no arguments and return an Optional object with the result, or an empty Optional if nothing is found.</li>
+<li>XXXMatch methods. Take a Predicate and return a boolean if an element in the stream returns true by applying the Predicate.</li>
+</ul>
+<p>The methods are:</p>
+<p><code>Optional&lt;T&gt;    findAny()</code>
+This is a short-circuiting terminal operation that returns an Optional representing some element of the stream. This doesn&#39;t guarantee to return the first element of a sorted stream.</p>
+<p><code>Optional&lt;T&gt;    findAny()</code>
+This is a short-circuiting terminal operation that returns the first element of the stream. If the stream has no order, then any element may be returned.</p>
+<p><code>boolean anyMatch(Predicate&lt;? super T&gt; predicate)</code>
+This is a short-circuiting terminal operation that returns whether any elements of this stream match the provided predicate.  If the stream is empty then false is returned and the predicate is not evaluated.</p>
+<p><code>boolean allMatch(Predicate&lt;? super T&gt; predicate)</code>
+This is a short-circuiting terminal operation that returns whether all elements of this stream match the provided predicate.  If the stream is empty then true is returned and the predicate is not evaluated.</p>
+<p><code>boolean noneMatch(Predicate&lt;? super T&gt; predicate)</code>
+This is a short-circuiting terminal operation that returns whether no elements of this stream match the provided predicate.  If the stream is empty then true is returned and the predicate is not evaluated.</p>
+<p>A short-circuiting terminal operation basically means that there&#39;s no need to process the entire stream to return a result. As soon as an element that fits the predicate is found or that a result can be inferred, the result is return.</p>
+<p>Here&#39;s an example:</p>
+<pre><code class="hljs java">Optional&lt;Integer&gt; first = Stream.of(<span class="hljs-number">1</span>, <span class="hljs-number">10</span>, <span class="hljs-number">5</span>, <span class="hljs-number">3</span>, <span class="hljs-number">13</span>, <span class="hljs-number">20</span>).filter(i -&gt; i % <span class="hljs-number">2</span> == <span class="hljs-number">0</span>).findFirst(); <span class="hljs-comment">//returns 2</span>
+Optional&lt;Integer&gt; any = Stream.of(<span class="hljs-number">1</span>, <span class="hljs-number">10</span>, <span class="hljs-number">5</span>, <span class="hljs-number">3</span>, <span class="hljs-number">13</span>, <span class="hljs-number">20</span>).filter(i -&gt; i % <span class="hljs-number">2</span> == <span class="hljs-number">0</span>).findFirst(); <span class="hljs-comment">//can return 2</span>
+<span class="hljs-keyword">boolean</span> any2 = Stream.of(<span class="hljs-number">1</span>, <span class="hljs-number">10</span>, <span class="hljs-number">5</span>, <span class="hljs-number">3</span>, <span class="hljs-number">13</span>, <span class="hljs-number">20</span>).anyMatch(i -&gt; i % <span class="hljs-number">3</span> == <span class="hljs-number">0</span>); <span class="hljs-comment">//returns true</span>
+<span class="hljs-keyword">boolean</span> all = Stream.of(<span class="hljs-number">1</span>, <span class="hljs-number">10</span>, <span class="hljs-number">5</span>, <span class="hljs-number">3</span>, <span class="hljs-number">13</span>, <span class="hljs-number">20</span>).allMatch(i -&gt; i % <span class="hljs-number">2</span> == <span class="hljs-number">0</span>); <span class="hljs-comment">//returns false</span>
+<span class="hljs-keyword">boolean</span> none = Stream.of(<span class="hljs-number">1</span>, <span class="hljs-number">10</span>, <span class="hljs-number">5</span>, <span class="hljs-number">3</span>, <span class="hljs-number">13</span>, <span class="hljs-number">20</span>).noneMatch(i -&gt; i % <span class="hljs-number">6</span> == <span class="hljs-number">0</span>); <span class="hljs-comment">//returns true</span>
+</code></pre>
+<p>&nbsp;</p>
+
+
+
+<h2 id="develop-code-that-uses-the-optional-class">Develop code that uses the Optional class</h2>
+<p>The <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Optional.html">java.util.Optional&lt;T&gt;</a> class acts as a container which may or may not contain a non-null value. </p>
+<p>The main methods of the class are:</p>
+<ul>
+<li><code>isPresent()</code> that returns true if it contains a non-null value, false otherwise.</li>
+<li><code>get()</code> that returns the non-null value if it contains a non-null value, and throws a NoSuchElementException otherwise. To avoid the exception, before getting the value you must check if the Optional object contains a non-null value.</li>
+<li><code>ifPresent(Consumer&lt;? super T&gt; action)</code> takes a Consumer to perform some operation on the value contained in the Optional. If the Optional is empty or null, it does not perform anything.</li>
+</ul>
+<p>OptionalInt, OptionalLong, and OptionalDouble deal with optional primitive values.</p>
+<ul>
+<li><code>getAsInt()</code> method from OptionalInt class returns int value.</li>
+<li><code>getAsLong()</code> method from OptionalLong class return long value.</li>
+<li><code>getAsDouble()</code> method from OptionalDouble class return double value.</li>
+</ul>
+<p>Some stream operations (like <code>map()</code>, <code>max()</code>, <code>min()</code>, etc.)  return optional values with nothing inside if the stream is empty. For example:</p>
+<pre><code class="hljs java">OptionalInt min = Stream.of(<span class="hljs-number">10</span>, <span class="hljs-number">20</span>, <span class="hljs-number">30</span>, <span class="hljs-number">40</span>).filter(n -&gt; n &gt; <span class="hljs-number">50</span>).min();
+<span class="hljs-keyword">if</span> (min.isPresent()) {
+  System.out.println(min.getAsInt());
+} <span class="hljs-keyword">else</span> {
+  System.out.println(<span class="hljs-string">"No value"</span>);
+}
+</code></pre>
+<p>Or if we don&#39;t need to print the &quot;No value&quot; message:</p>
+<pre><code class="hljs java">OptionalInt min = Stream.of(<span class="hljs-number">10</span>, <span class="hljs-number">20</span>, <span class="hljs-number">30</span>, <span class="hljs-number">40</span>).filter(n -&gt; n &gt; <span class="hljs-number">50</span>).min();
+min.isPresent(n -&gt; System.out.println(n));
+</code></pre>
+<p>Besides <code>get()</code>, we have three other methods to obtain values from an Optional:</p>
+<ul>
+<li><code>T orElse(T defaultValue)</code> Returns the value contained in the Optional. If empty, it returns the specified defaultValue.</li>
+<li><code>T orElseGet(Supplier&lt;? extends T&gt; defaultSupplier)</code> Returns the value contained in the Optional. If empty, it returns the value returned from the specified defaultSupplier.</li>
+<li><code>&lt;X extends Throwable&gt; T orElseThrow(Supplier&lt;? extends X&gt; exceptionSupplier) throws X extends Throwable</code> Returns the value contained in the Optional. If empty, it throws the exception returned from the specified exceptionSupplier.
+For example:<pre><code class="hljs java">Stream.of(<span class="hljs-number">10</span>, <span class="hljs-number">20</span>, <span class="hljs-number">30</span>, <span class="hljs-number">40</span>).filter(n -&gt; n &gt; <span class="hljs-number">50</span>).min().orElse(<span class="hljs-number">0</span>);
+Stream.of(<span class="hljs-number">10</span>, <span class="hljs-number">20</span>, <span class="hljs-number">30</span>, <span class="hljs-number">40</span>).filter(n -&gt; n &gt; <span class="hljs-number">50</span>).min().orElseGet(() -&gt; logAndReturnDefault());
+Stream.of(<span class="hljs-number">10</span>, <span class="hljs-number">20</span>, <span class="hljs-number">30</span>, <span class="hljs-number">40</span>).filter(n -&gt; n &gt; <span class="hljs-number">50</span>).min().orElseThrow(Exception::<span class="hljs-keyword">new</span>);
+</code></pre>
+</li>
+</ul>
+<p>If we are not using streams and we need to create an Optional, there are three methods we can use:</p>
+<ul>
+<li><code>&lt;T&gt; Optional&lt;T&gt; empty()</code> Returns an empty Optional.</li>
+<li><code>&lt;T&gt; Optional&lt;T&gt; of(T value)</code> Returns an Optional containing the specified value  If the value is null, it throws a NullPointerException.</li>
+<li><code>&lt;T&gt; Optional&lt;T&gt; ofNullable(T value)</code> Returns an Optional containing the specified value if the value is non-null. If the specified value is null, it returns an empty Optional.</li>
+</ul>
+<p>For example:</p>
+<pre><code class="hljs java">Optional&lt;String&gt; empty  = Optional.empty();
+Optional&lt;String&gt; string = Optional.of(<span class="hljs-string">"Hello"</span>);
+Optional&lt;String&gt; empty2  = Optional.ofNullable(<span class="hljs-keyword">null</span>);
+</code></pre>
+<p>&nbsp;</p>
+
+
+<h2 id="develop-code-that-uses-stream-data">Develop code that uses Stream data methods and calculation methods</h2>
+<h3 id="data-methods">Data methods</h3>
+<p><code>Optional&lt;T&gt;    max(Comparator&lt;? super T&gt; comparator)</code>
+Terminal operation that returns the maximum element of this stream according to the provided Comparator wrapped in an Optional object, or an empty Optional if the stream is empty.</p>
+<p><code>Optional&lt;T&gt;    min(Comparator&lt;? super T&gt; comparator)</code>
+Terminal operation that returns the minimum element of this stream according to the provided Comparator wrapped in an Optional object, or an empty Optional if the stream is empty.</p>
+<p><code>long    count()</code>
+Terminal operation that returns the count of elements in this stream.</p>
+<p>Comparator is a functional interface, so you can create a comparator in the form of a lambda expression. For example:</p>
+<pre><code class="hljs java">Comparator&lt;String&gt; byLength = (s1, s2) -&gt; Integer.compare( s1.length(), s2.length());
+Optional&lt;String&gt; max = Stream.of(<span class="hljs-string">"hello"</span>,<span class="hljs-string">"good bye"</span>, <span class="hljs-string">"black"</span>, <span class="hljs-string">"white"</span>, <span class="hljs-string">"good"</span>, <span class="hljs-string">"bad"</span>)
+        .max(byLength); <span class="hljs-comment">//returns "good bye"</span>
+Optional&lt;String&gt; min = Stream.of(<span class="hljs-string">"hello"</span>,<span class="hljs-string">"good bye"</span>, <span class="hljs-string">"black"</span>, <span class="hljs-string">"white"</span>, <span class="hljs-string">"good"</span>, <span class="hljs-string">"bad"</span>)
+        .min(byLength); <span class="hljs-comment">//returns "bad"</span>
+<span class="hljs-keyword">long</span> count = Stream.of(<span class="hljs-string">"hello"</span>,<span class="hljs-string">"good bye"</span>, <span class="hljs-string">"black"</span>, <span class="hljs-string">"white"</span>, <span class="hljs-string">"good"</span>, <span class="hljs-string">"bad"</span>)
+        .count(); <span class="hljs-comment">//returns 6</span>
+</code></pre>
+<h3 id="calculation-methods">Calculation methods</h3>
+<p>Calculation methods only work with the primitive versions of Stream: IntStream, LongStream, and DoubleStream. For example, for IntStream the methods are:</p>
+<p><code>int sum()</code>
+Terminal operation that returns the sum of elements in the stream.</p>
+<p><code>OptionalInt min()</code>
+Terminal operation that returns an OptionalInt describing the minimum element of the stream, or an empty optional if this stream is empty.</p>
+<p><code>OptionalInt max()</code>
+Terminal operation that returns an OptionalInt describing the minimum element of the stream, or an empty optional if this stream is empty.</p>
+<p><code>OptionalDouble average()</code>
+Terminal operation that returns an OptionalDouble describing the arithmetic mean of elements of the stream, or an empty optional if this stream is empty.</p>
+<p>Except for <code>average()</code> that always returns an OptionalDouble, the other methods return a long and OptionalLong for LongStream, and a dobule and OptionalDouble for DoubleStream.</p>
+<p>Here&#39;s an example:</p>
+<pre><code class="hljs java">OptionalInt max = IntStream.of(<span class="hljs-number">1</span>, <span class="hljs-number">34</span>, <span class="hljs-number">667</span>, <span class="hljs-number">3</span>, <span class="hljs-number">32</span>, <span class="hljs-number">23</span>).max(); <span class="hljs-comment">// max() returns 667</span>
+
+OptionalInt min = IntStream.of(<span class="hljs-number">1</span>, <span class="hljs-number">34</span>, <span class="hljs-number">667</span>, <span class="hljs-number">3</span>, <span class="hljs-number">32</span>, <span class="hljs-number">23</span>).min(); <span class="hljs-comment">// min() returns 1</span>
+
+OptionalDouble average = IntStream.of(<span class="hljs-number">1</span>, <span class="hljs-number">34</span>, <span class="hljs-number">667</span>, <span class="hljs-number">3</span>, <span class="hljs-number">32</span>, <span class="hljs-number">23</span>).average(); <span class="hljs-comment">// returns 126.66</span>
+
+<span class="hljs-keyword">int</span> sum = IntStream.of(<span class="hljs-number">1</span>, <span class="hljs-number">34</span>, <span class="hljs-number">667</span>, <span class="hljs-number">3</span>, <span class="hljs-number">32</span>, <span class="hljs-number">23</span>).sum(); <span class="hljs-comment">// returns 760</span>
+</code></pre>
+<p>&nbsp;</p>
+
+
+
+<h2 id="sort-a-collection-using-stream-api">Sort a collection using Stream API</h2>
+<p>To sort a collection using the method <code>sorted()</code> from the Stream API, you need a Comparator (there&#39;s a version of sorted that takes no arguments that returns a stream with its elements sorted according to natural order).</p>
+<p>Comparator is a functional interface, so you can create a comparator in the form of a lambda expression.  For example:</p>
+<pre><code class="hljs java">Comparator&lt;String&gt; byLength = (s1, s2) -&gt; Integer.compare( s1.length(), s2.length());
+
+Stream.of(<span class="hljs-string">"hello"</span>,<span class="hljs-string">"good bye"</span>, <span class="hljs-string">"black"</span>, <span class="hljs-string">"white"</span>, <span class="hljs-string">"good"</span>, <span class="hljs-string">"bad"</span>)
+          .sorted(byLength)
+          .forEach(s -&gt; System.out.println(s));
+</code></pre>
+<p>The output:</p>
+<pre><code>bad
+good
+hello
+black
+white
+good bye
+</code></pre><p>If you want to compare using multiple criteria, in Java 8 there&#39;s a new method to make this easily,  <code>Comparator.thenComparing()</code>:</p>
+<pre><code class="hljs java">Comparator&lt;String&gt; byLength = (s1, s2) -&gt; Integer.compare( s1.length(), s2.length());
+Comparator&lt;String&gt; byLetters = (s1, s2) -&gt; s1.compareTo(s2);
+
+Stream.of(<span class="hljs-string">"hello"</span>,<span class="hljs-string">"good bye"</span>, <span class="hljs-string">"black"</span>, <span class="hljs-string">"white"</span>, <span class="hljs-string">"good"</span>, <span class="hljs-string">"bad"</span>)
+          .sorted(byLength.thenComparing(byLetters))
+          .forEach(s -&gt; System.out.println(s));
+</code></pre>
+<p>The output:</p>
+<pre><code>bad
+good
+black
+hello
+white
+good bye
+</code></pre>
+<p>&nbsp;</p>
+
+
+<h2 id="save-results-to-a-collection">Save results to a collection using the collect method and group/partition data using the Collectors class</h2>
+<p>Streams have the following method:</p>
+<pre><code class="hljs java">collect(Collector&lt;? <span class="hljs-keyword">super</span> T,A,R&gt; collector)
+</code></pre>
+<p>This method performs a mutable reduction operation on the elements of this stream using a {Collector}(<a href="https://docs.oracle.com/javase/8/docs/api/java/util/stream/Collector.html">https://docs.oracle.com/javase/8/docs/api/java/util/stream/Collector.html</a>).</p>
+<p>A mutable reduction operation accumulates (or collects) input elements into a mutable result container, such as a Collection or StringBuilder, as it processes the elements in the stream.</p>
+<p>A collect operation requires three functions: </p>
+<ul>
+<li>A supplier function to construct new instances of the result container</li>
+<li>An accumulator function to incorporate an input element into a result container</li>
+<li>A combining function to merge the contents of one result container into another.</li>
+</ul>
+<p>In fact, streams also have the following method that takes the above functions to create our own collect operations:</p>
+<pre><code class="hljs java">collect(Supplier&lt;R&gt; supplier, BiConsumer&lt;R,? <span class="hljs-keyword">super</span> T&gt; accumulator, BiConsumer&lt;R,R&gt; combiner)
+</code></pre>
+<p>For example, traditionally, to collect the elements of a list into another list, we could do:</p>
+<pre><code class="hljs java">List&lt;String&gt; word = <span class="hljs-keyword">new</span> ArrayList&lt;&gt;();;
+List&lt;String&gt; letters = <span class="hljs-keyword">new</span> ArrayList&lt;&gt;();
+letters.add(<span class="hljs-string">"H"</span>);
+letters.add(<span class="hljs-string">"e"</span>);
+letters.add(<span class="hljs-string">"l"</span>);
+letters.add(<span class="hljs-string">"l"</span>);
+letters.add(<span class="hljs-string">"o"</span>);
+<span class="hljs-keyword">for</span> (String s : letters) {
+   word.add(s.toUpperCase());
+}
+</code></pre>
+<p>Now with the collect method:</p>
+<pre><code class="hljs java">List&lt;String&gt; letters = <span class="hljs-keyword">new</span> ArrayList&lt;&gt;();
+letters.add(<span class="hljs-string">"H"</span>);
+letters.add(<span class="hljs-string">"e"</span>);
+letters.add(<span class="hljs-string">"l"</span>);
+letters.add(<span class="hljs-string">"l"</span>);
+letters.add(<span class="hljs-string">"o"</span>);
+List&lt;String&gt; word = letters.stream().collect(() -&gt; <span class="hljs-keyword">new</span> ArrayList&lt;&gt;(),
+                                    (c, s) -&gt; c.add(s.toUpperCase()),
+                                    (c1, c2) -&gt; c1.addAll(c2));
+</code></pre>
+<p>However, there&#39;s a class, <a href="https://docs.oracle.com/javase/8/docs/api/java/util/stream/Collectors.html">Collectors</a>, which implements many useful reduction operations. So using Collectors, the code becomes simpler:</p>
+<pre><code class="hljs java">List&lt;String&gt; letters = <span class="hljs-keyword">new</span> ArrayList&lt;&gt;();
+letters.add(<span class="hljs-string">"H"</span>);
+letters.add(<span class="hljs-string">"e"</span>);
+letters.add(<span class="hljs-string">"l"</span>);
+letters.add(<span class="hljs-string">"l"</span>);
+letters.add(<span class="hljs-string">"o"</span>);
+List&lt;String&gt; word = letters.stream().map(s -&gt; s.toUpperCase()).collect(Collectors.toList());
+</code></pre>
+<p>Other implementations of Collectors are:</p>
+<pre><code class="hljs java"><span class="hljs-comment">// Accumulate into a TreeSet</span>
+Set&lt;String&gt; set = letters.stream()
+                          .map(s -&gt; s.toUpperCase())
+                          .collect(Collectors.toCollection(TreeSet::<span class="hljs-keyword">new</span>));
+
+<span class="hljs-comment">// Convert elements to strings and concatenate them, separated by commas</span>
+String joined = letters.stream()
+                      .map(s -&gt; s.toUpperCase())
+                      .collect(Collectors.joining(<span class="hljs-string">", "</span>));
+
+<span class="hljs-comment">// Compute sum of all letters</span>
+<span class="hljs-keyword">int</span> total = letters.stream()
+                      .collect(Collectors.summingInt(s.length())));
+
+<span class="hljs-comment">// Group by starting letter</span>
+Map&lt;String, List&lt;String&gt;&gt; grouped = letters.stream()
+                                    .collect(Collectors.groupingBy(s.substring(<span class="hljs-number">0</span>,<span class="hljs-number">1</span>)));
+
+<span class="hljs-comment">// Partition letters into uppercase and lowercase</span>
+Map&lt;Boolean, List&lt;String&gt;&gt; upperLower = letters.stream()
+                                    .collect(Collectors.partitioningBy(s -&gt; Character.isUpperCase(s.codePointAt(<span class="hljs-number">0</span>))));
+</code></pre>
+<p>The last method, partitionBy, takes a predicate that returns <code>Map&lt;Boolean, List &lt;String&gt;&gt;</code> where the key is a boolean and the results are based on the behavior of the predicate. So its output is:</p>
+<pre><code>{false=[&quot;e&quot;,&quot;l&quot;,&quot;l&quot;,&quot;o&quot;], true=[H]}
+</code></pre>
+<p>&nbsp;</p>
+
+
+
+<h2 id="use-of-merge-and-flatmap">Use of merge() and flatMap() methods of the Stream API</h2>
+<pre><code class="hljs java">&lt;R&gt; <span class="hljs-function">Stream&lt;R&gt; <span class="hljs-title">flatMap</span><span class="hljs-params">(Function&lt;? <span class="hljs-keyword">super</span> T,? extends Stream&lt;? extends R&gt;&gt; mapper)</span></span>
+</code></pre>
+<p>This method returns a stream consisting of the results of replacing each element of the original stream with the content of the stream produced by the provided function (if the function returns null, an empty stream is used, instead).</p>
+<p>This method is commonly used in one to many relationships to flatten all the elements into a new stream.</p>
+<p>For example, consider the following classes:</p>
+<pre><code class="hljs java"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Student</span> </span>{
+  <span class="hljs-keyword">private</span> <span class="hljs-keyword">int</span> id;
+  <span class="hljs-keyword">private</span> String name;
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">int</span> <span class="hljs-title">getId</span><span class="hljs-params">()</span> </span>{
+    <span class="hljs-keyword">return</span> id;
+  }
+  <span class="hljs-function"><span class="hljs-keyword">public</span> String <span class="hljs-title">getName</span><span class="hljs-params">()</span> </span>{
+    <span class="hljs-keyword">return</span> name;
+  }
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">setId</span><span class="hljs-params">(<span class="hljs-keyword">int</span> id)</span> </span>{
+    <span class="hljs-keyword">this</span>.id = id;
+  }
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">setName</span><span class="hljs-params">(String name)</span> </span>{
+    <span class="hljs-keyword">this</span>.name = name;
+  }
+}
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Course</span> </span>{
+  <span class="hljs-keyword">private</span> List&lt;Student&gt; students;
+  <span class="hljs-keyword">private</span> String name;
+  <span class="hljs-function"><span class="hljs-keyword">public</span> List&lt;Student&gt; <span class="hljs-title">getStudents</span><span class="hljs-params">()</span> </span>{
+    <span class="hljs-keyword">return</span> students;
+  }
+  <span class="hljs-function"><span class="hljs-keyword">public</span> String <span class="hljs-title">getName</span><span class="hljs-params">()</span> </span>{
+    <span class="hljs-keyword">return</span> name;
+  }
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">setStudents</span><span class="hljs-params">(List&lt;Student&gt; students)</span> </span>{
+    <span class="hljs-keyword">this</span>.students = students;
+  }
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">setName</span><span class="hljs-params">(String name)</span> </span>{
+    <span class="hljs-keyword">this</span>.name = name;
+  }
+}
+</code></pre>
+<p>Assuming there&#39;s a list of courses and each course has a list of students that take that course, if we want to aggregate the names of all students taking a course into one stream, the following code will do it:</p>
+<pre><code class="hljs java">List&lt;String&gt; students = courses.stream()
+                .flatMap(course -&gt; course.getStudents().stream()) <span class="hljs-comment">//Get the students of each course</span>
+                .map(student -&gt; student.getName()) <span class="hljs-comment">//Now that we have a stream with all the students, we extract their name</span>
+                .collect(Collectors.toList());
+</code></pre>
+<p>There are other examples in the <a href="https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html#flatMap-java.util.function.Function-">javadoc</a> of the method.</p>
+<p>&nbsp;</p>

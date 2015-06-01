@@ -1,0 +1,268 @@
+---
+layout: ocpj8-notes
+title: Java SE 8 Programmer II - Exceptions and Assertions
+---
+<h1>Exceptions and Assertions</h1>
+<p class="post-meta" style="text-align: left;">
+<small>
+<a href="#use-try-catch-and-throw-statements">- Use try-catch and throw statements</a><br/>
+<a href="#use-catch-multi-catch-and-finally">- Use catch, multi-catch, and finally clauses</a><br/>
+<a href="#use-autoclose-resources">- Use Autoclose resources with a try-with-resources statement</a><br/>
+<a href="#create-custom-exceptions">- Create custom exceptions and Auto-closeable resources</a><br/>
+<a href="#test-invariants">- Test invariants by using assertions</a><br/>
+</small>
+</p>
+
+<h2 id="use-try-catch-and-throw-statements">Use try-catch and throw statements</h2>
+<p>A try block is used to enclose code that might throw an exception and it can be followed by one or many catch block. </p>
+<p>A catch block is used to handle an exception. It defines the type of the exception and a reference. For example:</p>
+<pre><code class="hljs java"><span class="hljs-keyword">try</span> {  
+<span class="hljs-comment">// Code that may throw an exception  </span>
+} <span class="hljs-keyword">catch</span>(Exception e){
+ <span class="hljs-comment">// Do something with the exception using reference e</span>
+}
+</code></pre>
+<p>If exception is not handled, the Java Virtual Machine provides a default exception handler that performs the following tasks:</p>
+<ol>
+<li>Prints out exception description.</li>
+<li>Prints the stack trace (Hierarchy of methods where the exception occurred).</li>
+<li>Causes the program to terminate.</li>
+</ol>
+<p>But if exception is handled by in a try-catch block, the normal flow of the application is maintained and rest of the code is executed.</p>
+<p>If you want to manually throw an exception, use the throw keyword:</p>
+<pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Test</span> </span>{  
+   <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">boolean</span> <span class="hljs-title">validateName</span><span class="hljs-params">(String name)</span> </span>{
+      <span class="hljs-keyword">boolean</span> valid = <span class="hljs-keyword">true</span>;
+      <span class="hljs-keyword">try</span> {
+        <span class="hljs-keyword">if</span>(name != <span class="hljs-keyword">null</span>) {
+         <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> Exception(<span class="hljs-string">"The name is not valid"</span>);
+        }
+      } <span class="hljs-keyword">catch</span>(Exception e) {
+        valid = <span class="hljs-keyword">false</span>;
+      }
+
+      <span class="hljs-keyword">return</span> valid;
+   }  
+   <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String args[])</span> </span>{  
+      <span class="hljs-keyword">if</span>(validateName(<span class="hljs-keyword">null</span>)) {
+        System.out.println(<span class="hljs-string">"Valid Name"</span>);
+      } <span class="hljs-keyword">else</span> {
+        System.out.println(<span class="hljs-string">"Invalid Name"</span>);
+      }
+  }  
+}
+</code></pre>
+<p>The output is:</p>
+<pre><code>Invalid name
+</code></pre>
+<p>&nbsp;</p>
+
+
+
+<h2 id="use-catch-multi-catch-and-finally">Use catch, multi-catch, and finally clauses</h2>
+<h3 id="catch-and-multi-catch">Catch and multi-catch</h3>
+<p>If you&#39;re handling multiple exceptions, the catch blocks must be ordered from most specific to most general, for example, the catch for IndexOutOfBoundsException must come before the catch for Exception, otherwise, a compile-time error is generated:</p>
+<pre><code class="hljs java"><span class="hljs-keyword">try</span> {  
+  <span class="hljs-keyword">int</span> arr[] = <span class="hljs-keyword">new</span> <span class="hljs-keyword">int</span>[<span class="hljs-number">5</span>];  
+  arr[<span class="hljs-number">10</span>] = <span class="hljs-number">20</span>;  
+}  
+<span class="hljs-keyword">catch</span>(ArrayIndexOutOfBoundsException e) {
+  e.printStackTrace();
+}  
+<span class="hljs-keyword">catch</span>(ArithmeticException, e) {
+  e.printStackTrace();
+}
+</code></pre>
+<p>The problem with this example is that it contains duplicate code in each of the catch blocks. For this situation, since Java 7, we can use a multi-catch block:</p>
+<pre><code class="hljs java"><span class="hljs-keyword">try</span> {  
+  <span class="hljs-keyword">int</span> arr[] = <span class="hljs-keyword">new</span> <span class="hljs-keyword">int</span>[<span class="hljs-number">5</span>];  
+  arr[<span class="hljs-number">10</span>] = <span class="hljs-number">20</span>;  
+  <span class="hljs-keyword">int</span> r = arr[<span class="hljs-number">10</span>]/<span class="hljs-number">10</span>;
+}  
+<span class="hljs-keyword">catch</span>(ArrayIndexOutOfBoundsException|ArithmeticException, ex) {
+  ex.printStackTrace();
+}
+</code></pre>
+<p>The multi-catch clause specifies the types of exceptions that the block can handle, and each exception type is separated with a vertical bar (|). In this case, the catch parameter is implicitly final. So in the example, the catch parameter ex is final and therefore you cannot assign any values to it within the catch block.</p>
+<p>A restriction when using the multi-catch clause is that you can use related exceptions (subclasses) in the same clause because it is redundant, the exception would already be caught by an alternative. For example, the following is invalid, since ArrayIndexOutOfBoundsException is a subclass of Exception:</p>
+<pre><code class="hljs java"><span class="hljs-keyword">try</span> {  
+  <span class="hljs-keyword">int</span> arr[] = <span class="hljs-keyword">new</span> <span class="hljs-keyword">int</span>[<span class="hljs-number">5</span>];  
+  arr[<span class="hljs-number">10</span>] = <span class="hljs-number">20</span>;  
+  <span class="hljs-keyword">int</span> r = arr[<span class="hljs-number">10</span>]/<span class="hljs-number">10</span>;
+}  
+<span class="hljs-keyword">catch</span>(ArrayIndexOutOfBoundsException|Exception, ex) { <span class="hljs-comment">// compile-time error</span>
+  ex.printStackTrace();
+}
+</code></pre>
+<h3 id="finally">Finally</h3>
+<p>A finally block is always executed whether exception is handled or not. It&#39;s an optional block, and if there&#39;s one, it goes after a try or catch block. This means the following blocks are both valid:</p>
+<pre><code class="hljs java"><span class="hljs-keyword">try</span> {
+  <span class="hljs-comment">// code that might throw an exception </span>
+} <span class="hljs-keyword">catch</span>(Exception e) {
+  <span class="hljs-comment">// handle exception</span>
+} <span class="hljs-keyword">finally</span> {
+  <span class="hljs-comment">// code that it's executed no matter what</span>
+}
+
+<span class="hljs-keyword">try</span> {
+  <span class="hljs-comment">// code that might throw an exception </span>
+} <span class="hljs-keyword">finally</span> {
+  <span class="hljs-comment">// code that it's executed no matter what</span>
+}
+</code></pre>
+<p>So for each try block there can be zero or more catch blocks, but only one finally block.</p>
+<p>The only situation where a finally block will not be executed, it&#39;s if the program exits abruptly (either by calling <code>System.exit()</code> or by a fatal error that causes the process to abort). Finally gets called even in the following case, before the method returns:</p>
+<pre><code class="hljs java"><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">m</span><span class="hljs-params">()</span> </span>{
+  <span class="hljs-keyword">try</span> {  
+      <span class="hljs-function"><span class="hljs-keyword">throws</span> <span class="hljs-title">Exception</span><span class="hljs-params">()</span></span>;  
+  }  
+  <span class="hljs-keyword">catch</span> (Exception e) {   
+      <span class="hljs-keyword">return</span> failure;  
+  }  
+  <span class="hljs-keyword">finally</span> {  
+      System.out.println(<span class="hljs-string">"Of course this is printed"</span>);
+  }
+}
+</code></pre>
+<p>&nbsp;</p>
+
+
+
+<h2 id="use-autoclose-resources">Use Autoclose resources with a try-with-resources statement</h2>
+<p>Normally, a finally block is used to ensure that a resource is closed whether the try statement completes normally or not. For example:</p>
+<pre><code class="hljs java">BufferedReader br = <span class="hljs-keyword">new</span> BufferedReader(<span class="hljs-keyword">new</span> FileReader(path));
+<span class="hljs-keyword">try</span> {
+    <span class="hljs-keyword">return</span> br.readLine();
+} <span class="hljs-keyword">catch</span>(IOException e) {
+    e.printStackTrace();
+} <span class="hljs-keyword">finally</span> {
+    <span class="hljs-keyword">if</span> (br != <span class="hljs-keyword">null</span>) br.close();
+}
+</code></pre>
+<p>However, Java 7 introduced the try-with-resources statement, which ensures that each resource is closed at the end of the statement. Any object that implements <code>java.lang.AutoCloseable</code>, which includes all objects which implement <code>java.io.Closeable</code>, can be used as a resource. The above example can be rewritten with a try-with-resources statement like this:</p>
+<pre><code class="hljs java"><span class="hljs-keyword">try</span> (BufferedReader br = <span class="hljs-keyword">new</span> BufferedReader(<span class="hljs-keyword">new</span> FileReader(path))) {
+        <span class="hljs-keyword">return</span> br.readLine();
+    }
+</code></pre>
+<p>But there&#39;s a subtle difference between these two try blocks. If the methods <code>readLine()</code> and <code>close()</code> both throw exceptions, then the method in the first example throws the exception thrown from the finally block (from <code>close()</code>) and the exception thrown from the try block (from <code>readLine()</code>) is suppressed. In contrast, in the try-with-resources example, if exceptions are thrown from both the try block (from <code>readLine()</code>) and the try-with-resources statement (from <code>close()</code>), then the exception from the try block is thrown and the exception thrown from the try-with-resources block is suppressed. You can retrieve these suppressed exceptions by calling the <code>Throwable.getSuppressed()</code> method from the exception thrown by the try block.</p>
+<p>The <a href="https://docs.oracle.com/javase/8/docs/api/java/io/Closeable.html">Closeable</a> interface extends the <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/AutoCloseable.html">AutoCloseable</a> interface. The <code>close()</code> method of the Closeable interface throws exceptions of type IOException while the close method of the AutoCloseable interface throws exceptions of type Exception.</p>
+<p>You may declare more than one resources in a try-with-resources statement, separated by a semicolon. When the try block   terminates, either normally or because of an exception, the <code>close()</code> methods of the resources are automatically called in the opposite order of their creation. For example:</p>
+<pre><code class="hljs java"><span class="hljs-comment">// At the end, br2 is closed before br1.</span>
+<span class="hljs-keyword">try</span> (BufferedReader br1 = <span class="hljs-keyword">new</span> BufferedReader(<span class="hljs-keyword">new</span> FileReader(path1)); 
+      BufferedReader br2 = <span class="hljs-keyword">new</span> BufferedReader(<span class="hljs-keyword">new</span> FileReader(path2))) {
+        String l1 =  br1.readLine();
+        String l2 =  br2.readLine();
+    }
+</code></pre>
+<p>An important note, in a try-with-resources statement, any catch or finally blocks are run after the resources declared have been closed.</p>
+<p>&nbsp;</p>
+
+
+
+<h2 id="create-custom-exceptions">Create custom exceptions and Auto-closeable resources</h2>
+<h3 id="custom-exceptions">Custom exceptions</h3>
+<p>We can create our own exceptions by extending the <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Exception.html">java.lang.Exception</a> class. For example:</p>
+<pre><code class="hljs java"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MyException</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Exception</span> </span>{
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">MyException</span><span class="hljs-params">(String message)</span> </span>{
+    <span class="hljs-keyword">super</span>(message);
+  }
+}
+<span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Test</span> </span>{
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String args[])</span> </span>{
+    <span class="hljs-keyword">try</span>{
+            <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> MyException(<span class="hljs-string">"My exception..."</span>);
+        } <span class="hljs-keyword">catch</span>(MyException e){
+            e.printStackTrace();
+        }
+  }
+}
+</code></pre>
+<p>You can also extend from <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/RuntimeException.html">RuntimeException</a>, to make your exception unchecked (so it doesn&#39;t have to be catched if you don&#39;t want to).</p>
+<h3 id="auto-closeable-resources">Auto-closeable resources</h3>
+<p>You can implement the <a href="https://docs.oracle.com/javase/8/docs/api/java/lang/AutoCloseable.html">java.lang.AutoCloseable</a> or <a href="https://docs.oracle.com/javase/8/docs/api/java/io/Closeable.html">java.lang.Closeable</a> interfaces in your own classes and use them with a try-with-resources block. However, the close method of the <em>Closeable</em> interface throws exceptions of type <em>IOException</em> while the close method of the <em>AutoCloseable</em> interface throws exceptions of type Exception. So it&#39;s better to implement <em>AutoCloseable</em>, since you can override this behavior and throw other exceptions or no exception at all.</p>
+<p><em>AutoClosable</em> only has one method called close():</p>
+<pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">interface</span> <span class="hljs-title">AutoClosable</span> </span>{
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">close</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> Exception</span>;
+}
+</code></pre>
+<p>So an implementation would look like this:</p>
+<pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MyAutoClosable</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">AutoCloseable</span> </span>{
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">someMethod</span><span class="hljs-params">()</span> </span>{
+       System.out.println(<span class="hljs-string">"Doing something"</span>);
+    }
+
+    <span class="hljs-annotation">@Override</span>
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">close</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> Exception </span>{
+        System.out.println(<span class="hljs-string">"Closed!"</span>);
+    }
+}
+</code></pre>
+<p>And this is how you&#39;d use it:</p>
+<pre><code class="hljs java"><span class="hljs-keyword">try</span>(MyAutoClosable ac = <span class="hljs-keyword">new</span> MyAutoClosable()){
+    ac.someMethod();
+}
+</code></pre>
+<p>The output:</p>
+<pre><code>Doing something
+Closed!
+</code></pre>
+<p>&nbsp;</p>
+
+
+
+<h2 id="test-invariants">Test invariants by using assertions</h2>
+<p>Assertions are statements that you can use to test your assumptions about the code during development. If the assertion turns out to be false, then an AssertionError is thrown. You can use assertions in two forms:</p>
+<pre><code class="hljs java"><span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-title">method</span><span class="hljs-params">(<span class="hljs-keyword">int</span> i)</span> </span>{
+  <span class="hljs-keyword">assert</span> i &gt; <span class="hljs-number">0</span>;
+  <span class="hljs-comment">//or</span>
+  <span class="hljs-keyword">assert</span> i &gt; <span class="hljs-number">0</span> : <span class="hljs-string">"Parameter i must be a positive value"</span>
+
+  <span class="hljs-comment">// Do something now that we know i is greater than 0</span>
+}
+</code></pre>
+<p>In the first form, the assert expression must evaluate to a boolean value. The other version adds a second
+expression separated from the first boolean expression by a colon. This expression would be used when the assertion is false in addition to throwing AssertionError. This second expression must resolve to a value, otherwise, a compile-time error is generated.</p>
+<p>To enable assertions, you have to compile the code with the assertion enabled. Then, when running the program, assertions have to be enabled again.</p>
+<p>Assertions were added to Java since version 1.4, so before that version, you can use assert as an identifier. This is important because in Java 7, assertions are compiled by default, but you can override this behavior at the command line:</p>
+<pre><code>javac -source 1.3 Test.java
+</code></pre><p>The command above will issue warnings when  the word assert is used as an identifier, but the code will compile and execute. But if you use any of the following commands:</p>
+<pre><code>javac -source 1.4 Test.java
+javac -source 1.5 Test.java
+javac -source 5 Test.java
+javac -source 1.6 Test.java
+javac -source 6 Test.java
+javac -source 1.7 Test.java
+javac -source 7 Test.java
+javac Test.java
+</code></pre><p>The compilation will fail if assert is used as an identifier.</p>
+<p>So compilation is the first step to use assertions. But to execute the assertion checks, you have to enable them with:</p>
+<pre><code>java -ea com.example.Test
+</code></pre><p>or</p>
+<pre><code>java -enableassertions com.example.Test
+</code></pre><p>The default behavior is to run the code with assertions disabled, but the commands to explicitly disabling assertions are:</p>
+<pre><code>java -da com.example.Test
+</code></pre><p>or</p>
+<pre><code>java -disableassertions com.example.Test
+</code></pre><p>However, this command is useful in the case you want to enable assertions for some classes or packages only, for example:</p>
+<pre><code>java -ea -da:com.example.PrintUtil com.example.Test
+</code></pre><p>To disable assertions only for the com.example.Test class. Or:</p>
+<pre><code>java -ea -da:com.example.util... com.example.Test
+</code></pre><p>To disable assertions for the com.example.util package and all of its subpackages.</p>
+<p>But no all uses of assertions are considered appropriate. Here are the rules:</p>
+<ul>
+<li>Don&#39;t use assertions to validate arguments to a public method</li>
+<li>Use assertions to validate arguments to a private method</li>
+<li>Don&#39;t use assertions to validate command-line arguments</li>
+<li>Use assertions, even in public methods, to check for cases that are never supposed to happen</li>
+<li><p>Don&#39;t use assert expressions that can cause side effects. For example:</p>
+<pre><code class="hljs java"><span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-keyword">void</span> <span class="hljs-title">m</span><span class="hljs-params">(List&lt;Integer&gt; l)</span> </span>{
+  <span class="hljs-function"><span class="hljs-keyword">assert</span> <span class="hljs-title">checkSize</span><span class="hljs-params">(l)</span></span>;
+}
+<span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-keyword">boolean</span> <span class="hljs-title">checkSize</span><span class="hljs-params">(List&lt;Integer&gt; l)</span> </span>{
+  l.add(<span class="hljs-number">10</span>);
+  <span class="hljs-keyword">return</span> l.size() &gt; <span class="hljs-number">3</span>;
+}
+</code></pre>
+</li>
+</ul>
+<p>&nbsp;</p>

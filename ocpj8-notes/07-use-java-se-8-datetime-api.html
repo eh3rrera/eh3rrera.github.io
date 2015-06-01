@@ -1,0 +1,159 @@
+---
+layout: ocpj8-notes
+title: Java SE 8 Programmer II - Use Java SE 8 Date/Time API
+---
+<h1>Use Java SE 8 Date/Time API</h1>
+<p class="post-meta" style="text-align: left;">
+<small>
+<a href="#create-and-manage-date-based">- Create and manage date-based and time-based events including a combination of date and time into a single object using LocalDate, LocalTime, LocalDateTime, Instant, Period, and Duration</a><br/>
+<a href="#work-with-dates-and-times-across">- Work with dates and times across timezones and manage changes resulting from daylight savings including Format date and times values</a><br/>
+<a href="#define-and-create-and-manage-date-based-and-time">- Define and create and manage date-based and time-based events using Instant, Period, Duration, and TemporalUnit</a><br/>
+</small>
+</p>
+
+<h2 id="create-and-manage-date-based">Create and manage date-based and time-based events including a combination of date and time into a single object using LocalDate, LocalTime, LocalDateTime, Instant, Period, and Duration</h2>
+<p>The new Date/Time API was designed with the following principles:</p>
+<ul>
+<li>Immutable classes</li>
+<li>Dates and times are separated </li>
+<li>Support for different calendaring systems</li>
+</ul>
+<h3 id="localdate-localtime-and-localdatetime">LocalDate, LocalTime and LocalDateTime</h3>
+<p>The first classes to learn when using the new API are <a href="https://docs.oracle.com/javase/8/docs/api/java/time/LocalDate.html">LocalDate</a>, <a href="https://docs.oracle.com/javase/8/docs/api/java/time/LocalTime.html">LocalTime</a> and <a href="https://docs.oracle.com/javase/8/docs/api/java/time/LocalDateTime.html">LocalDateTime</a>, which is a pairing of the former classes:</p>
+<pre><code class="hljs java">LocalTime time = LocalTime.now();
+LocalDate date = LocalDate.now();
+LocalDateTime dt = LocalDateTime.of( date, time ); <span class="hljs-comment">// You can also call LocalDateTime.now();</span>
+</code></pre>
+<p>They are local in the sense that they represent date and time from the context of one observer, in contrast to time zones.</p>
+<p>All the core classes in the new API are constructed by factory methods. When constructing a value through its fields, the factory is called <em>of</em>. When converting from another type, the factory is called <em>from</em>. There are also parse methods that take strings as parameters:</p>
+<pre><code class="hljs java">LocalDate ld1 = LocalDate.of(<span class="hljs-number">2014</span>, Month.SEPTEMBER, <span class="hljs-number">19</span>);
+LocalDate ld2 = LocalDate.ofEpochDay(<span class="hljs-number">1000</span>);
+LocalTime lt1 = LocalTime.of(<span class="hljs-number">14</span>, <span class="hljs-number">05</span>);
+LocalTime lt2 = LocalTime.parse(<span class="hljs-string">"14:05:00"</span>);
+</code></pre>
+<p>You can use standard getters to obtain values from the classes:</p>
+<pre><code class="hljs java"><span class="hljs-keyword">int</span> m = LocalDate.getDayOfMonth();
+<span class="hljs-keyword">int</span> y = LocalDate.getYear();
+<span class="hljs-keyword">int</span> h = LocalTime.getHour();
+<span class="hljs-keyword">int</span> min = LocalTime.getMinute();
+</code></pre>
+<p>You can also modify the object values by using the <em>with</em> methods instead of using setters (because the classes are immutable, which also means that you don&#39;t actually modify a class, a new one is returned):</p>
+<pre><code class="hljs java">LocalDateTime thePast = dt.withDayOfYear(<span class="hljs-number">90</span>).withHour(<span class="hljs-number">21</span>);
+</code></pre>
+<p>There are other methods to perform calculations:</p>
+<pre><code class="hljs java">LocalDateTime dt = dt.plusMinutes(<span class="hljs-number">10</span>).plus(<span class="hljs-number">2</span>, ChronoUnit.DAYS);
+LocalDateTime dt = dt.minusYears(<span class="hljs-number">10</span>);
+</code></pre>
+<h3 id="instant">Instant</h3>
+<p>An instant is a point of time counting from the first second of 1/1/1970, also known as epoch. Instants after the epoch have positive values, and earlier instants have negative values and a larger value is always later on the timeline than a smaller value.</p>
+<p>The range of an instant requires the storage of a number larger than a long. To achieve this, the class stores a long representing epoch-seconds and an int representing nanosecond-of-second, which will always be between 0 and 999,999,999.</p>
+<p>An Instant can be created in a similar way as a date or a time:</p>
+<pre><code class="hljs java">Instant now = Instant.now();
+Instant epochNow = Instant.ofEpochSecond(<span class="hljs-number">1000000</span>);
+</code></pre>
+<p>It also has get, plus and minus methods:</p>
+<pre><code class="hljs java"><span class="hljs-keyword">long</span> s = Instant.getEpochSecond();
+<span class="hljs-keyword">int</span> n = Instant.getNano();
+Instant twoSecondsAfter = now.plusSeconds(<span class="hljs-number">2</span>);
+Instant twoSecondsBefore = now.minusSeconds(<span class="hljs-number">2</span>);
+</code></pre>
+<h3 id="period">Period</h3>
+<p>A period represents a value such as &quot;1 months and 15 days&quot;, in contrast to the other classes that represent a point in time.</p>
+<p>Here are some ways to create a period:</p>
+<pre><code class="hljs java">Period period = Period.of(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>); <span class="hljs-comment">// 1 year, 2 months, 3 days</span>
+Period periodTwoMonths = Period.ofMonths(<span class="hljs-number">2</span>);
+Period period20142015 = Period.between(LocalDate.of( <span class="hljs-number">2014</span>, Month.JANUARY, <span class="hljs-number">1</span>), LocalDate.of( <span class="hljs-number">2015</span>, Month.JANUARY, <span class="hljs-number">1</span>));
+</code></pre>
+<p>It also has get, plus and minus methods:</p>
+<pre><code class="hljs java"><span class="hljs-keyword">int</span> y = Instant.getYears();
+Period newPeriod = period.plusDays(<span class="hljs-number">2</span>).minusMonths(<span class="hljs-number">1</span>);
+</code></pre>
+<p>You can modify the values of dates using periods:</p>
+<pre><code class="hljs java">LocalDate newDate = date.plus(period);
+</code></pre>
+<h3 id="duration">Duration</h3>
+<p>A duration is similar to a period but its precision is based on hours, minutes, seconds, milliseconds. </p>
+<p>A duration can be created using an amount of seconds or minutes or hours or by specifying an start and end times:</p>
+<pre><code class="hljs java">Duration d2 = Duration.ofSeconds(<span class="hljs-number">10</span>, <span class="hljs-number">50</span>); <span class="hljs-comment">// 10 seconds and 50 nanoseconds</span>
+Duration d2 = Duration.between(LocalTime.NOON, LocalTime.MIDNIGHT);
+</code></pre>
+<p>It&#39;s also possible to perform normal plus, minus, and with operations on durations and also like periods, modify the value of a date or time using a duration.</p>
+<p>&nbsp;</p>
+
+
+
+<h2 id="work-with-dates-and-times-across">Work with dates and times across timezones and manage changes resulting from daylight savings including Format date and times values</h2>
+<h3 id="timezones">Timezones</h3>
+<p>Time zones are defined by their offset from Coordinated Universal Time (UTC) and correspond to a region in which the time is the same.</p>
+<p>Time zones can be referred to by two identifiers: abbreviated, for example, &quot;PLT&quot; and longer, for example, &quot;Europe/Paris&quot;.
+<a href="https://docs.oracle.com/javase/8/docs/api/java/time/ZoneId.html">ZoneId</a> is an identifier for a region:</p>
+<pre><code class="hljs java">ZoneId id = ZoneId.of(<span class="hljs-string">"Europe/Paris"</span>);
+</code></pre>
+<p><a href="https://docs.oracle.com/javase/8/docs/api/java/time/ZoneOffset.html">ZoneOffset</a> is the period of time representing a difference between Greenwich/UTC and a time zone.</p>
+<pre><code class="hljs java">ZoneOffset offset = ZoneOffset.of(<span class="hljs-string">"-6:00"</span>);
+</code></pre>
+<p><a href="https://docs.oracle.com/javase/8/docs/api/java/time/ZonedDateTime.html">ZonedDateTime</a> is a date and time with a fully qualified time zone. You should use this class if you want to represent a date and time without relying on the context of a specific server.  </p>
+<pre><code class="hljs java">ZonedDateTime zdt1 = ZonedDateTime.parse(<span class="hljs-string">"2014-12-03T10:15:300[Europe/Paris]"</span>);<span class="hljs-comment">//2014-12-03T10:15:300Z[Europe/Dublin]</span>
+ZonedDateTime zdt2 = ZonedDateTime.now(ZoneId.of(<span class="hljs-string">"Europe/Paris"</span>));
+</code></pre>
+<p><a href="https://docs.oracle.com/javase/8/docs/api/java/time/OffsetDateTime.html">OffsetDateTime</a> is an immutable representation of a date-time with an offset from UTC/Greenwich, for example &#39;2000-12-31T10:15:30+01:00&#39;.</p>
+<p>OffsetDateTime, ZonedDateTime and Instant all store an instant on the timeline to a nanosecond precision. Instant is the simplest, just representing the instant. OffsetDateTime adds to the instant the offset from UTC/Greenwich, which allows the local date-time to be obtained. ZonedDateTime adds full timezone data.</p>
+<p><a href="https://docs.oracle.com/javase/8/docs/api/java/time/OffsetTime.html">OffsetTime</a> is a time with an offset from UTC/Greenwich in the ISO-8601 calendar system, such as &#39;08:45:21+05:00&#39;.</p>
+<pre><code class="hljs java">OffsetDateTime odt = OffsetDateTime.of(LocaDateTime.now(),ZoneOffset.of(<span class="hljs-string">"-4"</span>)); <span class="hljs-comment">//2015-05-22T23:42:20.101-06:00</span>
+OffsetTime ot = OffsetTime.ofInstant(Intant.now(),ZoneId.of(<span class="hljs-string">"America/Los_Angeles"</span>)); <span class="hljs-comment">//22:42:20.101-07:00</span>
+</code></pre>
+<p><a href="http://docs.oracle.com/javase/8/docs/api/java/time/Clock.html">Clock</a> gives us the ability to get the current date/time from the system clock with a specific timezone:</p>
+<pre><code class="hljs java">Clock <span class="hljs-keyword">default</span> = Clock.systemDefaultZone();
+Clock clock = Clock.system(ZoneId.of(<span class="hljs-string">"Europe/Italy"</span>));
+</code></pre>
+<h3 id="formatting">Formatting</h3>
+<p><a href="http://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html">java.time.format.DateTimeFormatter</a> is the class for printing and parsing date-time objects.</p>
+<p>This class works by using:</p>
+<ul>
+<li>Predefined constants, such as ISO_LOCAL_DATE</li>
+<li>Pattern letters, such as yyyy-MMM-dd</li>
+<li>Localized styles, such as long or medium</li>
+</ul>
+<p>The date-time classes provide two methods - one for formatting, for example:</p>
+<pre><code class="hljs java">LocalDateTime dt = LocalDateTime.of( <span class="hljs-number">2010</span>, Month.JULY, <span class="hljs-number">03</span>, <span class="hljs-number">09</span>, <span class="hljs-number">0</span>, <span class="hljs-number">30</span> );
+String isoDateTime = dt.format(DateTimeFormatter.ISO_DATE_TIME);
+</code></pre>
+<p>And one for parsing, for example:</p>
+<pre><code class="hljs java">LocalDate dt = LocalDate.parse( <span class="hljs-string">"2014/09/19 14:05:12"</span>, DateTimeFormatter.ofPattern( <span class="hljs-string">"yyyy/MM/dd kk:mm:ss"</span> ) );
+</code></pre>
+<p>The last example makes use of a pattern. Patterns are sequences of letters and symbols used to create a Formatter using the <code>ofPattern(String)</code> and <code>ofPattern(String, Locale)</code> methods.</p>
+<p>&nbsp;</p>
+
+
+
+<h2 id="define-and-create-and-manage-date-based-and-time">Define and create and manage date-based and time-based events using Instant, Period, Duration, and TemporalUnit</h2>
+<p><a href="https://docs.oracle.com/javase/8/docs/api/java/time/Instant.html">Instant</a> captures the current moment in time. They are useful for obtaining timestamps to a nanosecond precision.</p>
+<pre><code class="hljs java">Instant i = Instants.now();
+</code></pre>
+<p><a href="https://docs.oracle.com/javase/8/docs/api/java/time/Period.html">Period</a> represents an amount of time in years, months, and/or days. They are useful for adding/subtracting time to/from a date:</p>
+<pre><code class="hljs java">LocalDateTime today = LocalDateTime.now();
+Period period = Period.ofDays(<span class="hljs-number">7</span>);
+LocalDateTime nextWeek = today.plus(period);
+</code></pre>
+<p><a href="https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html">Duration</a> represents an amount of time in hours, minutes, and/or seconds. Same concept as period but with time units:</p>
+<pre><code class="hljs java">LocalTime now = LocalDateTime.now();
+Duration tenMinutes = Duration.ofMinutes(<span class="hljs-number">10</span>);
+LocalTime tenMinutesLater = now.plus(tenMinutes);
+</code></pre>
+<p>Period and Duration also have a <code>between()</code>method to for determining elapsed time between dates (or time) objects:</p>
+<pre><code class="hljs java">LocalDate ld1 = LocalDate.parse(<span class="hljs-string">"2015-05-23"</span>);
+LocalDate ld2 = LocalDate.parse(<span class="hljs-string">"2014-05-23"</span>);
+Period timeBetween = Period.between(ld1,ld2); <span class="hljs-comment">//Difference in years, months, days</span>
+Duration timeSpan = Duration.between(ld1,ld2); <span class="hljs-comment">//Difference in hours, minutes, seconds</span>
+</code></pre>
+<p><a href="https://docs.oracle.com/javase/8/docs/api/java/time/temporal/TemporalUnit.html">TemporalUnit</a> is an interface that represents a unit of date-time, like years, months, days, hours, minutes and seconds. It doesn&#39;t represent the amount of the unit. Its implementation is the class <a href="https://docs.oracle.com/javase/8/docs/api/java/time/temporal/ChronoUnit.html">ChronoUnit</a>, which contains enum constants like:</p>
+<ul>
+<li>NANOS - Unit that represents the concept of a nanosecond</li>
+<li>SECONDS - Unit that represents the concept of a second.</li>
+<li>HALF_DAYS - Unit that represents the concept of half a day.</li>
+<li>MILLENNIA - Unit that represents the concept of a millennium. For the ISO calendar system, it is equal to 1000 years.</li>
+</ul>
+<p>And almost any other time unit you can imagine. It has some helpful methods like <code>between()</code>. For example, if you need to find the number of years between two dates:</p>
+<pre><code class="hljs java">ChronoUnit.YEARS.between(date1, date2):
+</code></pre>
+<p>&nbsp;</p>

@@ -1,0 +1,173 @@
+---
+layout: ocpj8-notes
+title: Java SE 8 Programmer II - Localization
+---
+<h1>Localization</h1>
+<p class="post-meta" style="text-align: left;">
+<small>
+<a href="#describe-the-advantages-of-localizing">- Describe the advantages of localizing an application</a><br/>
+<a href="#read-and-set-the-locale">- Read and set the locale by using the Locale object</a><br/>
+<a href="#create-and-read-a-properties-file">- Create and read a Properties file</a><br/>
+<a href="#build-a-resource-bundle">- Build a resource bundle for each locale and load a resource bundle in an application</a><br/>
+</small>
+</p>
+
+
+<h2 id="describe-the-advantages-of-localizing">Describe the advantages of localizing an application</h2>
+<p>Internationalization is the process of designing an application so that it can be adapted to various languages and regions without engineering changes. </p>
+<p>Localization is the process of adapting the content of a product to a specific region or language. Translating words is the best-known part of this process, but it is not the only part. Localization usually includes:</p>
+<ul>
+<li>Numbers</li>
+<li>Dates</li>
+<li>Currencies</li>
+<li>Images and sounds</li>
+<li>Layouts</li>
+</ul>
+<p>Even in countries with the same languages you can find differences, for example, American English vs British English.</p>
+<p>So the benefits of localization are:</p>
+<ul>
+<li>With the addition of localized data, the same executable can run worldwide.</li>
+<li>Textual elements, such as status messages and the GUI component labels, are not hardcoded in the program. Instead they are stored outside the source code and retrieved dynamically.</li>
+<li>Support for new languages does not require recompilation.</li>
+<li>Culturally-dependent data, such as dates and currencies, appear in formats that conform to the end user&#39;s region and language.</li>
+</ul>
+<p>&nbsp;</p>
+
+
+<h2 id="read-and-set-the-locale">Read and set the locale by using the Locale object</h2>
+<p>Here&#39;s the <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Locale.html">javadoc</a> for the Locale class.</p>
+<p>The four ways to create a Locale object are:</p>
+<ul>
+<li><p><code>Locale.Builder</code> Class</p>
+<p>For example:</p>
+<pre><code class="hljs java">Locale loc = <span class="hljs-keyword">new</span> Locale.Builder().setLanguage(<span class="hljs-string">"fr"</span>).setRegion(<span class="hljs-string">"FR"</span>).build();
+</code></pre>
+</li>
+<li><p>Locale Constructors</p>
+<p>There are three constructors available in the Locale class:</p>
+<ul>
+<li><code>Locale(String language)</code></li>
+<li><code>Locale(String language, String country)</code></li>
+<li><code>Locale(String language, String country, String variant)</code></li>
+</ul>
+<p>For example:</p>
+<pre><code class="hljs java">Locale l1 = <span class="hljs-keyword">new</span> Locale(<span class="hljs-string">"es"</span>, <span class="hljs-string">"ES"</span>);
+Locale l2 = <span class="hljs-keyword">new</span> Locale(<span class="hljs-string">"en"</span>);
+</code></pre>
+</li>
+<li><p><code>Locale.forLanguageTag</code> Factory Method</p>
+<p>For example:</p>
+<pre><code class="hljs java">Locale loc = Locale.forLanguageTag(<span class="hljs-string">"ja-JP"</span>);
+</code></pre>
+</li>
+<li><p>Locale Constants</p>
+<p>For example:</p>
+<pre><code class="hljs java">Locale loc1 = Locale.ITALIAN;
+Locale loc2 = Locale.CHINA;
+</code></pre>
+</li>
+</ul>
+<p>To find out which types of <em>Locale</em> definitions a locale-sensitive class recognizes, you invoke the <code>getAvailableLocales()</code> method. For example, to find out which <em>Locale</em> definitions are supported by the <em>NumberFormat</em> class:</p>
+<pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Test</span> </span>{
+    <span class="hljs-function"><span class="hljs-keyword">static</span> <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> </span>{
+        Locale locales[] = NumberFormat.getAvailableLocales();
+        <span class="hljs-keyword">for</span> (Locale l : locales) {
+            System.out.println(l.toString());
+        }
+    }
+}
+</code></pre>
+<p>The output can be something like this:</p>
+<pre><code>ms_MY
+ar_QA
+is_IS
+fi_FI
+pl
+en_MT
+</code></pre><p>If we change from<code>System.out.println(l.toString())</code> to <code>System.out.println(l.getDisplayName ())</code> the output would be:</p>
+<pre><code>Malay (Malaysia)
+Arabic (Qatar)
+Icelandic (Iceland)
+Finnish (Finland)
+Polish
+English (Malta)
+</code></pre><p>You can assign a different <em>Locale</em> to every locale-sensitive object in your program. However, locale-sensitive objects rely on the default <em>Locale</em> set by the Java Virtual Machine. You can use the <code>Locale.getDefault()</code> method to get it and the <code>Locale.setDefault(Locale)</code> to set it.</p>
+<p>&nbsp;</p>
+
+
+
+<h2 id="create-and-read-a-properties-file">Create and read a Properties file</h2>
+<p>Properties are files with string key/value pairs that store configuration data or settings:</p>
+<pre><code># A comment
+user=amtg
+passw=changeme
+language=java
+</code></pre><p>To use them, you create instances of <code>java.util.Properties</code>. The following example, loads the file config.properties from project classpath and read its properties:</p>
+<pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Test</span> </span>{
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> </span>{
+        Properties prop = <span class="hljs-keyword">new</span> Properties();
+        InputStream input = <span class="hljs-keyword">null</span>;
+
+        <span class="hljs-keyword">try</span> {
+            input = Test.class.getClassLoader().getResourceAsStream(<span class="hljs-string">"config.properties"</span>);
+            <span class="hljs-comment">//load the properties file from class path</span>
+            prop.load(input);
+
+        <span class="hljs-comment">//get a property value and print it out</span>
+        System.out.println(prop.getProperty(<span class="hljs-string">"user"</span>));
+
+        <span class="hljs-comment">//get all properties</span>
+        Enumeration&lt;?&gt; e = prop.propertyNames();
+            <span class="hljs-keyword">while</span> (e.hasMoreElements()) {
+                String key = (String) e.nextElement();
+                String value = prop.getProperty(key);
+                System.out.println(<span class="hljs-string">"Key : "</span> + key + <span class="hljs-string">", Value : "</span> + value);
+            }
+
+        } <span class="hljs-keyword">catch</span> (IOException ex) {
+            ex.printStackTrace();
+      } <span class="hljs-keyword">finally</span> {
+            input.close();
+            }
+    }
+}
+</code></pre>
+<p>&nbsp;</p>
+
+
+
+<h2 id="build-a-resource-bundle">Build a resource bundle for each locale and load a resource bundle in an application</h2>
+<p><a href="http://docs.oracle.com/javase/8/docs/api/java/util/ResourceBundle.html">java.util.ResourceBundle</a> class is used to store texts in key/pair values and components that are locale sensitive.</p>
+<p>Resource bundles can share a common base name, but names can also have additional components that identify their locales. For example, if the base name of resource bundles is &quot;MyBundle&quot;, we can have a &quot;MyBundle_en&quot; for the english locale and &quot;MyBundle_es&quot; for a spanish locale. We can even have different resources for different countries, for example, &quot;MyBundle_fr_CA&quot; for canadian french:</p>
+<pre><code>MyBundle.properties
+MyBundle_en.properties
+MyBundle_es.properties
+MyBundle_fr_CA.properties
+</code></pre><p>These files should be located in the same directory. If no locale is found for a resource bundle, the default bundle (&quot;MyBundle.properties&quot;) will be used.</p>
+<p>To load the resource bundle MyBundle.properties for an English locale, we use the following code:</p>
+<pre><code class="hljs java">Locale locale = <span class="hljs-keyword">new</span> Locale(<span class="hljs-string">"en"</span>, <span class="hljs-string">"US"</span>);
+ResourceBundle rb = ResourceBundle.getBundle(<span class="hljs-string">"MyBundle"</span>, locale);
+System.out.println(rb.getString(<span class="hljs-string">"label"</span>));
+</code></pre>
+<p>Although we only use the <em>ResourceBundle</em> class, it actually has two subclasses,  <em>PropertyResourceBundle</em> and <em>ListResourceBundle</em>. </p>
+<p>The <em>PropertyResourceBundle</em> class stores localized texts in standard Java property files.</p>
+<p>The <em>ListResourceBundle</em> class uses classes to contain the resources. Using classes, you can use more than just <em>String</em> values.</p>
+<p>Here&#39;s an example implementation:</p>
+<pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MyBundle_en</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">ListResourceBundle</span> </span>{
+
+    <span class="hljs-annotation">@Override</span>
+    <span class="hljs-keyword">protected</span> Object[][] getContents() {
+        <span class="hljs-keyword">return</span> labels;
+    }
+
+    <span class="hljs-keyword">private</span> Object[][] labels = {
+            { <span class="hljs-string">"value1"</span>   , <span class="hljs-keyword">new</span> Integer(<span class="hljs-number">100</span>) },
+            { <span class="hljs-string">"label1"</span>, <span class="hljs-string">"MILES"</span> },
+    };
+}
+</code></pre>
+<p>To get an object value, we use <code>rb.getObject(key)</code> or <code>rb.getStringArray(key)</code> (which is just a shortcut to <code>(String[])getObject(key)</code>) instead of <code>rb.getString(key)</code></p>
+<p>You can also obtain a set of all the keys contained in the <em>ResourceBundle</em> by using:</p>
+<pre><code class="hljs java">Set&lt;String&gt; keys = rb.keySet();
+</code></pre>
+<p>&nbsp;</p>

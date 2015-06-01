@@ -1,0 +1,197 @@
+---
+layout: ocpj8-notes
+title: Java SE 8 Programmer II - Lambda Built-in Functional Interfaces
+---
+<h1>Lambda Built-in Functional Interfaces</h1>
+<p class="post-meta" style="text-align: left;">
+<small>
+<a href="#use-the-built-in-interfaces">- Use  the built-in interfaces included in the java.util.function package such as Predicate, Consumer, Function, and Supplier</a><br/>
+<a href="#develop-code-that-uses-primitive">- Develop code that uses primitive versions of functional interfaces</a><br/>
+<a href="#develop-code-that-uses-binary">- Develop code that uses binary versions of functional interfaces</a><br/>
+<a href="#develop-code-that-uses-the-unaryoperator">- Develop code that uses the UnaryOperator interface</a><br/>
+</small>
+</p>
+
+
+<h2 id="use-the-built-in-interfaces">Use  the built-in interfaces included in the java.util.function package such as Predicate, Consumer, Function, and Supplier</h2>
+<p>Functional interfaces provide target types for lambda expressions and method references. Each functional interface has a single abstract method, called the functional method for that functional interface, to which the lambda expression&#39;s parameter and return types are matched or adapted.</p>
+<h3 id="predicate">Predicate</h3>
+<p>A predicate is a statement that may be true or false depending on the values of its variables. It can be thought of as a function that returns a value that is either true or false.</p>
+<p>In java 8, a <em>Predicate</em> is a functional interface that can be used anywhere you need to evaluate a boolean condition. Since it&#39;s a functional interface, you can pass a lambda expression wherever a <em>Predicate</em> is expected.</p>
+<p>See the <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Predicate.html">API</a> to know the methods of this interface.</p>
+<p>Here&#39;s an example. First we see how the interface with an anonymous class:</p>
+<pre><code class="hljs java">Predicate&lt;String&gt; isALongWord = <span class="hljs-keyword">new</span> Predicate&lt;String&gt;() {
+    <span class="hljs-annotation">@Override</span>
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">boolean</span> <span class="hljs-title">test</span><span class="hljs-params">(String t)</span> </span>{
+        <span class="hljs-keyword">return</span> t.length() &gt; <span class="hljs-number">10</span>;
+    }
+};
+String s = <span class="hljs-string">"successfully"</span>
+<span class="hljs-keyword">boolean</span> result = isALongWord.test(s);
+</code></pre>
+<p>And now with a lambda expression:</p>
+<pre><code class="hljs java">Predicate&lt;String&gt; isALongWord = t -&gt; t.length() &gt; <span class="hljs-number">10</span>;
+String s = <span class="hljs-string">"successfully"</span>
+<span class="hljs-keyword">boolean</span> result = isALongWord.test(s);
+</code></pre>
+<p>Predicates are also used to filter collections, for example:</p>
+<pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Test</span> </span>{
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> </span>{
+    List&lt;String&gt; l = <span class="hljs-keyword">new</span> ArrayList&lt;&gt;();
+    l.add(<span class="hljs-string">"successfully"</span>);
+    l.add(<span class="hljs-string">"easy"</span>);
+    l.add(<span class="hljs-string">"fortune"</span>);
+    List&lt;String&gt; filtered = l.stream().filter( s -&gt; s.length() &gt; <span class="hljs-number">5</span> ).collect(Collectors.&lt;String&gt;toList());
+    System.out.println(filtered);
+  }
+}
+</code></pre>
+<p>Here, the filter method expects a <em>Predicate</em>, so we can pass a lambda expression to simplify things, so the output of the example is:</p>
+<pre><code>[&quot;successfully&quot;, &quot;fortune&quot;]
+</code></pre><h3 id="consumer">Consumer</h3>
+<p>This functional interface represents an operation that accepts a single input argument and returns no result. The real outcome is the side-effects it produces. Since it&#39;s a functional interface, you can pass a lambda expression wherever a <em>Consumer</em> is expected.</p>
+<p>See the <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Consumer.html">API</a> to know the methods of this interface.</p>
+<p>Here&#39;s an example:</p>
+<pre><code class="hljs java"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Product</span> </span>{
+  <span class="hljs-keyword">private</span> <span class="hljs-keyword">double</span> price = <span class="hljs-number">0.0</span>;
+
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">setPrice</span><span class="hljs-params">(<span class="hljs-keyword">double</span> price)</span> </span>{
+    <span class="hljs-keyword">this</span>.price = price;
+  }
+
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">printPrice</span><span class="hljs-params">()</span> </span>{
+    System.out.println(price);
+  }
+}
+
+<span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Test</span> </span>{
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> </span>{
+    Consumer&lt;Product&gt; updatePrice = p -&gt; p.setPrice(<span class="hljs-number">5.9</span>);
+    Product p = <span class="hljs-keyword">new</span> Product();
+    updatePrice.accept(p);
+    p.printPrice();
+  }
+}
+</code></pre>
+<p>Basically, what <em>Consumer</em> does is executing the assigned lambda expression. The side-effect here, it&#39;s the updating of the product&#39;s price, so the output is:</p>
+<pre><code>5.9
+</code></pre><h3 id="function">Function</h3>
+<p>This functional interface represents a function that accepts one argument and produces a result. One use for example, it&#39;s  to convert or transform from one object to another. Since it&#39;s a functional interface, you can pass a lambda expression wherever a <em>Function</em> is expected.</p>
+<p>See the <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Function.html">API</a> to know the methods of this interface.</p>
+<p>Here&#39;s an example:</p>
+<pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Test</span> </span>{
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> </span>{
+    <span class="hljs-keyword">int</span> n = <span class="hljs-number">5</span>;
+    modifyTheValue(n, val-&gt; val + <span class="hljs-number">10</span>);
+    modifyTheValue(n, val-&gt; val * <span class="hljs-number">100</span>);
+  }
+
+  <span class="hljs-function"><span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">modifyValue</span><span class="hljs-params">(<span class="hljs-keyword">int</span> v, Function&lt;Integer, Integer&gt; function)</span></span>{
+    <span class="hljs-keyword">int</span> result = function.apply(v);
+    System.out.println(newValue);
+  }
+
+}
+</code></pre>
+<p>The input parameter type and the return type of the method can either be same or different. In this case, they are the same type and the program just execute the functions represented by the lambda expression, an addition and a multiplication, so the output is:</p>
+<pre><code>15
+500
+</code></pre><h3 id="supplier">Supplier</h3>
+<p>This functional interface does the opposite of the <em>Consumer</em>, it takes no arguments but it returns some value. It may return different values when it is being called more than once. Since it&#39;s a functional interface, you can pass a lambda expression wherever a <em>Supplier</em> is expected.</p>
+<p>See the <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Supplier.html">API</a> to know the one method of this interface.</p>
+<p>Here&#39;s an example:</p>
+<pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Program</span> </span>{
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> </span>{
+        <span class="hljs-keyword">int</span> n = <span class="hljs-number">3</span>;
+        display(() -&gt; n + <span class="hljs-number">10</span>);
+        display(() -&gt; n + <span class="hljs-number">100</span>);
+    }
+
+    <span class="hljs-function"><span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">display</span><span class="hljs-params">(Supplier&lt;Integer&gt; arg)</span> </span>{
+        System.out.println(arg.get());
+    }
+}
+</code></pre>
+<p>Basically, a <em>Supplier</em> just provides values. The output of the example is:</p>
+<pre><code>13
+113
+</code></pre>
+<p>&nbsp;</p>
+
+
+
+<h2 id="develop-code-that-uses-primitive">Develop code that uses primitive versions of functional interfaces</h2>
+<p>Due to the way generics are implemented, parameters of the functional interfaces (for example, <em>Predicate&lt;T&gt;</em>) can be bound only to reference types (like <em>String</em>, objects, etc).</p>
+<p>If you want to use primitive types with these functional interfaces, Java use a mechanism called autoboxing to automatically convert a primitive to its corresponding wrapper type (for example, int to <em>Integer</em>) and vice versa.</p>
+<p>But since boxed values use more memory, this comes with a performance cost. For this reason, Java provides specialized versions of the functional interfaces in order to avoid autoboxing operations when the inputs or outputs are primitives.</p>
+<p>For example, instead of using</p>
+<pre><code class="hljs java">Predicate&lt;Integer&gt; p = i -&gt; i &gt; <span class="hljs-number">10</span>;
+</code></pre>
+<p>You can use</p>
+<pre><code class="hljs java">IntPredicate p = i -&gt; i &gt; <span class="hljs-number">10</span>;
+</code></pre>
+<p>In general, the names of functional interfaces that have a primitive version for the input parameter are preceded by the primitive type, like <em>IntPredicate</em>.
+The <em>Function</em> interface also has variants for the output parameter like <em>ToIntFunction&lt;T&gt;</em>.</p>
+<p>Here&#39;s a summary of the primitive version of functional interfaces with a link to their javadoc:</p>
+<p><strong>Predicate&lt;T&gt;</strong><br><a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/IntPredicate.html">IntPredicate</a>. Predicate of one int-valued argument.<br><a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/LongPredicate.html">LongPredicate</a>. Predicate of one long-valued argument.<br><a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/DoublePredicate.html">DoublePredicate</a>. Predicate of one double-valued argument.</p>
+<p><strong>Consumer&lt;T&gt;</strong><br><a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/IntConsumer.html">IntConsumer</a>. Operation that accepts a single int-valued argument and returns no result.<br><a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/LongConsumer.html">LongConsumer</a>. Operation that accepts a single long-valued argument and returns no result.<br><a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/DoubleConsumer.html">DoubleConsumer</a>. Operation that accepts a single double-valued argument and returns no result.</p>
+<p><strong>Function&lt;T, R&gt;</strong><br><a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/IntFunction.html">IntFunction&lt;R&gt;</a>. Function that accepts an int-valued argument and produces a result.<br><a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/IntToDoubleFunction.html">IntToDoubleFunction</a>. Function that accepts an int-valued argument and produces a double-valued result.<br><a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/IntToLongFunction.html">IntToLongFunction</a>. Function that accepts an int-valued argument and produces a long-valued result.<br><a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/LongFunction.html">LongFunction&lt;R&gt;</a>. Function that accepts a long-valued argument and produces a result.<br><a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/LongToDoubleFunction.html">LongToDoubleFunction</a>. Function that accepts a long-valued argument and produces a double-valued result.<br><a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/LongToIntFunction.html">LongToIntFunction</a>. Function that accepts a long-valued argument and produces an int-valued result.<br><a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/DoubleFunction.html">DoubleFunction&lt;R&gt;</a>. Function that accepts a double-valued argument and produces a result.<br><a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/ToIntFunction.html">ToIntFunction&lt;T&gt;</a>. Function that produces an int-valued result.<br><a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/ToDoubleFunction.html">ToDoubleFunction&lt;T&gt;</a>. Function that produces a double-valued result.<br><a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/ToLongFunction.html">ToLongFunction&lt;T&gt;</a>. Function that produces a long-valued result.</p>
+<p><strong>Supplier&lt;T&gt;</strong><br><a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/BooleanSupplier.html">BooleanSupplier</a>. Supplier of boolean-valued results.<br><a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/IntSupplier.html">IntSupplier</a>. Supplier of int-valued results.<br><a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/LongSupplier.html">LongSupplier</a>. Supplier of long-valued results.<br><a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/DoubleSupplier.html">DoubleSupplier</a>. Supplier of double-valued results.</p>
+<p><strong>UnaryOperator&lt;T&gt;</strong><br><a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/IntUnaryOperator.html">IntUnaryOperator</a>. Function operation on a single int-valued operand that produces an int-valued result.<br><a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/LongUnaryOperator.html">LongUnaryOperator</a>. Function operation on a single long-valued operand that produces a long-valued result.<br><a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/DoubleUnaryOperator.html">DoubleUnaryOperator</a>. Function operation on a single double-valued operand that produces a double-valued result.</p>
+<p>&nbsp;</p>
+
+
+
+<h2 id="develop-code-that-uses-binary">Develop code that uses binary versions of functional interfaces</h2>
+<p>The following functional interfaces:</p>
+<ul>
+<li>Predicate&lt;T&gt;</li>
+<li>Consumer&lt;T&gt;</li>
+<li>Function&lt;T,R&gt;</li>
+<li>UnaryOperator&lt;T&gt;</li>
+</ul>
+<p>Represent an operation that takes one argument. But there are versions of these interfaces that take two arguments called. These are the binary versions. They have the same semantics, the only difference is the number of arguments. Note there is no binary version of <em>Supplier</em>. This is due to the fact that a <em>Supplier</em> takes no arguments.</p>
+<p>Here&#39;s a summary of the binary versions of the functional interfaces along with their primitive versions and a link to their javadoc:</p>
+<p><strong>BiPredicate&lt;L, R&gt;</strong><br>(No primitive versions)</p>
+<p><strong>BiConsumer&lt;T, U&gt;</strong><br><a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/ObjIntConsumer.html">ObjIntConsumer&lt;T&gt;</a>. Operation that accepts an Object-valued and an int-valued argument and returns no result.<br><a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/ObjLongConsumer.html">ObjLongConsumer&lt;T&gt;</a>. Operation that accepts an Object-valued and a long-valued argument and returns no result.<br><a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/ObjDoubleConsumer.html">ObjDoubleConsumer&lt;T&gt;</a>. Operation that accepts an Object-valued and a double-valued argument and returns no result.</p>
+<p><strong>BiFunction&lt;T, U, R&gt;</strong><br><a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/ToIntBiFunction.html">ToIntBiFunction&lt;T, U&gt;</a>. Function that accepts two arguments and produces an int-valued result.<br><a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/ToLongBiFunction.html">ToLongBiFunction&lt;T, U&gt;</a>. Function that accepts two arguments and produces a long-valued result.<br><a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/ToDoubleBiFunction.html">ToDoubleBiFunction&lt;T, U&gt;</a>. Function that accepts two arguments and produces a double-valued result.</p>
+<p><strong>BinaryOperator&lt;T&gt;</strong><br><a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/IntBinaryOperator.html">IntBinaryOperator</a>. Function operation upon two int-valued operands and producing an int-valued result.<br><a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/LongBinaryOperator.html">LongBinaryOperator</a>. Function operation upon two long-valued operands and producing a long-valued result.<br><a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/DoubleBinaryOperator.html">DoubleBinaryOperator</a>. Function operation upon two double-valued operands and producing a double-valued result.</p>
+<p>&nbsp;</p>
+
+
+<h2 id="develop-code-that-uses-the-unaryoperator">Develop code that uses the UnaryOperator interface</h2>
+<p><em>UnaryOperator</em> is a functional interface that receives a value of a certain type and returns a value of the same type. This is a specialization of the <em>Function</em> interface for the case where the operand and result are of the same type (in fact <em>UnaryOperator</em> extends from <em>Function</em>).</p>
+<p>Here&#39;s the <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/UnaryOperator.html">javadoc</a>.</p>
+<p>And here&#39;s an example:</p>
+<pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Test</span> </span>{
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> </span>{
+
+      UnaryOperator&lt;Integer&gt; unary = v -&gt; v * <span class="hljs-number">10</span>;
+      <span class="hljs-comment">// This means the same as the UnaryOperator above.</span>
+      Function&lt;Integer, Integer&gt; function = v -&gt; v * <span class="hljs-number">10</span>;
+
+      System.out.println(unary.apply(<span class="hljs-number">10</span>));
+      System.out.println(function.apply(<span class="hljs-number">10</span>));
+  }
+}
+</code></pre>
+<p>The output:</p>
+<pre><code>100
+100
+</code></pre><p>The UnaryOperator can also be applied to a collection like this:</p>
+<pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Program</span> </span>{
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> </span>{
+      List&lt;Integer&gt; list = <span class="hljs-keyword">new</span> ArrayList&lt;&gt;();
+      list.add(<span class="hljs-number">1</span>);
+      list.add(<span class="hljs-number">2</span>);
+      list.add(<span class="hljs-number">3</span>);
+      list.replaceAll(i -&gt; i * <span class="hljs-number">10</span>);
+      <span class="hljs-comment">// ... Display the results.</span>
+      System.out.println(list);
+  }
+}
+</code></pre>
+<p>The output:</p>
+<pre><code>[10, 20, 30]
+</code></pre>
+<p>&nbsp;</p>

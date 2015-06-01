@@ -1,0 +1,237 @@
+---
+layout: ocpj8-notes
+title: Java SE 8 Programmer II - Java I/O Fundamentals
+---
+<h1>Java I/O Fundamentals</h1>
+<p class="post-meta" style="text-align: left;">
+<small>
+<a href="#read-and-write-data-from-the-console">- Read and write data from the console</a><br/>
+<a href="#use-bufferedreader-bufferedwriter">- Use BufferedReader, BufferedWriter, File, FileReader, FileWriter, FileInputStream, FileOutputStream, ObjectOutputStream, ObjectInputStream, and PrintWriter in the java.iopackage.</a><br/>
+</small>
+</p>
+
+
+<h2 id="read-and-write-data-from-the-console">Read and write data from the console</h2>
+<h3 id="console-object">Console object</h3>
+<p>Access to the console depends upon the underlying platform and also upon the way in which the java program is invoked. If it&#39;s started from the command line without redirecting the standard input and output streams then its console will exist. If it&#39;s stated for example by a background job scheduler or an IDE, it&#39;s most likely that it will be no access to the console.</p>
+<p>If there&#39;s a console,  it will be available with the <code>System.console()</code> method. If it&#39;s not available, an invocation of that method will return null.</p>
+<p>Reading a line of text from the console:</p>
+<pre><code class="hljs java">Console console = <span class="hljs-keyword">null</span>;
+String s = <span class="hljs-keyword">null</span>;
+<span class="hljs-keyword">try</span>
+{
+   console = System.console();
+   <span class="hljs-keyword">if</span> (console != <span class="hljs-keyword">null</span>)
+   {
+      s = console.readLine();
+      System.out.println(s);
+   }
+} <span class="hljs-keyword">catch</span> (Exception ex)
+{
+   ex.printStackTrace();
+}
+</code></pre>
+<p>For reading a password or other secure data,<code>readPassword()</code> or <code>readPassword(String, Object...)</code> (that provides a formatted prompt) and manually zero the returned character array after processing to minimize the lifetime of sensitive data in memory:</p>
+<pre><code class="hljs java">Console console = <span class="hljs-keyword">null</span>;
+<span class="hljs-keyword">char</span>[] passwd = <span class="hljs-keyword">null</span>;
+<span class="hljs-keyword">try</span>
+{
+   console = System.console();
+   <span class="hljs-keyword">if</span> (console != <span class="hljs-keyword">null</span>)
+   {
+      <span class="hljs-keyword">if</span>((passwd = cons.readPassword(<span class="hljs-string">"[%s]"</span>, <span class="hljs-string">"Password:"</span>)) != <span class="hljs-keyword">null</span>) {
+        java.util.Arrays.fill(passwd, <span class="hljs-string">' '</span>);
+      }
+   }
+} <span class="hljs-keyword">catch</span> (Exception ex)
+{
+   ex.printStackTrace();
+}
+</code></pre>
+<p>For writing, we have two equivalent methods that accept a <a href="https://docs.oracle.com/javase/8/docs/api/java/util/Formatter.html#syntax">format string</a>:</p>
+<pre><code class="hljs java">Console console = System.console();
+<span class="hljs-keyword">if</span> (console != <span class="hljs-keyword">null</span>)
+{
+  console.format(<span class="hljs-string">"[%s]"</span>, <span class="hljs-string">"Hi"</span>);
+  console.printf(<span class="hljs-string">"[%s]"</span>, <span class="hljs-string">"Hi again"</span>);
+  console.format(<span class="hljs-string">"Or just hi"</span>);
+}
+</code></pre>
+<h3 id="standard-streams">Standard Streams</h3>
+<p>Java supports three standard streams: Standard Input, accessed through <code>System.in</code>; Standard Output, accessed through <code>System.out</code>; and Standard Error, accessed through <code>System.err</code>. These objects are defined automatically and do not need to be opened.</p>
+<p>To read using streams:</p>
+<pre><code class="hljs java"><span class="hljs-keyword">try</span> {
+   BufferedReader bufferRead = <span class="hljs-keyword">new</span> BufferedReader(<span class="hljs-keyword">new</span> InputStreamReader(System.in));
+   String s = bufferRead.readLine();
+
+   System.out.println(s);
+}
+<span class="hljs-keyword">catch</span>(IOException ex)
+{
+  ex.printStackTrace();
+}
+</code></pre>
+<p> To write, standard output and standard error are both for output and they are defined as PrintStream objects:</p>
+<pre><code class="hljs java">System.out.println(<span class="hljs-string">"Hi"</span>);
+System.out.print(<span class="hljs-string">"Hi again\n"</span>);
+</code></pre>
+<p>&nbsp;</p>
+
+
+
+<h2 id="use-bufferedreader-bufferedwriter">Use BufferedReader, BufferedWriter, File, FileReader, FileWriter, FileInputStream, FileOutputStream, ObjectOutputStream, ObjectInputStream, and PrintWriter in the java.io package.</h2>
+<p><a href="https://docs.oracle.com/javase/8/docs/api/java/io/File.html">File</a></p>
+<p>This class is a representation of a file or a directory pathnames. Its instances are immutable, that is, once created, the abstract pathname represented by the object will never change.</p>
+<p>You can create an instance this way:</p>
+<pre><code class="hljs java">File file = <span class="hljs-keyword">new</span> File(<span class="hljs-string">"c:\\file.txt"</span>);
+</code></pre>
+<p>Or:</p>
+<pre><code class="hljs java">File file = <span class="hljs-keyword">new</span> File(<span class="hljs-string">"/usr/file.txt"</span>);
+</code></pre>
+<p>Once you have created a File object you can do a lot of things:</p>
+<pre><code class="hljs java"><span class="hljs-comment">// Check if the corresponding file or directory actually exists</span>
+<span class="hljs-keyword">boolean</span> fileExists = file.exists();
+
+<span class="hljs-comment">// Create a single directory if it does not already exist</span>
+<span class="hljs-keyword">boolean</span> directoryCreated = file.mkdir();
+
+<span class="hljs-comment">// Read the length of the file in bytes</span>
+<span class="hljs-keyword">long</span> length = file.length();
+
+<span class="hljs-comment">// Rename or move a file or directory:</span>
+<span class="hljs-keyword">boolean</span> renameSuccessful = file.renameTo(<span class="hljs-keyword">new</span> File(<span class="hljs-string">"c:\\new-file.txt"</span>));
+
+<span class="hljs-comment">// Delete the file or directory</span>
+success = file.delete();
+
+<span class="hljs-comment">// Check if the File object points to a directory</span>
+<span class="hljs-keyword">boolean</span> isDirectory = file.isDirectory();
+
+<span class="hljs-comment">// Check if the file/directory is hidden</span>
+<span class="hljs-keyword">boolean</span> isHidden = file.isHidden();
+
+<span class="hljs-comment">// Get a list (an array) of all the names of the files/directories in a directory</span>
+String[] fileNames = file.list();
+
+<span class="hljs-comment">// Get a list of all files/directories in a directory as instances of File</span>
+File[]   files = file.listFiles();
+</code></pre>
+<p><a href="https://docs.oracle.com/javase/8/docs/api/java/io/FileReader.html">FileReader</a><br>and<br><a href="https://docs.oracle.com/javase/8/docs/api/java/io/FileWriter.html">FileWriter</a></p>
+<p>FileReader and FileWriter are character based, they are intended for reading and writing text. </p>
+<p>Here&#39;s an example code snippet for FileReader:</p>
+<pre><code class="hljs java">Reader reader = <span class="hljs-keyword">new</span> FileReader(<span class="hljs-string">"c:\\file.txt"</span>);
+<span class="hljs-keyword">int</span> data = reader.read();
+<span class="hljs-keyword">while</span>(data != -<span class="hljs-number">1</span>){
+    <span class="hljs-keyword">char</span> dataChar = (<span class="hljs-keyword">char</span>) data;
+    data = reader.read();
+}
+reader.close();
+</code></pre>
+<p>Here&#39;s an example code snippet for FileWriter:</p>
+<pre><code class="hljs java">Writer writer = <span class="hljs-keyword">new</span> FileWriter(<span class="hljs-string">"c:\\file.txt"</span>);
+writer.write(<span class="hljs-string">"Hello World Writer"</span>);
+writer.close();
+</code></pre>
+<p>FileReader extends from InputStreamReader, so it can work with an InputStream. At the same time, FileWriter extends from OutputStreamReader, so it can work with an OutputStream.</p>
+<p><a href="https://docs.oracle.com/javase/8/docs/api/java/io/FileInputStream.html">FileInputStream</a></p>
+<p>FileInputStream reads the contents of a file as a stream of bytes. It&#39;s a subclass of InputStream. It can be created either with a String or a File object that represent a path. Here&#39;s an example:</p>
+<pre><code class="hljs java">InputStream input = <span class="hljs-keyword">new</span> FileInputStream(<span class="hljs-string">"c:\\text.txt"</span>);
+<span class="hljs-keyword">int</span> byteData = input.read();
+<span class="hljs-keyword">while</span>(byteData != -<span class="hljs-number">1</span>) {
+  byteData = input.read();
+}
+input.close();
+</code></pre>
+<p>There&#39;s another version of <code>read()</code> that reads up to the length of an array of bytes of data from the input stream into that array:</p>
+<pre><code class="hljs java">InputStream fis = <span class="hljs-keyword">new</span> FileInputStream(<span class="hljs-string">"c:\\text.txt"</span>);
+<span class="hljs-keyword">byte</span>[] data = <span class="hljs-keyword">new</span> <span class="hljs-keyword">byte</span>[<span class="hljs-number">1024</span>];
+<span class="hljs-keyword">int</span> bytesRead = fis.read(data);
+<span class="hljs-keyword">while</span>(bytesRead != -<span class="hljs-number">1</span>) {
+  bytesRead = fis.read(data);
+}
+fis.close();
+</code></pre>
+<p><a href="https://docs.oracle.com/javase/8/docs/api/java/io/FileOutputStream.html">FileOutputStream</a></p>
+<p>FileOutputStream writes the contents of a file as a stream of bytes. It&#39;s a subclass of OutputStream. It can be created either with a String or a File object that represent a path.</p>
+<p>When you create a FileOutputStream representing a file that already exists, you can decide if you want to overwrite or to append to the existing file. It depends on the constructor you choose:</p>
+<pre><code class="hljs java">OutputStream fos1 = <span class="hljs-keyword">new</span> FileOutputStream(<span class="hljs-string">"c:\\text.txt"</span>); <span class="hljs-comment">//overwrites file</span>
+OutputStream fos2 = <span class="hljs-keyword">new</span> FileOutputStream(<span class="hljs-string">"c:\\text.txt"</span>, <span class="hljs-keyword">true</span>); <span class="hljs-comment">//appends to file</span>
+OutputStream fos3 = <span class="hljs-keyword">new</span> FileOutputStream(<span class="hljs-string">"c:\\text.txt"</span>, <span class="hljs-keyword">false</span>); <span class="hljs-comment">//overwrites file</span>
+</code></pre>
+<p>When you write to a FileOutputStream, the data may get cached internally in memory and written to disk at a later time. If you want to make sure that all data is written to disk without having to close the FileOutputStream, you can call its <code>flush()</code> method.</p>
+<pre><code class="hljs java">OutputStream output = <span class="hljs-keyword">null</span>;
+<span class="hljs-keyword">try</span> {
+  output = <span class="hljs-keyword">new</span> FileOutputStream(<span class="hljs-string">"c:\\text.txt"</span>);
+
+  <span class="hljs-keyword">while</span>(moreData()) {
+    <span class="hljs-keyword">int</span> data = getData();
+    output.write(data);
+  }
+} <span class="hljs-keyword">finally</span> {
+    <span class="hljs-keyword">if</span>(output != <span class="hljs-keyword">null</span>) {
+        output.close();
+    }
+}
+</code></pre>
+<p>The other versions of the <code>write()</code> method are:
+<code>write(byte[] bytes)</code>. It writes all the bytes in the byte array to the OutputStream.
+<code>write(byte[] bytes, int offset, int length)</code>. It writes length number of bytes starting from offset from the byte array to the OutputStream.</p>
+<p><a href="https://docs.oracle.com/javase/8/docs/api/java/io/BufferedReader.html">BufferedReader</a></p>
+<p>BufferedReader provides buffering to a character-input stream. Rather than read one byte at a time, BufferedReader reads a larger block at a time. 
+To add buffering to an InputStream just wrap it in a BufferedInputStream:</p>
+<pre><code class="hljs java">Reader r = <span class="hljs-keyword">new</span> BufferedReader(<span class="hljs-keyword">new</span> FileReader(<span class="hljs-string">"c:\\file.txt"</span>));
+</code></pre>
+<p>The BufferedReader creates a byte array internally and fill it by calling the <code>read()</code> or <code>readLine()</code> methods on the underlying Reader. You can set the buffer size to use internally, for example to 1024 bytes, like this:</p>
+<pre><code class="hljs java">Reader r = <span class="hljs-keyword">new</span> BufferedReader(<span class="hljs-keyword">new</span> FileReader(<span class="hljs-string">"c:\\file.txt"</span>), <span class="hljs-number">1024</span>);
+</code></pre>
+<p><a href="https://docs.oracle.com/javase/8/docs/api/java/io/BufferedWriter.html">BufferedWriter</a></p>
+<p>BufferedWriter provides buffering to a character-output stream. To add buffering to a Writer just wrap it in a BufferedWriter:</p>
+<pre><code class="hljs java">BufferedWriter input = <span class="hljs-keyword">new</span> BufferedWriter(<span class="hljs-keyword">new</span> FileWriter(<span class="hljs-string">"c:\\file.txt"</span>));
+</code></pre>
+<p>To set the size of the buffer, provide it as a constructor parameter like this:</p>
+<pre><code class="hljs java">BufferedWriter input = <span class="hljs-keyword">new</span> BufferedWriter(<span class="hljs-keyword">new</span> FileWriter(<span class="hljs-string">"c:\\file.txt"</span>), <span class="hljs-number">1024</span>);
+</code></pre>
+<p>Without buffering, each invocation of a <code>write()</code> or <code>newLine()</code> method would cause characters to be converted into bytes and written immediately to the file, which can be very inefficient.</p>
+<p><a href="https://docs.oracle.com/javase/8/docs/api/java/io/ObjectInputStream.html">ObjectInputStream</a></p>
+<p>ObjectInputStream allows you to read serialized objects (their class must implement java.io.Serializable) from an InputStream instead of only bytes. You wrap an InputStream in an ObjectInputStream like this:</p>
+<pre><code class="hljs java"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Test</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">java</span>.<span class="hljs-title">io</span>.<span class="hljs-title">Serializable</span> </span>{}
+...
+ObjectInputStream input = <span class="hljs-keyword">new</span> ObjectInputStream(<span class="hljs-keyword">new</span> FileInputStream(<span class="hljs-string">"obj.data"</span>));
+Test object = (Test) input.readObject();
+input.close();
+</code></pre>
+<p><a href="https://docs.oracle.com/javase/8/docs/api/java/io/ObjectOutputStream.html">ObjectOutputStream</a></p>
+<p>ObjectOutputStream allows you to write serialized objects (their class must implement java.io.Serializable) from an OutputStream instead of only bytes. You wrap an OutputStream in an ObjectOutputStream like this:</p>
+<pre><code class="hljs java"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Test</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">java</span>.<span class="hljs-title">io</span>.<span class="hljs-title">Serializable</span> </span>{}
+...
+ObjectOutputStream output = <span class="hljs-keyword">new</span> ObjectOutputStream(<span class="hljs-keyword">new</span> FileOutputStream(<span class="hljs-string">"obj.data"</span>));
+Test object = <span class="hljs-keyword">new</span> Test();
+output.writeObject(object);
+output.close();
+</code></pre>
+<p><a href="https://docs.oracle.com/javase/8/docs/api/java/io/PrinterWriter.html">PrintWriter</a> </p>
+<p>PrintWriter class allows you to write formatted data or data from primitive types instead of bytes to an underlying Writer. Here&#39;s an example:</p>
+<pre><code class="hljs java">PrintWriter writer = <span class="hljs-keyword">new</span> PrintWriter(<span class="hljs-keyword">new</span> FileWriter(<span class="hljs-string">"c:\\file.txt"</span>) );
+writer.print(<span class="hljs-keyword">true</span>);
+writer.print(<span class="hljs-number">1</span>);
+writer.print(<span class="hljs-number">1.23</span>);
+
+<span class="hljs-comment">// printf and format methods do the same</span>
+writer.printf(<span class="hljs-string">"%s"</span>, <span class="hljs-string">"Hi"</span>);
+writer.format(<span class="hljs-string">"%s"</span>, <span class="hljs-string">"Hi"</span>);
+
+writer.close();
+</code></pre>
+<p>The constructors of PrintWriter are:</p>
+<p><code>PrintWriter(File file)</code><br>Creates a new PrintWriter, without automatic line flushing, with the specified file.</p>
+<p><code>PrintWriter(File file, String csn)</code><br>Creates a new PrintWriter, without automatic line flushing, with the specified file and charset.</p>
+<p><code>PrintWriter(OutputStream out)</code>  `<br>Creates a new PrintWriter, without automatic line flushing, from an existing OutputStream.</p>
+<p><code>PrintWriter(OutputStream out, boolean autoFlush)</code><br>Creates a new PrintWriter from an existing OutputStream.</p>
+<p><code>PrintWriter(String fileName)</code><br>Creates a new PrintWriter, without automatic line flushing, with the specified file name.</p>
+<p><code>PrintWriter(String fileName, String csn)</code><br>Creates a new PrintWriter, without automatic line flushing, with the specified file name and charset.</p>
+<p><code>PrintWriter(Writer out)</code><br>Creates a new PrintWriter, without automatic line flushing.</p>
+<p><code>PrintWriter(Writer out, boolean autoFlush)</code><br>Creates a new PrintWriter.</p>
+<p>&nbsp;</p>
+
+
+

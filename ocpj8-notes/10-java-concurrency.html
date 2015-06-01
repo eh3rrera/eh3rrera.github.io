@@ -1,0 +1,790 @@
+---
+layout: ocpj8-notes
+title: Java SE 8 Programmer II - Java Concurrency
+---
+<h1>Java Concurrency</h1>
+<p class="post-meta" style="text-align: left;">
+<small>
+<a href="#create-worker-threads">- Create worker threads using Runnable, Callable and use an ExecutorService to concurrently execute tasks</a><br/>
+<a href="#identify-potential-threading">- Identify potential threading problems among deadlock, starvation, livelock, and race conditions</a><br/>
+<a href="#identify-potential-threading">- Use synchronized keyword and java.util.concurrent.atomic package to control the order of thread execution</a><br/>
+<a href="#use-java-util-concurrent-collections">- Use java.util.concurrent collections and classes including CyclicBarrier and CopyOnWriteArrayList</a><br/>
+<a href="#use-parallel-fork-join-framework">- Use parallel Fork/Join Framework</a><br/>
+<a href="#use-parallel-streams">- Use parallel Streams including reduction, decomposition, merging processes, pipelines and performance.</a><br/>
+</small>
+</p>
+
+
+<h2 id="create-worker-threads">Create worker threads using Runnable, Callable and use an ExecutorService to concurrently execute tasks</h2>
+<h3 id="runnable">Runnable</h3>
+<p>We can create a thread by passing an implementation of <a href="http://docs.oracle.com/javase/8/docs/api/java/lang/Runnable.html">Runnable</a> to a Thread constructor. There are three ways to do it:</p>
+<pre><code class="hljs java"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Task</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">Runnable</span> </span>{
+  <span class="hljs-annotation">@Override</span>
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">run</span><span class="hljs-params">()</span> </span>{
+      System.out.println(<span class="hljs-string">"Running"</span>);
+  }
+}
+
+<span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Test</span> </span>{
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String args[])</span> </span>{
+    Runnable r = <span class="hljs-keyword">new</span> Task();
+    Thread thread = <span class="hljs-keyword">new</span> Thread(r);
+    thread.start();
+  }
+}
+</code></pre>
+<p>Or with an anonymous class:</p>
+<pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Test</span> </span>{
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String args[])</span> </span>{
+    Runnable r = <span class="hljs-keyword">new</span> Runnable() {
+      <span class="hljs-annotation">@Override</span>
+      <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">run</span><span class="hljs-params">()</span> </span>{
+          System.out.println(<span class="hljs-string">"Running"</span>);
+      }
+    };
+    Thread thread = <span class="hljs-keyword">new</span> Thread(r);
+    thread.start();
+  }
+}
+</code></pre>
+<p>Or with a lambda expression:</p>
+<pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Test</span> </span>{
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String args[])</span> </span>{
+    Runnable r = () -&gt; System.out.println(<span class="hljs-string">"Running"</span>);
+    Thread thread = <span class="hljs-keyword">new</span> Thread(r);
+    thread.start();
+  }
+}
+</code></pre>
+<h3 id="callable">Callable</h3>
+<p>The <a href="http://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Callable.html">Callable</a> interface is similar to Runnable, they&#39;re both designed to be executed by another thread, a Runnable however, does not return a result and cannot throw a checked exception. We can create a Callable in three ways:</p>
+<pre><code class="hljs java"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Task</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">Callable</span>&lt;<span class="hljs-title">Integer</span>&gt; </span>{
+  <span class="hljs-annotation">@Override</span>
+  <span class="hljs-function"><span class="hljs-keyword">public</span> Integer <span class="hljs-title">call</span><span class="hljs-params">()</span> </span>{
+      <span class="hljs-keyword">int</span> n = <span class="hljs-number">0</span>;
+      <span class="hljs-keyword">for</span>(<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">100</span>; i++) { n += i; }
+      <span class="hljs-keyword">return</span> n;
+  }
+}
+
+<span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Test</span> </span>{
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String args[])</span> </span>{
+    ExecutorService executor = Executors.newSingleThreadExecutor();
+    Callable c = <span class="hljs-keyword">new</span> Task();
+    Future&lt;Long&gt; future = executor.submit(c);
+    <span class="hljs-keyword">try</span> {
+        Long result = future.get(); <span class="hljs-comment">//waits for the thread to complete</span>
+        System.out.println(result);
+    } <span class="hljs-keyword">catch</span> (ExecutionException e) {
+        e.printStackTrace();
+    }
+    executor.shutdown();
+  }
+}
+</code></pre>
+<p>Or with an anonymous class:</p>
+<pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Test</span> </span>{
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String args[])</span> </span>{
+    ExecutorService executor = Executors.newSingleThreadExecutor();
+    Callable c = <span class="hljs-keyword">new</span> Callable&lt;Integer&gt;() {
+      <span class="hljs-function"><span class="hljs-keyword">public</span> Integer <span class="hljs-title">call</span><span class="hljs-params">()</span> </span>{
+          <span class="hljs-keyword">int</span> n = <span class="hljs-number">0</span>;
+          <span class="hljs-keyword">for</span>(<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">100</span>; i++) { n += i; }
+          <span class="hljs-keyword">return</span> n;
+      }
+    };
+    Future&lt;Long&gt; future = executor.submit(c);
+    <span class="hljs-keyword">try</span> {
+        Long result = future.get(); <span class="hljs-comment">//waits for the thread to complete</span>
+        System.out.println(result);
+    } <span class="hljs-keyword">catch</span> (ExecutionException e) {
+        e.printStackTrace();
+    }
+    executor.shutdown();
+  }
+}
+</code></pre>
+<p>Or with a lambda expression:</p>
+<pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Test</span> </span>{
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String args[])</span> </span>{
+    ExecutorService executor = Executors.newSingleThreadExecutor();
+    Callable c = () -&gt; {
+          <span class="hljs-keyword">int</span> n = <span class="hljs-number">0</span>;
+          <span class="hljs-keyword">for</span>(<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i &lt; <span class="hljs-number">100</span>; i++) { n += i; }
+          <span class="hljs-keyword">return</span> n;
+      };
+    Future&lt;Long&gt; future = executor.submit(c);
+    <span class="hljs-keyword">try</span> {
+        Long result = future.get(); <span class="hljs-comment">//waits for the thread to complete</span>
+        System.out.println(result);
+    } <span class="hljs-keyword">catch</span> (ExecutionException e) {
+        e.printStackTrace();
+    }
+    executor.shutdown();
+  }
+}
+</code></pre>
+<h3 id="executorservice">ExecutorService</h3>
+<p>The <a href="http://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ExecutorService.html">ExecutorService</a> interface represents a mechanism that executes tasks in the background. </p>
+<p>You can use the <a href="http://docs.oracle.com/javase/8/docs/api/java/util/concurrent/Executors.html">Executors</a> factory class to create ExecutorService implementations. Some examples are:</p>
+<pre><code class="hljs java"><span class="hljs-comment">// Creates an Executor that uses a single worker thread operating off an unbounded queue.</span>
+ExecutorService es1 = Executors.newSingleThreadExecutor();
+<span class="hljs-comment">// Creates a thread pool that reuses a fixed number of threads operating off a shared unbounded queue.</span>
+ExecutorService es2 = Executors.newFixedThreadPool(<span class="hljs-number">10</span>);
+<span class="hljs-comment">// Creates a thread pool that can schedule commands to run after a given delay, or to execute periodically.</span>
+ExecutorService es3 = Executors.newScheduledThreadPool(<span class="hljs-number">10</span>);
+</code></pre>
+<p>There are a few methods to execute task with an ExecutorService:</p>
+<h4 id="execute-runnable-">execute(Runnable)</h4>
+<p>The execute method takes a Runnable, and executes it asynchronously:</p>
+<pre><code class="hljs java">executorService.execute(<span class="hljs-keyword">new</span> Runnable() {
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">run</span><span class="hljs-params">()</span> </span>{
+        System.out.println(<span class="hljs-string">"A task"</span>);
+    }
+});
+executorService.shutdown();
+</code></pre>
+<h4 id="submit-runnable-">submit(Runnable)</h4>
+<p>This method takes a Runnable, but returns a Future object. This object returns null when the Runnable has finished executing:</p>
+<pre><code class="hljs java">Future future = executorService.submit(<span class="hljs-keyword">new</span> Runnable() {
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">run</span><span class="hljs-params">()</span> </span>{
+        System.out.println(<span class="hljs-string">"A task"</span>);
+    }
+});
+future.get(); <span class="hljs-comment">//Blocks until the Runnable has finished</span>
+executorService.shutdown();
+</code></pre>
+<h4 id="submit-callable-">submit(Callable)</h4>
+<p>This version of the method takes a Callable, and returns a Future object with a result when it has finished executing:</p>
+<pre><code class="hljs java">Future future = executorService.submit(<span class="hljs-keyword">new</span> Callable&lt;String&gt;() {
+    <span class="hljs-function"><span class="hljs-keyword">public</span> String <span class="hljs-title">call</span><span class="hljs-params">()</span> </span>{
+        <span class="hljs-keyword">return</span> <span class="hljs-string">"A callable"</span>;
+    }
+});
+System.out.println(future.get()); <span class="hljs-comment">//Blocks until the Callable has finished</span>
+executorService.shutdown();
+</code></pre>
+<h4 id="invokeany-collection-extends-callable-t-">invokeAny(Collection&lt;? extends Callable&lt;T&gt;&gt;)</h4>
+<p>This method executes the given tasks returning the result of one that has completed successfully. You have no guarantee about which of the Callable&#39;s results you&#39;ll get, just one of the ones that finish. When one of the tasks complete or throws an exception, the rest are cancelled. For example:</p>
+<pre><code class="hljs java">List&lt;Callable&lt;String&gt;&gt; callables = <span class="hljs-keyword">new</span> ArrayList&lt;Callable&lt;String&gt;&gt;();
+callables.add(<span class="hljs-keyword">new</span> Callable&lt;String&gt;() {
+    <span class="hljs-function"><span class="hljs-keyword">public</span> String <span class="hljs-title">call</span><span class="hljs-params">()</span> </span>{
+        <span class="hljs-keyword">return</span> <span class="hljs-string">"Callable 1"</span>;
+    }
+});
+callables.add(<span class="hljs-keyword">new</span> Callable&lt;String&gt;() {
+    <span class="hljs-function"><span class="hljs-keyword">public</span> String <span class="hljs-title">call</span><span class="hljs-params">()</span> </span>{
+        <span class="hljs-keyword">return</span> <span class="hljs-string">"Callable 2"</span>;
+    }
+});
+callables.add(<span class="hljs-keyword">new</span> Callable&lt;String&gt;() {
+    <span class="hljs-function"><span class="hljs-keyword">public</span> String <span class="hljs-title">call</span><span class="hljs-params">()</span> </span>{
+        <span class="hljs-keyword">return</span> <span class="hljs-string">"Callable 3"</span>;
+    }
+});
+String result = executorService.invokeAny(callables);
+System.out.println(result);
+executorService.shutdown();
+</code></pre>
+<p>Sometimes it will print &quot;Callable 1&quot;, sometimes &quot;Callable 2&quot;, and other times &quot;Callable 3&quot;.</p>
+<h4 id="invokeall-collection-extends-callable-t-">invokeAll(Collection&lt;? extends Callable&lt;T&gt;&gt;)</h4>
+<p>This method executes the given tasks, returning a list of Futures holding their status and results when all complete. <code>Future.isDone()</code> is true for each element of the returned list. A completed task could have terminated either normally or by throwing an exception:</p>
+<pre><code class="hljs java">List&lt;Callable&lt;String&gt;&gt; callables = <span class="hljs-keyword">new</span> ArrayList&lt;Callable&lt;String&gt;&gt;();
+callables.add(<span class="hljs-keyword">new</span> Callable&lt;String&gt;() {
+    <span class="hljs-function"><span class="hljs-keyword">public</span> String <span class="hljs-title">call</span><span class="hljs-params">()</span> </span>{
+        <span class="hljs-keyword">return</span> <span class="hljs-string">"Callable 1"</span>;
+    }
+});
+callables.add(<span class="hljs-keyword">new</span> Callable&lt;String&gt;() {
+    <span class="hljs-function"><span class="hljs-keyword">public</span> String <span class="hljs-title">call</span><span class="hljs-params">()</span> </span>{
+        <span class="hljs-keyword">return</span> <span class="hljs-string">"Callable 2"</span>;
+    }
+});
+callables.add(<span class="hljs-keyword">new</span> Callable&lt;String&gt;() {
+    <span class="hljs-function"><span class="hljs-keyword">public</span> String <span class="hljs-title">call</span><span class="hljs-params">()</span> </span>{
+        <span class="hljs-keyword">return</span> <span class="hljs-string">"Callable 3"</span>;
+    }
+});
+List&lt;Future&lt;String&gt;&gt; futures = executorService.invokeAll(callables);
+<span class="hljs-keyword">for</span>(Future&lt;String&gt; f : futures){
+    System.out.println(f.get());
+}
+executorService.shutdown();
+</code></pre>
+<p>When you are done using the ExecutorService you should shut it down, so the threads do not keep running. To terminate the threads inside the ExecutorService you call its <code>shutdown()</code> method. The ExecutorService will not shut down immediately, but it will no longer accept new tasks, and once all threads have finished current tasks, the ExecutorService shuts down. If you want to shut down the ExecutorService immediately, you can call the <code>shutdownNow()</code> method. This will attempt to stop all executing tasks right away, and skips all non-processed tasks.</p>
+<p>&nbsp;</p>
+
+
+
+<h2 id="identify-potential-threading">Identify potential threading problems among deadlock, starvation, livelock, and race conditions</h2>
+<h3 id="deadlock">Deadlock</h3>
+<p>Deadlock describes a situation where two or more threads are blocked forever, waiting for each other. Example:</p>
+<pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">TestThread</span> </span>{
+   <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> Object lock1 = <span class="hljs-keyword">new</span> Object();
+   <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> Object lock2 = <span class="hljs-keyword">new</span> Object();
+
+   <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String args[])</span> </span>{
+
+      Thread t1 = <span class="hljs-keyword">new</span> Thread(<span class="hljs-keyword">new</span> Task1());
+      Thread t2 = <span class="hljs-keyword">new</span> Thread(<span class="hljs-keyword">new</span> Task2);
+      t1.start();
+      t2.start();
+   }
+
+   <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Task1</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">Runnable</span> </span>{
+      <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">run</span><span class="hljs-params">()</span> </span>{
+         <span class="hljs-keyword">synchronized</span> (lock1) {
+            System.out.println(<span class="hljs-string">"Task 1: Holding lock 1..."</span>);
+            <span class="hljs-keyword">try</span> {
+              Thread.sleep(<span class="hljs-number">10</span>);
+            }
+            <span class="hljs-keyword">catch</span> (InterruptedException e) {}
+            System.out.println(<span class="hljs-string">"Task 1: Waiting for lock 2..."</span>);
+            <span class="hljs-keyword">synchronized</span> (lock2) {
+               System.out.println(<span class="hljs-string">"Task 1: Holding lock 1 &amp; 2..."</span>);
+            }
+         }
+      }
+   }
+
+   <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Task2</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">Runnable</span> </span>{
+      <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">run</span><span class="hljs-params">()</span> </span>{
+         <span class="hljs-keyword">synchronized</span> (lock2) {
+            System.out.println(<span class="hljs-string">"Task 2: Holding lock 2..."</span>);
+            <span class="hljs-keyword">try</span> {
+              Thread.sleep(<span class="hljs-number">10</span>);
+            }
+            <span class="hljs-keyword">catch</span> (InterruptedException e) {}
+            System.out.println(<span class="hljs-string">"Task 2: Waiting for lock 1..."</span>);
+            <span class="hljs-keyword">synchronized</span> (lock1) {
+               System.out.println(<span class="hljs-string">"Task 2: Holding lock 1 &amp; 2..."</span>);
+            }
+         }
+      }
+   } 
+}
+</code></pre>
+<h3 id="starvation">Starvation</h3>
+<p>Lock starvation occurs when a thread, having lesser priority than other ones, is constantly waiting for a lock, never able to take it because other thread(s) with higher priority are constantly acquiring the lock.</p>
+<h3 id="livelock">Livelock</h3>
+<p>A LiveLock is like a deadlock in the sense that two (or more) threads are blocking each others. But with the livelock, each thread is waiting &quot;actively&quot;, trying to resolve the problem on its own. A live lock occurs when the combination of these processes&#39; efforts to resolve the problem makes it impossible for them to ever terminate. For example, if two threads detect a deadlock, and try to &quot;step aside&quot; for each other, without care they will end up being stuck in a loop always &quot;stepping aside&quot; and never managing to move forwards.</p>
+<h3 id="race-conditions">Race conditions</h3>
+<p>A race condition is the situation where two threads compete for the same resource and they try to change it at the same time, doing it in a way that causes unexpected results. The problem happens when for example, one thread checks if the value is X, then do something that depends on that value and another thread does something to the value in between the check and the do.</p>
+<p>&nbsp;</p>
+
+
+
+<h2 id="use-synchronized-keyword">Use synchronized keyword and java.util.concurrent.atomic package to control the order of thread execution</h2>
+<h3 id="synchronized">synchronized</h3>
+<p>You have to be careful when multiple threads access shared variables, since it can result in a race condition. For example, in a method like this:</p>
+<pre><code class="hljs java"><span class="hljs-keyword">int</span> n = <span class="hljs-number">0</span>;
+
+<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">m</span><span class="hljs-params">()</span> </span>{
+    <span class="hljs-keyword">this</span>.n = <span class="hljs-keyword">this</span>.n + <span class="hljs-number">1</span>;
+}
+</code></pre>
+<p>The increment of variable n is vulnerable to concurrency. We can use the synchronized keyword to fix this. We can for example synchronize the method:</p>
+<pre><code class="hljs java"><span class="hljs-keyword">int</span> n = <span class="hljs-number">0</span>;
+
+<span class="hljs-function"><span class="hljs-keyword">synchronized</span> <span class="hljs-keyword">void</span> <span class="hljs-title">m</span><span class="hljs-params">()</span> </span>{
+    <span class="hljs-keyword">this</span>.n = <span class="hljs-keyword">this</span>.n + <span class="hljs-number">1</span>;
+}
+</code></pre>
+<p>Or just a block of code:</p>
+<pre><code class="hljs java"><span class="hljs-keyword">int</span> n = <span class="hljs-number">0</span>;
+
+<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">m</span><span class="hljs-params">()</span> </span>{
+  <span class="hljs-keyword">synchronized</span> (<span class="hljs-keyword">this</span>) {
+    <span class="hljs-keyword">this</span>.n = <span class="hljs-keyword">this</span>.n + <span class="hljs-number">1</span>;
+  }
+}
+</code></pre>
+<p>Internally, Java uses a so monitor or lock in order to manage synchronization. This monitor is bound to an object. For synchronized instance methods, the lock is on the instance of the corresponding object. For static methods, it&#39;s the class. For synchronized blocks, the object can be specified (the example use this to refer to the instance the method belongs to). Only the thread that acquires the lock has access to the method (or block).</p>
+<h3 id="java-util-concurrent-atomic">java.util.concurrent.atomic</h3>
+<p><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/atomic/package-summary.html">java.concurrent.atomic</a> contains classes to perform atomic operations. With an atomic operation, you can safely perform the operation in parallel on multiple threads without using the synchronized keyword or locks.</p>
+<p>We have for example:</p>
+<ul>
+<li>AtomicBoolean, AtomicInteger, AtomicLong, and AtomicReference&lt;V&gt; to update a value of the corresponding type (or object reference) atomically.</li>
+<li>AtomicIntegerArray, AtomicLongArray, and AtomicReferenceArray&lt;E&gt; to update the elements of the corresponding array type (or object reference) atomically.</li>
+<li>DoubleAdder and LongAdder, where one or more variables together maintain an initially zero sum of the corresponding type.</li>
+<li>DoubleAccumulator and LongAccumulator, where one or more variables together maintain a running value of the corresponding type updated using a supplied binary operator.</li>
+</ul>
+<p>The syncrhonized example above can be changed to use an AtomicInteger in this way:</p>
+<pre><code class="hljs java">AtomicInteger n = <span class="hljs-keyword">new</span> AtomicInteger(); <span class="hljs-comment">// creates an AtomicInteger with the initial value 0.</span>
+
+<span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">m</span><span class="hljs-params">()</span> </span>{
+    n.incrementAndGet();
+}
+</code></pre>
+<p>Here are some common operations for the atomic classes:</p>
+<pre><code class="hljs java">AtomicInteger ai = <span class="hljs-keyword">new</span> AtomicInteger(<span class="hljs-number">10</span>);
+<span class="hljs-keyword">int</span> val = ai.get(); <span class="hljs-comment">// Get the value</span>
+ai.set(<span class="hljs-number">15</span>); <span class="hljs-comment">// Set the value</span>
+
+<span class="hljs-keyword">int</span> expectedValue = <span class="hljs-number">15</span>;
+<span class="hljs-keyword">int</span> newValue      = <span class="hljs-number">20</span>;
+<span class="hljs-comment">// If the value of ai equals expectedValue, ai is set to newValue</span>
+ai.compareAndSet(expectedValue, newValue);
+
+ai = <span class="hljs-keyword">new</span> AtomicInteger(<span class="hljs-number">10</span>);
+val = ai.getAndAdd(<span class="hljs-number">10</span>); <span class="hljs-comment">// val contains 10 but ai contains 20</span>
+val = ai.addAndGet(<span class="hljs-number">10</span>); <span class="hljs-comment">// val and ai contain 30</span>
+
+val = ai.getAndDecrement(); <span class="hljs-comment">// val contains 30 but ai contains 29</span>
+val = ai.decrementAndGet(); <span class="hljs-comment">// val and ai contain 28</span>
+
+val = ai.getAndIncrement(); <span class="hljs-comment">// val contains 28 but ai contains 29</span>
+val = ai.incrementAndGet(); <span class="hljs-comment">// val and ai contain 30</span>
+</code></pre>
+<p>The methods <code>updateAndGet()</code> and <code>getAndUpdate()</code> accept a lambda expression in order to perform a function (an IntUnaryOperator in the case of AtomicInteger) upon the value, for example:</p>
+<pre><code class="hljs java">AtomicInteger ai = <span class="hljs-keyword">new</span> AtomicInteger(<span class="hljs-number">10</span>);
+ai.updateAndGet(i -&gt; i * <span class="hljs-number">5</span>); <span class="hljs-comment">// ai contains 50</span>
+</code></pre>
+<p>The methods <code>accumulateAndGet()</code> and <code>getAndAccumulate()</code> accept a lambda expression of type IntBinaryOperator (in the case of AtomicInteger) that updates the current value with the results of applying the given function to the current and given values. The function is applied with the current value as its first argument, and the given value as the second argument. For example:</p>
+<pre><code class="hljs java">AtomicInteger ai = <span class="hljs-keyword">new</span> AtomicInteger(<span class="hljs-number">10</span>);
+atomicInt.accumulateAndGet(<span class="hljs-number">5</span>, (a, b) -&gt; a + b) <span class="hljs-comment">// ai contains 15</span>
+</code></pre>
+<p>In the case of LongAdder and DoubleAdder, they can be used to consecutively add values to a number. For example:</p>
+<pre><code class="hljs java">ExecutorService executor = Executors.newFixedThreadPool(<span class="hljs-number">3</span>);
+LongAdder la = <span class="hljs-keyword">new</span> LongAdder();
+IntStream.range(<span class="hljs-number">0</span>, <span class="hljs-number">1000</span>)
+    .forEach(i -&gt; executor.submit(la::increment)); <span class="hljs-comment">//Adds one to la, 1000 times</span>
+System.out.println(la.sum());   <span class="hljs-comment">// la contains 1000</span>
+</code></pre>
+<p>This class provides the methods <code>add(long)</code> (adds the given value) and <code>increment()</code> (add one) and is thread-safe. But instead of just summing up a single result, this class maintains a set of variables internally to reduce contention over threads. The result can be retrieved by calling <code>sum()</code> or <code>sumThenReset()</code> (gets the value and reset the sum to zero). This class is prefered over the atomic classes when updates from multiple threads are more common than reads. </p>
+<p>LongAccumulator and DoubleAccumulator are a more generalized version of the previous classes. Here&#39;s an example:</p>
+<pre><code class="hljs java">LongAccumulator acc = <span class="hljs-keyword">new</span> LongAccumulator((a, b) -&gt; a + b , <span class="hljs-number">1</span>L);
+ExecutorService executor = Executors.newFixedThreadPool(<span class="hljs-number">2</span>);
+IntStream.range(<span class="hljs-number">0</span>, <span class="hljs-number">5</span>)
+    .forEach(i -&gt; executor.submit(() -&gt; acc.accumulate(i)));
+System.out.println(acc.getThenReset()); <span class="hljs-comment">//acc contains 15</span>
+</code></pre>
+<p>In the example, a LongAccumulator is created with the function <code>a + b</code> and an initial value of one. With every call to accumulate(i), both the current result and the value i are passed as parameters to the lambda expression. A LongAccumulator also maintains a set of variables internally to reduce contention over threads. The result can be retrieved by calling <code>get()</code> or <code>getThenReset()</code> (gets the value and reset the variables to zero).</p>
+<p>&nbsp;</p>
+
+
+
+<h2 id="use-java-util-concurrent-collections">Use java.util.concurrent collections and classes including CyclicBarrier and CopyOnWriteArrayList</h2>
+<h3 id="blockingqueue">BlockingQueue</h3>
+<p>The <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/BlockingQueue.html">BlockingQueue</a> interface represents a thread-safe queue. Generally, a thread produce objects, while another thread consume them.</p>
+<p>A BlockingQueue has four forms of methods:</p>
+<table border="1">
+<thead>
+<tr>
+<th></th>
+<th>Throws Exception</th>
+<th>Special Value</th>
+<th>Blocks</th>
+<th>Times Out</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Insert</td>
+<td><code>add(e)</code></td>
+<td><code>offer(e)</code></td>
+<td><code>put(e)</code></td>
+<td><code>offer(e, timeout, timeunit)</code></td>
+</tr>
+<tr>
+<td>Remove</td>
+<td><code>remove()</code></td>
+<td><code>poll()</code></td>
+<td><code>take()</code></td>
+<td><code>poll(timeout, timeunit)</code></td>
+</tr>
+<tr>
+<td>Examine</td>
+<td><code>element()</code></td>
+<td><code>peek()</code></td>
+<td>&nbsp;</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Throws Exception</strong>: If the attempted operation is not possible immediately, an exception is thrown.<br><strong>Special Value</strong>: If the attempted operation is not possible immediately, a special value is returned (often true / false).<br><strong>Blocks</strong>: If the attempted operation is not possible immediately, the method call blocks until it is.<br><strong>Times Out</strong>: If the attempted operation is not possible immediately, the method call blocks until it is, but waits no longer than the given timeout.</p>
+<p>It is not possible to insert null into a BlockingQueue. If you try to insert null, the BlockingQueue will throw a NullPointerException.</p>
+<p>The implementations of the BlockingQueue are:</p>
+<ul>
+<li><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ArrayBlockingQueue.html">ArrayBlockingQueue</a>. A bounded blocking queue backed by an array. This queue orders elements FIFO (first-in-first-out). The head of the queue is that element that has been on the queue the longest time. The tail of the queue is that element that has been on the queue the shortest time. New elements are inserted at the tail of the queue, and the queue retrieval operations obtain elements at the head of the queue.  </li>
+<li><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/DelayQueue.html">DelayQueue</a>. An unbounded blocking queue of Delayed elements, in which an element can only be taken when its delay has expired. </li>
+<li><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/LinkedBlockingQueue.html">LinkedBlockingQueue</a>. An optionally-bounded blocking queue based on linked nodes. This queue orders elements FIFO (first-in-first-out).  </li>
+<li><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/LinkedTransferQueue.html">LinkedTransferQueue</a>. An unbounded TransferQueue based on linked nodes. This queue orders elements FIFO (first-in-first-out) with respect to any given producer.  </li>
+<li><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/PriorityBlockingQueue.html">PriorityBlockingQueue</a>. An unbounded blocking queue that uses the same ordering rules as class <a href="https://docs.oracle.com/javase/8/docs/api/java/util/PriorityQueue.html">PriorityQueue</a> and supplies blocking retrieval operations.  </li>
+<li><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/SynchronousQueue.html">SynchronousQueue</a>. A blocking queue in which each insert operation must wait for a corresponding remove operation by another thread, and vice versa. A synchronous queue does not have any internal capacity, not even a capacity of one. You cannot peek at a synchronous queue because an element is only present when you try to remove it; you cannot insert an element (using any method) unless another thread is trying to remove it; you cannot iterate as there is nothing to iterate.</li>
+</ul>
+<p>Here&#39;s an example using ArrayBlockingQueue:</p>
+<pre><code class="hljs java"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Producer</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">Runnable</span> </span>{
+    <span class="hljs-keyword">private</span> BlockingQueue&lt;String&gt; queue = <span class="hljs-keyword">null</span>;
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">Producer</span><span class="hljs-params">(BlockingQueue&lt;String&gt; queue)</span> </span>{
+        <span class="hljs-keyword">this</span>.queue = queue;
+    }
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">run</span><span class="hljs-params">()</span> </span>{
+        <span class="hljs-keyword">try</span> {
+            <span class="hljs-comment">// The sleeps calls will cause the Consumer to block while waiting for objects in the queue.</span>
+            queue.put(<span class="hljs-string">"1"</span>);
+            Thread.sleep(<span class="hljs-number">1000</span>);
+            queue.put(<span class="hljs-string">"2"</span>);
+            Thread.sleep(<span class="hljs-number">1000</span>);
+            queue.put(<span class="hljs-string">"3"</span>);
+        } <span class="hljs-keyword">catch</span> (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Consumer</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">Runnable</span> </span>{
+    <span class="hljs-keyword">private</span> BlockingQueue&lt;String&gt; queue = <span class="hljs-keyword">null</span>;
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">Consumer</span><span class="hljs-params">(BlockingQueue&lt;String&gt; queue)</span> </span>{
+        <span class="hljs-keyword">this</span>.queue = queue;
+    }
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">run</span><span class="hljs-params">()</span> </span>{
+        <span class="hljs-keyword">try</span> {
+            System.out.println(queue.take());
+            System.out.println(queue.take());
+            System.out.println(queue.take());
+        } <span class="hljs-keyword">catch</span> (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+<span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Test</span> </span>{
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span> Exception </span>{
+        BlockingQueue&lt;String&gt; queue = <span class="hljs-keyword">new</span> ArrayBlockingQueue&lt;&gt;(<span class="hljs-number">1024</span>);
+        Producer producer = <span class="hljs-keyword">new</span> Producer(queue);
+        Consumer consumer = <span class="hljs-keyword">new</span> Consumer(queue);
+
+        <span class="hljs-keyword">new</span> Thread(producer).start();
+        <span class="hljs-keyword">new</span> Thread(consumer).start();
+        Thread.sleep(<span class="hljs-number">4000</span>);
+    }
+}
+</code></pre>
+<h3 id="blocking-deque">Blocking Deque</h3>
+<p>The <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/BlockingDeque.html">BlockingDeque</a> interface in the java.util.concurrent class represents a thread-safe deque. A deque is a &quot;Double Ended Queue&quot;, a queue which you can insert and take elements from, in both ends.</p>
+<p>The implementation of the BlockingDeque is:</p>
+<ul>
+<li><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/LinkedBlockingDeque.html">LinkedBlockingDeque</a>. An optionally-bounded blocking deque based on linked nodes.</li>
+</ul>
+<p>Like a BlockingQueue, a BlockingDeque has four forms of methods:<br>For the First Element:</p>
+<table border="1">
+<thead>
+<tr>
+<th></th>
+<th>Throws Exception</th>
+<th>Special Value</th>
+<th>Blocks</th>
+<th>Times Out</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Insert</td>
+<td><code>addFirst(e)</code></td>
+<td><code>offerFirst(e)</code></td>
+<td><code>putFirst(e)</code></td>
+<td><code>offerFirst(e, timeout, timeunit)</code></td>
+</tr>
+<tr>
+<td>Remove</td>
+<td><code>removeFirst()</code></td>
+<td><code>pollFirst()</code></td>
+<td><code>takeFirst()</code></td>
+<td><code>pollFirst(timeout, timeunit)</code></td>
+</tr>
+<tr>
+<td>Examine</td>
+<td><code>getFirst()</code></td>
+<td><code>peekFirst()</code></td>
+<td>&nbsp;</td>
+</tr>
+</tbody>
+</table>
+<p>For the Las Element:</p>
+<table border="1">
+<thead>
+<tr>
+<th></th>
+<th>Throws Exception</th>
+<th>Special Value</th>
+<th>Blocks</th>
+<th>Times Out</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Insert</td>
+<td><code>addLast(e)</code></td>
+<td><code>offerLast(e)</code></td>
+<td><code>putLast(e)</code></td>
+<td><code>offerLast(e, timeout, timeunit)</code></td>
+</tr>
+<tr>
+<td>Remove</td>
+<td><code>removeLast()</code></td>
+<td><code>pollLast()</code></td>
+<td><code>takeLast()</code></td>
+<td><code>pollLast(timeout, timeunit)</code></td>
+</tr>
+<tr>
+<td>Examine</td>
+<td><code>getLast()</code></td>
+<td><code>peekLast()</code></td>
+<td>&nbsp;</td>
+</tr>
+</tbody>
+</table>
+<p>For example:</p>
+<pre><code class="hljs java">BlockingDeque&lt;String&gt; deque = <span class="hljs-keyword">new</span> LinkedBlockingDeque&lt;&gt;();
+deque.addFirst(<span class="hljs-string">"a"</span>);
+deque.addLast(<span class="hljs-string">"b"</span>);
+String b = deque.takeLast();
+String a = deque.takeFirst();
+</code></pre>
+<h3 id="concurrentmap">ConcurrentMap</h3>
+<p>The <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ConcurrentMap.html">ConcurrentMap</a> interface represents a Map that can handle concurrent access.</p>
+<p>The implementation of the ConcurrentMap is:</p>
+<ul>
+<li>(ConcurrentHashMap](<a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ConcurrentHashMap.html">https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ConcurrentHashMap.html</a>). A hash table supporting full concurrency of retrievals and high expected concurrency for updates. </li>
+</ul>
+<p>Since it extends form Map, it has the same methods as a normal map and some others for concurrent access:</p>
+<pre><code class="hljs java">ConcurrentMap&lt;String, String&gt; concurrentMap = <span class="hljs-keyword">new</span> ConcurrentHashMap&lt;&gt;();
+concurrentMap.put(<span class="hljs-string">"key"</span>, <span class="hljs-string">"value"</span>);
+Object value = concurrentMap.get(<span class="hljs-string">"key"</span>);
+
+<span class="hljs-comment">// Puts a new value into the map only if no value exists for the given key</span>
+String val = map.putIfAbsent(<span class="hljs-string">"key2"</span>, <span class="hljs-string">"value2"</span>);
+
+<span class="hljs-comment">// Returns the value for the given key. If doesn't exist, the passed default value is returned</span>
+value = map.getOrDefault(<span class="hljs-string">"hi"</span>, <span class="hljs-string">"or not"</span>);
+</code></pre>
+<p>However, Java 8 adds new methods that support functional programming.</p>
+<p>The method <code>forEach()</code> accepts a BiConsumer lambda expression with both the key and value of the map passed as parameters. It replaces for-each loops:</p>
+<pre><code class="hljs java">concurrentMap.forEach((key, value) -&gt; System.out.println(key + <span class="hljs-string">"="</span> + value));
+</code></pre>
+<p>The method <code>replaceAll()</code> accepts a BiFunction lambda expression. The function is called with the key and the value of each map entry returning a new value to be assigned for the current key:</p>
+<pre><code class="hljs java">concurrentMap.replaceAll((key, value) -&gt; value.toUpperCase());
+</code></pre>
+<p>To transform a single entry, use <code>compute()</code>. The method accepts both the key to be computed and a bi-function. There are two variations, <code>computeIfAbsent()</code> and <code>computeIfPresent()</code>, that work only if the key is absent or present respectively:</p>
+<pre><code class="hljs java">concurrentMap.compute(<span class="hljs-string">"key"</span>, (key, value) -&gt; value.toUpperCase());
+</code></pre>
+<p>The method <code>merge()</code> can be used to unify a new value with an existing value in the map. It accepts a key, the new value to be merged into the existing entry and a bi-function to specify the merging behavior of both values:</p>
+<pre><code class="hljs java">concurrentMap.merge(<span class="hljs-string">"key"</span>, <span class="hljs-string">"newVal"</span>, (oldVal, newVal) -&gt; oldVal + <span class="hljs-string">" merged with "</span> + newVal);
+System.out.println(concurrentMap.get(<span class="hljs-string">"key"</span>)); <span class="hljs-comment">// It prints "value merged with newVal"</span>
+</code></pre>
+<h3 id="concurrentnavigablemap">ConcurrentNavigableMap</h3>
+<p>The <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ConcurrentNavigableMap.html">ConcurrentNavigableMap</a> interface is a <a href="https://docs.oracle.com/javase/8/docs/api/java/util/NavigableMap.html">java.util.NavigableMap</a> with support for concurrent access and for its submaps. The submaps are the maps returned by various methods like <code>headMap()</code>, <code>subMap()</code> and <code>tailMap()</code>.</p>
+<p>The implementation of ConcurrentNavigableMap is:</p>
+<ul>
+<li><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ConcurrentSkipListMap.html">ConcurrentSkipListMap</a>. A scalable concurrent ConcurrentNavigableMap implementation. The map is sorted according to the natural ordering of its keys, or by a Comparator provided at map creation time, depending on which constructor is used.</li>
+</ul>
+<p>The <code>headMap(T toKey)</code> method returns a view of the map containing the keys which are strictly less than the given key. Changes to the original map are reflected in the head map:</p>
+<pre><code class="hljs java">ConcurrentNavigableMap&lt;String, String&gt; map = <span class="hljs-keyword">new</span> ConcurrentSkipListMap&lt;&gt;();
+map.put(<span class="hljs-string">"1"</span>, <span class="hljs-string">"one"</span>);
+map.put(<span class="hljs-string">"2"</span>, <span class="hljs-string">"two"</span>);
+map.put(<span class="hljs-string">"3"</span>, <span class="hljs-string">"three"</span>);
+ConcurrentNavigableMap headMap = map.headMap(<span class="hljs-string">"2"</span>);
+</code></pre>
+<p>headMap contains a ConcurrentNavigableMap with the key &quot;1&quot;, since only this key is strictly less than &quot;2&quot;.</p>
+<p>The <code>tailMap(T fromKey)</code> method returns a view of the map containing the keys which are greater than or equal to the given fromKey.Changes to the original map are reflected in the head map:</p>
+<pre><code class="hljs java">ConcurrentNavigableMap&lt;String, String&gt; map = <span class="hljs-keyword">new</span> ConcurrentSkipListMap&lt;&gt;();
+map.put(<span class="hljs-string">"1"</span>, <span class="hljs-string">"one"</span>);
+map.put(<span class="hljs-string">"2"</span>, <span class="hljs-string">"two"</span>);
+map.put(<span class="hljs-string">"3"</span>, <span class="hljs-string">"three"</span>);
+ConcurrentNavigableMap tailMap = map.tailMap(<span class="hljs-string">"2"</span>);
+</code></pre>
+<p>tailMap contains the keys &quot;2&quot; and &quot;3&quot; because these two keys are greater than or equal to &quot;2&quot;.</p>
+<p>The <code>subMap()</code> method returns a view of the original map which contains all keys from (including) to (excluding) two keys given as parameters to the method:</p>
+<pre><code class="hljs java">ConcurrentNavigableMap&lt;String, String&gt; map = <span class="hljs-keyword">new</span> ConcurrentSkipListMap&lt;&gt;();
+map.put(<span class="hljs-string">"1"</span>, <span class="hljs-string">"one"</span>);
+map.put(<span class="hljs-string">"2"</span>, <span class="hljs-string">"two"</span>);
+map.put(<span class="hljs-string">"3"</span>, <span class="hljs-string">"three"</span>);
+ConcurrentNavigableMap subMap = map.subMap(<span class="hljs-string">"2"</span>, <span class="hljs-string">"3"</span>);
+</code></pre>
+<p>submap contains only the key &quot;2&quot;, because only this key is greater than or equal to &quot;2&quot; and smaller than &quot;3&quot;.</p>
+<h3 id="cyclicbarrier">CyclicBarrier</h3>
+<p>The <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CyclicBarrier.html">CyclicBarrier</a> class is a synchronization mechanism that allows a set of threads to all wait for each other to reach a common barrier point. The barrier is called cyclic because it can be re-used after the waiting threads are released.</p>
+<p>The waiting threads wait at the CyclicBarrier until either:</p>
+<ul>
+<li>The last thread arrives (calls <code>await()</code>)</li>
+<li>The thread is interrupted by another thread (another thread calls its interrupt() method)</li>
+<li>Another waiting thread is interrupted</li>
+<li>Another waiting thread times out while waiting at the CyclicBarrier</li>
+<li>The <code>CyclicBarrier.reset()</code> method is called by some external thread.</li>
+</ul>
+<p>When you create a CyclicBarrier you specify how many threads are to wait at it, before releasing them:</p>
+<pre><code class="hljs java">CyclicBarrier barrier = <span class="hljs-keyword">new</span> CyclicBarrier(<span class="hljs-number">2</span>);
+</code></pre>
+<p>The CyclicBarrier supports a barrier action, which is a Runnable that is executed once the last thread arrives. You pass tit in its constructor:</p>
+<pre><code class="hljs java">Runnable barrierAction = () -&gt; System.out.println(<span class="hljs-string">"Barrier Action"</span>) ;
+CyclicBarrier barrier = <span class="hljs-keyword">new</span> CyclicBarrier(<span class="hljs-number">2</span>, barrierAction);
+</code></pre>
+<p>And here is how a thread waits at a CyclicBarrier:</p>
+<pre><code class="hljs java">barrier.await();
+<span class="hljs-comment">// Specifying a 20 seconds timeout to release the threads, even if not all threads are waiting at the CyclicBarrier</span>
+barrier.await(<span class="hljs-number">10</span>, TimeUnit.SECONDS);
+</code></pre>
+<p>You can see a complete example in the <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CyclicBarrier.html">javadoc</a>.</p>
+<h3 id="copyonwritearraylist">CopyOnWriteArrayList</h3>
+<p>The <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CopyOnWriteArrayList.html">CopyOnWriteArrayList</a> class is a thread-safe variant of ArrayList in which all mutative operations (add, set, and so on) are implemented by making a fresh copy of the underlying array.</p>
+<p>The iterator of CopyOnWriteArrayList is fail-safe and doesn&#39;t throw a ConcurrentModificationException even if underlying CopyOnWriteArrayList is modified once the iteration begins, because the iterator is operating on separate copy of ArrayList. For that reason, all the updates made on CopyOnWriteArrayList are not available to the iterator. However, element-changing operations on iterators themselves (remove, set, and add) are not supported. These methods throw an UnsupportedOperationException.</p>
+<p>With CopyOnWriteArrayList, there is no lock on read, so this operation is faster. Because of this, CopyOnWriteArrayList is most useful when you have few updates and inserts and many concurrent reads than using for example, <code>Collections.synchronizedList(arrayList)</code>.</p>
+<p>&nbsp;</p>
+
+
+
+<h2 id="use-parallel-fork-join-framework">Use parallel Fork/Join Framework</h2>
+<p>The Fork/Join Framework is designed for work that can be broken down into smaller tasks, with its results combined to produce the final result. One important concept is that ideally no worker thread is idle, idle workers steal the work from those workers who are busy, this is known as <em>work-stealing</em>.</p>
+<p>It follows this algorithm:</p>
+<pre><code>if (problem is small)
+    directly solve problem
+else {
+    split problem into independent parts
+    fork new subtasks to solve each part
+    join all subtasks
+    compose result from subresults
+}
+</code></pre><p>The core classes of the Fork-Join framework are ForkJoinPool and ForkJoinTask.</p>
+<h4 id="forkjoinpool">ForkJoinPool</h4>
+<p><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ForkJoinPool.html">ForkJoinPool</a> is an implementation of ExecutorService that employs the work-stealing algorithm. It can be created like this:</p>
+<pre><code class="hljs java">ForkJoinPool pool = <span class="hljs-keyword">new</span> ForkJoinPool(<span class="hljs-keyword">int</span>); <span class="hljs-comment">//creates a ForkJoinPool with the indicated parallelism level (number of initial threads in the pool)</span>
+ForkJoinPool pool = <span class="hljs-keyword">new</span> ForkJoinPool(); <span class="hljs-comment">//equivalent to new ForkJoinPool(Runtime.availableProcessors())</span>
+</code></pre>
+<p>There are different ways of submitting a task to the ForkJoinPool:</p>
+<pre><code class="hljs java"><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">execute</span><span class="hljs-params">(ForkJoinTask&lt;?&gt; task)</span></span>
+</code></pre>
+<p>Arranges for (asynchronous) execution of the given task.</p>
+<pre><code class="hljs java"><span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">execute</span><span class="hljs-params">(Runnable task)</span></span>
+</code></pre>
+<p>Executes the given command at some time in the future.</p>
+<pre><code class="hljs java">&lt;T&gt; <span class="hljs-function">T <span class="hljs-title">invoke</span><span class="hljs-params">(ForkJoinTask&lt;T&gt; task)</span></span>
+</code></pre>
+<p>Performs the given task, returning its result upon completion.</p>
+<pre><code class="hljs java">&lt;T&gt; List&lt;Future&lt;T&gt;&gt; invokeAll(Collection&lt;? extends Callable&lt;T&gt;&gt; tasks)
+</code></pre>
+<p>Executes the given tasks, returning a list of Futures holding their status and results when all complete.</p>
+<pre><code class="hljs java">&lt;T&gt; <span class="hljs-function">ForkJoinTask&lt;T&gt;    <span class="hljs-title">submit</span><span class="hljs-params">(Callable&lt;T&gt; task)</span></span>
+</code></pre>
+<p>Submits a value-returning task for execution and returns a Future representing the pending results of the task.</p>
+<pre><code class="hljs java">&lt;T&gt; <span class="hljs-function">ForkJoinTask&lt;T&gt;    <span class="hljs-title">submit</span><span class="hljs-params">(ForkJoinTask&lt;T&gt; task)</span></span>
+</code></pre>
+<p>Submits a ForkJoinTask for execution.</p>
+<pre><code class="hljs java">ForkJoinTask&lt;?&gt; submit(Runnable task)
+</code></pre>
+<p>Submits a Runnable task for execution and returns a Future representing that task.</p>
+<pre><code class="hljs java">&lt;T&gt; <span class="hljs-function">ForkJoinTask&lt;T&gt;    <span class="hljs-title">submit</span><span class="hljs-params">(Runnable task, T result)</span></span>
+</code></pre>
+<p>Submits a Runnable task for execution and returns a Future representing that task.</p>
+<h4 id="forkjointask">ForkJoinTask</h4>
+<p><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ForkJoinTask.html">ForkJoinTask</a> is an abstract class for creating tasks that run within a ForkJoinPool. <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/RecursiveAction.html">RecursiveAction</a> and <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/RecursiveTask.html">RecursiveTask</a> are its subclasses. The only difference between these two classes is that the RecursiveAction does not return a value while RecursiveTask does.</p>
+<p>The main methods of ForkJoinTask are:</p>
+<ul>
+<li>The <code>fork()</code> method allows a ForkJoinTask to be planned for asynchronous execution. A new task can be created with this method.</li>
+<li>The join() method allows a ForkJoinTask to wait for the completion of another one.</li>
+</ul>
+<p>In this example,  the program finds the minimum number from a large array:</p>
+<pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">MinimumTaskFinder</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">RecursiveTask</span>&lt;<span class="hljs-title">Integer</span>&gt; </span>{
+
+  <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">final</span> <span class="hljs-keyword">int</span> SEQUENTIAL_THRESHOLD = <span class="hljs-number">5</span>;
+
+  <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> <span class="hljs-keyword">int</span>[] data;
+  <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> <span class="hljs-keyword">int</span> start;
+  <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> <span class="hljs-keyword">int</span> end;
+
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">MinimumTaskFinder</span><span class="hljs-params">(<span class="hljs-keyword">int</span>[] data, <span class="hljs-keyword">int</span> start, <span class="hljs-keyword">int</span> end)</span> </span>{
+    <span class="hljs-keyword">this</span>.data = data;
+    <span class="hljs-keyword">this</span>.start = start;
+    <span class="hljs-keyword">this</span>.end = end;
+  }
+
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">MinimumTaskFinder</span><span class="hljs-params">(<span class="hljs-keyword">int</span>[] data)</span> </span>{
+    <span class="hljs-keyword">this</span>(data, <span class="hljs-number">0</span>, data.length);
+  }
+
+  <span class="hljs-annotation">@Override</span>
+  <span class="hljs-function"><span class="hljs-keyword">protected</span> Integer <span class="hljs-title">compute</span><span class="hljs-params">()</span> </span>{
+    <span class="hljs-keyword">final</span> <span class="hljs-keyword">int</span> length = end - start;
+    <span class="hljs-keyword">if</span> (length &lt; SEQUENTIAL_THRESHOLD) {
+      <span class="hljs-function"><span class="hljs-keyword">return</span> <span class="hljs-title">computeDirectly</span><span class="hljs-params">()</span></span>;
+    }
+    <span class="hljs-keyword">final</span> <span class="hljs-keyword">int</span> split = length / <span class="hljs-number">2</span>;
+    <span class="hljs-keyword">final</span> MinimumTaskFinder left = <span class="hljs-keyword">new</span> MinimumTaskFinder(data, start, start + split);
+    left.fork();
+    <span class="hljs-keyword">final</span> MinimumTaskFinder right = <span class="hljs-keyword">new</span> MinimumTaskFinder(data, start + split, end);
+    <span class="hljs-keyword">return</span> Math.min(right.compute(), left.join());
+  }
+
+  <span class="hljs-function"><span class="hljs-keyword">private</span> Integer <span class="hljs-title">computeDirectly</span><span class="hljs-params">()</span> </span>{
+    <span class="hljs-keyword">int</span> min = Integer.MAX_VALUE;
+    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> i = start; i &lt; end; i++) {
+      <span class="hljs-keyword">if</span> (data[i] &lt; min) {
+        min = data[i];
+      }
+    }
+    <span class="hljs-keyword">return</span> min;
+  }
+
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> </span>{
+    <span class="hljs-keyword">int</span>[] data = <span class="hljs-keyword">new</span> <span class="hljs-keyword">int</span>[<span class="hljs-number">10000</span>];
+    Random random = <span class="hljs-keyword">new</span> Random();
+    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i &lt; data.length; i++) {
+      data[i] = random.nextInt(<span class="hljs-number">1000</span>);
+    }
+
+    ForkJoinPool pool = <span class="hljs-keyword">new</span> ForkJoinPool();
+    MinimumTaskFinder task = <span class="hljs-keyword">new</span> MinimumTaskFinder(data);
+    System.out.println(pool.invoke(task));
+  }
+}
+</code></pre>
+<p>If the size of the array is less than a threshold, then find the minimum directly by iterating over the array. Otherwise, since the problem can be broken into chunks, split the array into two halves, recurse on each half and wait for them to complete (join). Once the value is reduced to the threshold, the tasks are not further divided for parallelism. Finally, once we have the result of each half, we can find the minimum of the two and return it. </p>
+<p>&nbsp;</p>
+
+
+
+<h2 id="use-parallel-streams">Use parallel Streams including reduction, decomposition, merging processes, pipelines and performance.</h2>
+<p>You can execute streams in parallel so Java partitions the stream into multiple substreams. Aggregate operations iterate over and process these substreams in parallel and then combine the results. It&#39;s important that the operations are stateless and can be executed in an arbitrary order.</p>
+<p>A stream is not parallel by default. To make a parallel stream, invoke the method <code>Collection.parallelStream</code> (if you&#39;re working with a collection) or <code>BaseStream.parallel</code>:</p>
+<pre><code class="hljs java">List l = <span class="hljs-keyword">new</span> ArrayList();
+l.parallelStream().forEach(System.out:println);
+<span class="hljs-comment">// Or</span>
+Stream.of(<span class="hljs-string">"1"</span>, <span class="hljs-string">"2"</span>, <span class="hljs-string">"3"</span>).parallel().forEach(System.out:println);
+</code></pre>
+<p>Parallel streams use a common ForkJoinPool available via the <code>ForkJoinPool.commonPool()</code> method. The size of the thread-pool depends on the amount of available physical CPU cores:</p>
+<pre><code class="hljs java">ForkJoinPool commonPool = ForkJoinPool.commonPool();
+System.out.println(commonPool.getParallelism());
+</code></pre>
+<p>The value can be modified by setting the following JVM parameter to a non-negative integer:</p>
+<pre><code class="hljs java">-Djava.util.concurrent.ForkJoinPool.common.parallelism=<span class="hljs-number">4</span>
+</code></pre>
+<h3 id="reduction">Reduction</h3>
+<p>A reduction operation combines all elements into a single result, such as finding the sum or maximum of a set of numbers, or accumulating elements into a list. So in addition to <code>reduce()</code>, <code>collect()</code>, <code>sum()</code>, <code>max()</code>, or <code>count()</code> are also reduction operations.</p>
+<p>The <code>reduce()</code> method has the following versions:</p>
+<pre><code class="hljs java"><span class="hljs-function">Optional&lt;T&gt;    <span class="hljs-title">reduce</span><span class="hljs-params">(BinaryOperator&lt;T&gt; accumulator)</span></span>
+</code></pre>
+<p>Performs a reduction on the elements of this stream, using an associative accumulation function, and returns an Optional describing the reduced value, if any.</p>
+<pre><code class="hljs java"><span class="hljs-function">T    <span class="hljs-title">reduce</span><span class="hljs-params">(T identity, BinaryOperator&lt;T&gt; accumulator)</span></span>
+</code></pre>
+<p>Performs a reduction on the elements of this stream, using the provided identity value and an associative accumulation function, and returns the reduced value.</p>
+<pre><code class="hljs java">&lt;U&gt; <span class="hljs-function">U    <span class="hljs-title">reduce</span><span class="hljs-params">(U identity, BiFunction&lt;U,? <span class="hljs-keyword">super</span> T,U&gt; accumulator, BinaryOperator&lt;U&gt; combiner)</span></span>
+</code></pre>
+<p>Performs a reduction on the elements of this stream, using the provided identity, accumulation and combining functions.</p>
+<p>A reduce operation is parallelizable as long as the function(s) used to process the elements are associative and stateless. For example:</p>
+<pre><code class="hljs java"><span class="hljs-keyword">int</span> sum = numbers.parallelStream().reduce(<span class="hljs-number">0</span>, (x,y) -&gt; x+y);
+</code></pre>
+<p>Can be parallelized with no modification:</p>
+<pre><code class="hljs java"><span class="hljs-keyword">int</span> sum = numbers.parallelStream().reduce(<span class="hljs-number">0</span>, (x,y) -&gt; x+y);
+</code></pre>
+<p>Reduction can operate on subsets of the data in parallel, and then combine the intermediate results to get the final answer.</p>
+<p>A reduce operation on elements of type &lt;T&gt; yielding a result of type &lt;U&gt; requires three parameters:</p>
+<pre><code class="hljs java"> &lt;U&gt; <span class="hljs-function">U <span class="hljs-title">reduce</span><span class="hljs-params">(U identity,
+              BiFunction&lt;U, ? <span class="hljs-keyword">super</span> T, U&gt; accumulator,
+              BinaryOperator&lt;U&gt; combiner)</span></span>;
+</code></pre>
+<p>Here, the identity element is both an initial seed value for the reduction and a default result if there are no input elements. The accumulator function takes a partial result and the next element, and produces a new partial result. The combiner function combines two partial results to produce a new partial (or the final) result. Example:</p>
+<pre><code class="hljs java"><span class="hljs-keyword">int</span> sum = numbers.parallelStream()
+                  .reduce(<span class="hljs-number">0</span>, 
+                    (sum, x) -&gt; sum + x,
+                    (x, y) -&gt; x + y);
+</code></pre>
+<p>&nbsp;</p>

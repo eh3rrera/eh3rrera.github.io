@@ -1,0 +1,461 @@
+---
+layout: ocpj8-notes
+title: Java SE 8 Programmer II - Generics and Collections
+---
+<h1>Generics and Collections</h1>
+<p class="post-meta" style="text-align: left;">
+<small>
+<a href="#create-and-use-a-generic-class">- Create and use a generic class</a><br/>
+<a href="#create-and-use-arraylist">- Create and use ArrayList, TreeSet, TreeMap, and ArrayDeque objects</a><br/>
+<a href="#use-java-util-comparator">- Use java.util.Comparator and java.lang.Comparable interfaces</a><br/>
+<a href="#collections-streams-and-filters">- Collections Streams and Filters</a><br/>
+<a href="#iterate-using-foreach-methods">- Iterate using forEach methods of Streams and List</a><br/>
+<a href="#describe-stream-interface">- Describe Stream interface and Stream pipeline</a><br/>
+<a href="#filter-a-collection">- Filter a collection by using lambda expressions</a><br/>
+<a href="#use-method-references-with-streams">- Use method references with Streams</a><br/>
+</small>
+</p>
+
+
+
+<h2 id="create-and-use-a-generic-class">Create and use a generic class</h2>
+<p>Generics introduce the concept of type variable. Type variable are delimited by angle brackets and follow the class (or the interface) name:</p>
+<pre><code class="hljs java"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Test</span>&lt;<span class="hljs-title">T</span>&gt; </span>{
+  <span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">m</span><span class="hljs-params">(T arg)</span> </span>{ <span class="hljs-javadoc">/** Do something with the argument of type T */</span> }
+}
+</code></pre>
+<p>Type variables are really parameters that provide information to the compiler so it can check types. In the example above, class <em>Test</em> works with an object of type T, the same types that takes method <em>m</em>. Here&#39;s how we will use it:</p>
+<pre><code class="hljs java">Test&lt;String&gt; t1 = <span class="hljs-keyword">new</span> T&lt;&gt;();
+t1.m(<span class="hljs-string">"a"</span>);
+
+Test&lt;Integer&gt; t2 = <span class="hljs-keyword">new</span> T&lt;&gt;();
+t2.m(<span class="hljs-number">1</span>);
+</code></pre>
+<p>Notice that the generic parameter on the right is optional, it can be inferred by the compiler using the reference declaration.</p>
+<p>So generics are a mechanism for type checking, for example, when we create an instance of <em>List&lt;String&gt;</em>:</p>
+<pre><code class="hljs java">List&lt;String&gt; l = <span class="hljs-keyword">new</span> ArrayList&lt;String&gt;();
+l.add(<span class="hljs-string">"a"</span>);
+l.add(<span class="hljs-string">"b"</span>);
+</code></pre>
+<p>If we tried to put some other type of object different than <em>String</em>, the compiler would raise an error:</p>
+<pre><code class="hljs java">l.add(<span class="hljs-number">1</span>); <span class="hljs-comment">//Compile-time error</span>
+</code></pre>
+<p>To get a value from the collection:</p>
+<pre><code class="hljs java">String s = l.get(<span class="hljs-number">0</span>);
+</code></pre>
+<p>To iterate the collection:</p>
+<pre><code class="hljs java"><span class="hljs-keyword">for</span>(String s : l) {
+    System.out.println(s);
+}
+</code></pre>
+<p>Now consider this object hierarchy:</p>
+<pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Animal</span> </span>{ }
+<span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Dog</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Animal</span> </span>{ }
+<span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Cat</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">Animal</span> </span>{ }
+</code></pre>
+<p>There are three generic wildcard operators:</p>
+<pre><code class="hljs java">List&lt;?&gt;           l1 = <span class="hljs-keyword">new</span> ArrayList&lt;&gt;();
+List&lt;? extends Animal&gt; l2 = <span class="hljs-keyword">new</span> ArrayList&lt;&gt;();
+List&lt;? <span class="hljs-keyword">super</span>   Animal&gt; l3 = <span class="hljs-keyword">new</span> ArrayList&lt;&gt;();
+</code></pre>
+<p>The unknown wildcard (<code>List&lt;?&gt;</code>) means the list is typed to an unknown type, so the list could hold any type. Since we don&#39;t know the type of the <em>List</em>, you can&#39;t add elements to the collection, you can only read from the collection and treat the objects as <em>Object</em> instances:</p>
+<pre><code class="hljs java">List&lt;?&gt; l = <span class="hljs-keyword">new</span> ArrayList&lt;&gt;();
+<span class="hljs-keyword">for</span>(Object o : l){
+      System.out.println(o);
+}
+</code></pre>
+<p>The extends wildcard (<code>List&lt;? extends Animal&gt;</code>) means the list can hold objects that are instances of <em>Animal</em>, or subclasses of <em>Animal</em> (e.g. <em>Dog</em> and <em>Cat</em>). Again, you cannot insert elements into the list, because you don&#39;t know the exact type of the list. But you can get the elements from the collection because you can safely say that its elements are of instances or subclasses of <em>Animal</em>:</p>
+<pre><code class="hljs java">List&lt;? extends Animal&gt; l = <span class="hljs-keyword">new</span> ArrayList&lt;&gt;();
+<span class="hljs-keyword">for</span>(Animal a : l){
+      System.out.println(a);
+}
+</code></pre>
+<p>The super wildcard  (<code>List&lt;? super Animal&gt;</code>) means the list is typed to either the <em>Animal</em> class, or a superclass of <em>Animal</em>. This time, you can insert elements into the list because you know that the list is typed to either <em>Animal</em> or a superclass of <em>Animal</em>, so it is safe to insert instances of <em>Animal</em> or subclasses of <em>Animal</em> (like <em>Dog or </em>Cat<em>) because they are an </em>Animal*:</p>
+<pre><code class="hljs java">List&lt;? <span class="hljs-keyword">super</span> Animal&gt; l = <span class="hljs-keyword">new</span> ArrayList&lt;&gt;();
+l.add(<span class="hljs-keyword">new</span> Animal());
+l.add(<span class="hljs-keyword">new</span> Dog());
+l.add(<span class="hljs-keyword">new</span> Cat());
+</code></pre>
+<p>However, to get elements from the list, you must cast the result to <em>Object</em>, since the elements could be of any type that is either an <em>Animal</em> or a superclass, but it is not possible to know exactly which. The only thing you know for sure is that any class is a subclass of <em>Object</em>:</p>
+<pre><code class="hljs java">List&lt;? <span class="hljs-keyword">super</span> Animal&gt; l = <span class="hljs-keyword">new</span> ArrayList&lt;&gt;();
+<span class="hljs-keyword">for</span>(Object o : l){
+      System.out.println(o);
+}
+</code></pre>
+<p>&nbsp;</p>
+
+
+
+<h2 id="create-and-use-arraylist">Create and use ArrayList, TreeSet, TreeMap, and ArrayDeque objects</h2>
+<h3 id="arraylist">ArrayList</h3>
+<p>ArrayList is an implementation of the List interface that internally uses an Array to store the elements. This implementation is not synchronized.</p>
+<p>Each ArrayList instance has a capacity. The capacity is the size of the array used to store the elements in the list. It is always at least as large as the list size. As elements are added to an ArrayList, its capacity grows automatically.</p>
+<p>Here&#39;s the <a href="http://docs.oracle.com/javase/8/docs/api/java/util/ArrayList.html">javadoc</a> and an example:</p>
+<pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Test</span> </span>{
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> </span>{
+      List&lt;Integer&gt; l = <span class="hljs-keyword">new</span> ArrayList&lt;&gt;();
+
+      <span class="hljs-comment">// Add elements</span>
+      l.add(<span class="hljs-number">1</span>);
+      l.add(<span class="hljs-number">2</span>);
+      l.add(<span class="hljs-number">3</span>);
+
+      <span class="hljs-comment">// Get size.</span>
+      <span class="hljs-keyword">int</span> count = l.size();
+
+      <span class="hljs-comment">// Get an element with the zero-based index.</span>
+      Integer i = l.get(<span class="hljs-number">0</span>);
+  }
+}
+</code></pre>
+<h3 id="treeset">TreeSet</h3>
+<p>TreeSet is an implementation of the Set interface that uses a tree for storage, which makes access time very fast. The elements are ordered using their natural ordering, or by a Comparator provided at set creation time, depending on which constructor is used. This implementation is not synchronized.</p>
+<p>Here&#39;s the <a href="http://docs.oracle.com/javase/8/docs/api/java/util/TreeSet.html">javadoc</a> and an example:</p>
+<pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Test</span> </span>{
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> </span>{
+      Set&lt;Integer&gt; ts = <span class="hljs-keyword">new</span> TreeSet&lt;&gt;();
+
+      <span class="hljs-comment">// Add elements</span>
+      ts.add(<span class="hljs-number">2</span>);
+      ts.add(<span class="hljs-number">1</span>);
+      ts.add(<span class="hljs-number">3</span>);
+
+      <span class="hljs-comment">// Get size.</span>
+      System.out.println(ts); <span class="hljs-comment">// Prints [1,2,3]</span>
+  }
+}
+</code></pre>
+<h3 id="treemap">TreeMap</h3>
+<p>TreeMap is an implementation of the Map interface that uses a tree for storage key/value pairs, which makes access time very fast. The elements are ordered using the natural ordering or their keys, or by a Comparator provided at map creation time, depending on which constructor is used. This implementation is not synchronized.</p>
+<p>Here&#39;s the <a href="http://docs.oracle.com/javase/8/docs/api/java/util/TreeMap.html">javadoc</a> and an example:</p>
+<pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Test</span> </span>{
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> </span>{
+        Map&lt;String, Integer&gt; tm = <span class="hljs-keyword">new</span> TreeMap&lt;&gt;();
+      <span class="hljs-comment">// Put elements to the map</span>
+      tm.put(<span class="hljs-string">"A"</span>, <span class="hljs-number">10</span>);
+      tm.put(<span class="hljs-string">"C"</span>, <span class="hljs-number">40</span>);
+      tm.put(<span class="hljs-string">"B"</span>, <span class="hljs-number">20</span>);
+
+        <span class="hljs-comment">// Get a set of the entries</span>
+      Set&lt;Entry&lt;String, Integer&gt;&gt; set = tm.entrySet();
+      <span class="hljs-comment">// Get an iterator</span>
+      Iterator&lt;Entry&lt;String, Integer&gt;&gt; i = set.iterator();
+      <span class="hljs-comment">// Display elements</span>
+      <span class="hljs-keyword">while</span>(i.hasNext()) {
+         Entry&lt;String, Integer&gt; me = i.next();
+         System.out.print(me.getKey() + <span class="hljs-string">": "</span>);
+         System.out.println(me.getValue());
+      }
+
+      <span class="hljs-comment">// Get an element</span>
+      Integer i = tm.get(<span class="hljs-string">"C"</span>));
+  }
+}
+</code></pre>
+<h3 id="arraydeque">ArrayDeque</h3>
+<p>ArrayDeque is an implementation of the Deque interface.  Array deques have no capacity restrictions; they grow as necessary to support usage. They are not thread-safe. Null elements are prohibited. This class and its iterator implement all of the optional methods of the Collection and Iterator interfaces. Elements are stored in the order (first or last) in which they are inserted.</p>
+<p>Here&#39;s the <a href="http://docs.oracle.com/javase/8/docs/api/java/util/ArrayDeque.html">javadoc</a> and an example:</p>
+<pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Test</span> </span>{
+  <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> </span>{
+      Deque&lt;Integer&gt; d = <span class="hljs-keyword">new</span> ArrayDeque();
+
+      <span class="hljs-comment">//Add elements</span>
+      d.add(<span class="hljs-number">1</span>); <span class="hljs-comment">//add element at tail</span>
+    d.addFirst(<span class="hljs-number">2</span>); <span class="hljs-comment">//add element at head</span>
+    d.addLast (<span class="hljs-number">3</span>); <span class="hljs-comment">//add element at tail</span>
+
+    <span class="hljs-comment">//Get elements</span>
+    Integer firstElement1 = d.element(); <span class="hljs-comment">//peek at the element at the head without taking the element out of the queue (throws exception is the queue is empty)</span>
+    Integer firstElement2 = d.peek(); <span class="hljs-comment">//peek at the element at the head without taking the element out of the queue (returns null is the queue is empty)</span>
+    Integer firstElement3 = d.getFirst();<span class="hljs-comment">//get first element (throws exception is the queue is empty)</span>
+    Integer firstElement4 = d.peekFirst();<span class="hljs-comment">//get first element (returns null is the queue is empty)</span>
+    Integer lastElement1  = d.getLast();<span class="hljs-comment">//get last element (throws exception is the queue is empty)</span>
+    Integer lastElement2  = d.peekLast();<span class="hljs-comment">//get last element (returns null is the queue is empty)</span>
+
+    <span class="hljs-comment">//Remove elements</span>
+    Integer element1 = d.remove(); <span class="hljs-comment">//retrieves and removes the head of the queue</span>
+    Integer element2 = d.removeFirst(); <span class="hljs-comment">//retrieves and removes the first element of the queue</span>
+    Integer element3  = d.removeLast(); <span class="hljs-comment">//retrieves and removes the last element of the queue</span>
+  }
+}
+</code></pre>
+<p>&nbsp;</p>
+
+
+
+<h2 id="use-java-util-comparator">Use java.util.Comparator and java.lang.Comparable interfaces</h2>
+<p><code>compareTo(obj)</code> is from the <a href="http://docs.oracle.com/javase/8/docs/api/java/lang/Comparable.html">Comparable</a> interface and is called on one object, to compare it to another object, so the object to be compared has to implement this interface.</p>
+<pre><code class="hljs java">String s = <span class="hljs-string">"hello"</span>;
+<span class="hljs-keyword">int</span> result = s.compareTo(<span class="hljs-string">"world"</span>);
+</code></pre>
+<p><code>compare(obj1, obj2)</code> is from the <a href="http://docs.oracle.com/javase/8/docs/api/java/util/Comparator.html">Comparator</a> interface and is called on some object to compare two other objects, so an utility class has to implement this interface to be used somewhere else.</p>
+<pre><code class="hljs java">Comparator&lt;String&gt; comp = <span class="hljs-keyword">new</span> MyComparator&lt;&gt;();
+<span class="hljs-keyword">int</span> result = comp.compare(<span class="hljs-string">"hello"</span>, <span class="hljs-string">"world"</span>);
+</code></pre>
+<p>Java classes that have a natural ordering implement the <em>Comparable</em> interface (like <em>String</em>, <em>Integer</em>, <em>BigInteger</em>, etc).</p>
+<p>The <em>Comparator</em> interface is typically used for sorting data structures such as <em>TreeMap</em> and <em>TreeSet</em> or to be passed to a sort method (such as <code>Collections.sort</code> or <code>Arrays.sort</code>).</p>
+<p>Both methods return:
+0 if the objects are equal (this have to be consistent with the equals() method)
+-1 if the first object (or the object making the comparison) is &quot;less&quot; than the other object
+1 if the first object (or the object making the comparison) is &quot;greater&quot; than the other object</p>
+<p>Here&#39;s and example:</p>
+<pre><code class="hljs java"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Person</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">Comparable</span>&lt;<span class="hljs-title">Person</span>&gt; </span>{
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">int</span> age;
+    <span class="hljs-keyword">private</span> String name;
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">Person</span><span class="hljs-params">(<span class="hljs-keyword">int</span> age, String name)</span> </span>{
+        <span class="hljs-keyword">this</span>.age = age;
+        <span class="hljs-keyword">this</span>.name = name;
+    }
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">int</span> <span class="hljs-title">getAge</span><span class="hljs-params">()</span> </span>{
+        <span class="hljs-keyword">return</span> age;
+    }
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">setAge</span><span class="hljs-params">(<span class="hljs-keyword">int</span> age)</span> </span>{
+        <span class="hljs-keyword">this</span>.age = age
+    }
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> String <span class="hljs-title">getName</span><span class="hljs-params">()</span> </span>{
+        <span class="hljs-keyword">return</span> name;
+    }
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">setName</span><span class="hljs-params">(String name)</span> </span>{
+        <span class="hljs-keyword">this</span>.name = name;
+    }
+
+    <span class="hljs-annotation">@Override</span>
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">int</span> <span class="hljs-title">compareTo</span><span class="hljs-params">(Person p)</span> </span>{
+        <span class="hljs-keyword">if</span> (<span class="hljs-keyword">this</span>.getAge() &gt; p.getAge())
+            <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>;
+        <span class="hljs-function"><span class="hljs-keyword">else</span> <span class="hljs-title">if</span> <span class="hljs-params">(<span class="hljs-keyword">this</span>.getAge()</span> &lt; p.<span class="hljs-title">getAge</span><span class="hljs-params">()</span>)
+            <span class="hljs-keyword">return</span> -1</span>;
+        <span class="hljs-keyword">else</span>
+            <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;
+    }
+}
+
+<span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">AgeComparator</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">Comparator</span>&lt;<span class="hljs-title">Person</span>&gt; </span>{
+    <span class="hljs-annotation">@Override</span>
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">int</span> <span class="hljs-title">compare</span><span class="hljs-params">(Person p1, Person p2)</span> </span>{
+        <span class="hljs-keyword">int</span> age1 = p1.getAge();
+        <span class="hljs-keyword">int</span> age2 = p2.getAge();
+
+        <span class="hljs-keyword">if</span> (age1 &gt; age2) {
+            <span class="hljs-keyword">return</span> <span class="hljs-number">1</span>;
+        } <span class="hljs-function"><span class="hljs-keyword">else</span> <span class="hljs-title">if</span> <span class="hljs-params">(age1 &lt; age2)</span> </span>{
+            <span class="hljs-keyword">return</span> -<span class="hljs-number">1</span>;
+        } <span class="hljs-keyword">else</span> {
+            <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;
+        }
+    }
+}
+
+<span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Test</span> </span>{
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> </span>{
+        Pesron p1 = <span class="hljs-keyword">new</span> HDTV(<span class="hljs-number">60</span>, <span class="hljs-string">"James"</span>);
+        Person p2 = <span class="hljs-keyword">new</span> HDTV(<span class="hljs-number">55</span>, <span class="hljs-string">"Bryan"</span>);
+
+        <span class="hljs-keyword">if</span> (p1.compareTo(p2) &gt; <span class="hljs-number">0</span>) {
+            System.out.println(p1.getName() + <span class="hljs-string">" is older."</span>);
+        } <span class="hljs-keyword">else</span> {
+            System.out.println(p2.getName() + <span class="hljs-string">" is older."</span>);
+        }
+
+        <span class="hljs-comment">//Sorted by age</span>
+        List&lt;Person&gt; l = <span class="hljs-keyword">new</span> ArrayList&lt;&gt;();
+        l.add(p1);
+        l.add(p2);
+
+        Collections.sort(l, <span class="hljs-keyword">new</span> AgeComparator());
+        <span class="hljs-keyword">for</span> (Person p : l)
+          System.out.println(p.getName());
+    }
+}
+</code></pre>
+<p>Output:</p>
+<pre><code>James is older
+Bryan
+James
+</code></pre>
+<p>&nbsp;</p>
+
+
+
+<h2 id="collections-streams-and-filters">Collections Streams and Filters</h2>
+<p>A stream represents a sequence of elements. It supports different kind of operations to perform computations upon those elements.</p>
+<p>In Java 8, collections have methods that return a stream, for example, <em>List</em> and <em>Set</em> support the new methods <code>stream()</code> and  <code>parallelStream()</code> to either create a sequential or a parallel stream.</p>
+<p>But we don&#39;t have to create collections in order to work with streams:</p>
+<pre><code class="hljs java">Stream.of(<span class="hljs-string">"a1"</span>, <span class="hljs-string">"a2"</span>, <span class="hljs-string">"a3"</span>)
+    .findFirst()
+    .forEach(System.out::println);
+</code></pre>
+<p><code>Stream.of()</code> will create a stream from object references.</p>
+<p>Besides regular object streams, Java 8 brings special kinds of streams for working with the primitive data types, sucha as <em>IntStream</em>, <em>LongStream</em> and <em>DoubleStream</em>.</p>
+<p><em>IntStreams</em> for example, can replace the regular for loop using <code>IntStream.range()</code>:</p>
+<pre><code class="hljs java">IntStream.range(<span class="hljs-number">1</span>, <span class="hljs-number">10</span>)
+    .forEach(System.out::println);
+</code></pre>
+<p>Streams cannot be reused. As soon as you call any terminal operation the stream is closed. Terminal operations return either a void or non-stream result, like the <code>forEach()</code> method. To overcome this limitation, we have to create a new stream chain for every terminal operation we want to execute.</p>
+<p>Before Java 8, we used for loops or iterators to iterate through the collections and filter them. In Java 8, stream operations have methods like foreach, map, filter, etc. which internally iterates through the elements.
+For example:</p>
+<pre><code class="hljs java">List&lt;String&gt; names = newArrayList&lt;&gt;();
+<span class="hljs-keyword">for</span>(Employee e : employees) {
+  <span class="hljs-keyword">if</span>(e.getName().startsWith(<span class="hljs-string">"C"</span>)) {
+    names.add(e.getName());
+  }
+}
+</code></pre>
+<p>Now, the line below is doing exactly the same thing but using stream and a filter:</p>
+<pre><code class="hljs java">List&lt;String&gt; names = employees.stream().filter(e -&gt; e.getName().startsWith(<span class="hljs-string">"A"</span>)).collect(Collectors.toList());
+</code></pre>
+<p>&nbsp;</p>
+
+
+<h2 id="iterate-using-foreach-methods">Iterate using forEach methods of Streams and List</h2>
+<p>In Java 8, collections that implement <em>Iterable</em> (such as <em>List</em> and <em>Set</em>) now have a <code>forEach()</code> method. This method takes as a parameter a functional interface, therefore, the parameter can be a lambda expression:</p>
+<pre><code class="hljs java">List&lt;String&gt; l = <span class="hljs-keyword">new</span> ArrayList&lt;&gt;();
+
+l.add(<span class="hljs-string">"A"</span>);
+l.add(<span class="hljs-string">"B"</span>);
+l.add(<span class="hljs-string">"C"</span>);
+l.add(<span class="hljs-string">"D"</span>);
+
+l.forEach(i -&gt; System.out.println(i));
+</code></pre>
+<p>Using Stream&#39;s <code>forEach()</code> method is almost the same:</p>
+<pre><code class="hljs java">List&lt;String&gt; l = <span class="hljs-keyword">new</span> ArrayList&lt;&gt;();
+
+l.add(<span class="hljs-string">"A"</span>);
+l.add(<span class="hljs-string">"B"</span>);
+l.add(<span class="hljs-string">"C"</span>);
+l.add(<span class="hljs-string">"D"</span>);
+
+l.stream().forEach(i -&gt; System.out.println(i));
+</code></pre>
+<p>The advantage of using a stream is that we can perform operations on the elements of the collection before the iteration.</p>
+<p>&nbsp;</p>
+
+
+<h2 id="describe-stream-interface">Describe Stream interface and Stream pipeline</h2>
+<p>A stream is a sequence of elements supporting sequential and parallel aggregate operations.  A stream is not a data structure that stores elements. Instead, it just carries values from a source through a pipeline. Here&#39;s the <a href="https://docs.oracle.com/javase/8/docs/api/java/util/stream/Stream.html">javadoc</a>.</p>
+<p>A stream pipeline is just a sequence of aggregate operations. A stream pipeline consists of:</p>
+<ul>
+<li>A stream source, like a collection</li>
+<li>Intermediate operations that transform the stream and produce a new stream, like <code>filter()</code> and</li>
+<li>A terminal operation that either produces a result or calls the <code>forEach()</code> method. </li>
+</ul>
+<p>An example of a pipeline that consists of the aggregate operations filter and count:</p>
+<pre><code class="hljs java"><span class="hljs-keyword">long</span> count = words.stream()
+                  .filter(w -&gt; w.endsWith(<span class="hljs-string">"ly"</span>))
+                  .count();
+</code></pre>
+<p>&nbsp;</p>
+
+
+
+<h2 id="filter-a-collection">Filter a collection by using lambda expressions</h2>
+<p>The way to filter collections is through the use of a <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Predicate.html">Predicate</a>, which is basically something that returns a boolean value.</p>
+<p><em>Predicate</em> is a functional interface, which means that wherever an implementation of this interface is expected, we can pass a lambda expression.</p>
+<p>For example, consider a list with objects of this class:</p>
+<pre><code class="hljs java"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Person</span> </span>{
+    <span class="hljs-keyword">private</span> <span class="hljs-keyword">int</span> age;
+    <span class="hljs-keyword">private</span> String name;
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">int</span> <span class="hljs-title">getAge</span><span class="hljs-params">()</span> </span>{
+        <span class="hljs-keyword">return</span> age;
+    }
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">setAge</span><span class="hljs-params">(<span class="hljs-keyword">int</span> age)</span> </span>{
+        <span class="hljs-keyword">this</span>.age = age
+    }
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> String <span class="hljs-title">getName</span><span class="hljs-params">()</span> </span>{
+        <span class="hljs-keyword">return</span> name;
+    }
+
+    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">setName</span><span class="hljs-params">(String name)</span> </span>{
+        <span class="hljs-keyword">this</span>.name = name;
+    }
+}
+</code></pre>
+<p>To filter the list, first we need to convert it to a stream and then pass a lambda expression that returns a boolean value to its <code>filter()</code> method:</p>
+<pre><code class="hljs java">List filterd = l.stream().filter(p -&gt; p.getAge() &gt; <span class="hljs-number">20</span>).collect(Collectors.toList());
+</code></pre>
+<p>But what if we want to use multiple conditions to filter the list? The <em>Predicate</em> interface has some methods to join conditions:</p>
+<pre><code class="hljs java">Predicate&lt;Person&gt; nameNotNull = p -&gt; p.getName() != <span class="hljs-keyword">null</span>;
+Predicate&lt;Person&gt; ageAbove20 = p -&gt; p.getAge() &gt; <span class="hljs-number">20</span>;
+
+Predicate&lt;Person&gt; multipleConditions = nameNotNull.and(ageAbove20);
+List filterd = l.stream().filter(multipleConditions).collect(Collectors.toList());
+</code></pre>
+<p>&nbsp;</p>
+
+
+
+<h2 id="use-method-references-with-streams">Use method references with Streams</h2>
+<p>When the body of a lambda expression is used to execute a method, like in this example:</p>
+<pre><code class="hljs java">List&lt;String&gt; l = <span class="hljs-keyword">new</span> ArrayList&lt;&gt;();
+l.stream().forEach(s -&gt; System.out.println(s));
+</code></pre>
+<p>We can substitue the lambda expression with a method reference like this:</p>
+<pre><code class="hljs java">List&lt;String&gt; l = <span class="hljs-keyword">new</span> ArrayList&lt;&gt;();
+l.stream().forEach(System.out::println);
+</code></pre>
+<p>Notice how <strong>::</strong> is used to call the method and that no parameters are passed, since the compiler infers them along with their type.</p>
+<p>There are four types of method references (assuming a class named Person with a <code>getName()</code> method and a variable named p of that type):</p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Reference to a static method</td>
+<td><code>Math::square</code></td>
+</tr>
+<tr>
+<td>Reference to a constructor</td>
+<td><code>Integer::new</code></td>
+</tr>
+<tr>
+<td>Reference to an instance method of an arbitrary object of a particular type</td>
+<td><code>Person::getName</code></td>
+</tr>
+<tr>
+<td>Reference to an instance method of a particular object</td>
+<td><code>p::getName</code></td>
+</tr>
+</tbody>
+</table>
+<p>Here&#39;s a comparison between a lambda expression and the equivalent method expression:</p>
+<table>
+<thead>
+<tr>
+<th>Lambda Expression</th>
+<th>Method Reference</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>n -&gt; Math.square(n)</code></td>
+<td><code>Math::square</code></td>
+</tr>
+<tr>
+<td><code>i -&gt; new Integer(i)</code></td>
+<td><code>Integer::new</code></td>
+</tr>
+<tr>
+<td><code>p -&gt; p.getName()</code></td>
+<td><code>Person::getName</code></td>
+</tr>
+<tr>
+<td><code>p -&gt; p.getName()</code></td>
+<td><code>p::getName</code></td>
+</tr>
+</tbody>
+</table>
+<p>&nbsp;</p>
+
