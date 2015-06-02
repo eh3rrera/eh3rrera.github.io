@@ -63,3 +63,17 @@ h2[id]:before {
   height: 100px; 
   visibility: hidden; 
 }
+
+.linkbox {
+	margin: auto;
+	font-size: 90%;
+}
+.linkbox .next {
+	float: right;
+	width:40%;
+	text-align: right;
+}
+.linkbox .previous {
+	float: left;
+	width:40%;
+}
