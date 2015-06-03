@@ -1,0 +1,411 @@
+---
+layout: post
+title: Introduction to BPMN
+description: A simple introduction to what is BPMN and its purpose.
+category:
+  - bpmn
+---
+
+<h3>What is a process and process modeling?</h3>
+
+  <p>Let’s define these terms in simple words.</p>
+
+  <p>A process is the work someone (or something) do to accomplish an objective.</p>
+
+  <p style="text-align: center;"><img alt="" src="{{ site.url }}/images/2015-05-29-introduction-to-bpmn/noun_9427_300.jpg" /></p>
+
+  <p>Process modeling means documenting the current state of a process to describe for example, how it starts, when it’s complete, and how a process get from A to B.</p>
+
+  <p style="text-align: center;"><img alt="" src="{{ site.url }}/images/2015-05-29-introduction-to-bpmn/noun_85185_300.jpg" /></p>
+
+  <h3>The importance of process modeling</h3>
+
+  <div style="text-align: center;"><img alt="" src="{{ site.url }}/images/2015-05-29-introduction-to-bpmn/noun_25370_300.jpg" /></div>
+
+  <div style="text-align: center;">
+    How do you organize to get the work done?
+  </div>
+
+  <div style="text-align: center;"><img alt="" src="{{ site.url }}/images/2015-05-29-introduction-to-bpmn/noun_87667_300.jpg" /></div>
+
+  <div style="text-align: center;">
+    Which are the steps?
+  </div>
+
+  <div style="text-align: center;"><img alt="" src="{{ site.url }}/images/2015-05-29-introduction-to-bpmn/noun_78911_300.jpg" /></div>
+
+  <div style="text-align: center;">
+    Who should do them?
+  </div>
+
+  <p><br /></p>
+
+  <p>All organizations need to know the answers of these questions in order to <b>UNDERSTAND</b> how their business actually works and <b>IMPROVE</b> how things are done.</p>
+
+  <p style="text-align: center;"><img alt="" src="{{ site.url }}/images/2015-05-29-introduction-to-bpmn/noun_99475_300.jpg" /></p>
+
+  <p>However, until processes are documented, it’s impossible to <b>UNDERSTAND</b> them, <b>IMPROVE</b> them, and <b>CONTROL</b> them.</p>
+  <hr />
+
+  <p><i>PROCESS MODELING SHOULD BE THE FIRST STEP TO UNDERSTAND AND BEST ORGANIZE THE WAY A BUSINESS WORKS.</i></p>
+  <hr />
+
+  <h3>Models and communication</h3>
+
+  <p>So models are a COMMUNICATION tool since they help an organization to understand its processes.</p>
+
+  <p>Process modeling might be an easy task in a small organization, but think about a large organization:</p>
+
+  <div style="text-align: center;"><img alt="noun_48891_300" src="{{ site.url }}/images/2015-05-29-introduction-to-bpmn/noun_48891_300.jpg" /></div>
+
+  <div style="text-align: center;">
+    An organization with thousands of employees.
+  </div>
+
+  <div style="text-align: center;"><img alt="noun_35519_300" src="{{ site.url }}/images/2015-05-29-introduction-to-bpmn/noun_35519_300.jpg" /></div>
+
+  <div style="text-align: center;">
+    An organization spread across many locations around the world.
+  </div>
+
+  <div style="text-align: center;"><img alt="noun_10085_300" src="{{ site.url }}/images/2015-05-29-introduction-to-bpmn/noun_10085_300.jpg" /></div>
+
+  <div style="text-align: center;">
+    An organization that has relationships and/or dependencies with many suppliers, partners and customers.
+  </div>
+
+  <p><br /></p>
+
+  <p>It can easily become a mess. Interpretations of the model are hardly the same because people no longer have the same context or the same cultural references, leaving the interpretation of the model to the reader.<br /></p>
+
+  <p>Obviously, this is a problem. The elements used to describe business processes must <b>COMMUNICATE</b> the <b>MEANING</b> intended by the modeler.<br /></p>
+
+  <p>And that’s where BPMN comes in.<br /></p>
+  <hr class="sigil_split_marker" />
+
+  <div style="font-size: 120%">
+    <p style="text-align: center;"><b>B</b> USINESS</p>
+
+    <p style="text-align: center;"><b>P</b> ROCESS</p>
+
+    <p style="text-align: center;"><b>M</b> ODELING</p>
+
+    <p style="text-align: center;"><b>N</b> OTATION</p>
+  </div>
+  <hr class="sigil_split_marker" />
+
+  <h3>What is BPMN?<br /></h3>
+
+  <p>The Business Process Modeling Notation provides a <b>STANDARD</b> way of representing business processes.</p>
+
+  <p>This is done by specifying the sequence of activities that make up the process and its relating information in basically two levels of detail:<br /></p>
+
+  <div style="text-align: center;"><img alt="noun_90571_300" src="{{ site.url }}/images/2015-05-29-introduction-to-bpmn/noun_90571_300.jpg" /></div>
+
+  <div style="text-align: center;">
+    <b>Simple</b>
+  </div>
+
+  <div style="text-align: center;">
+    Diagrams with activities, some decisions and important events. If needed, more information can be added, like more specific types of activities and events, roles, etc.
+  </div>
+
+  <div style="text-align: center;"><img alt="noun_90573_300" src="{{ site.url }}/images/2015-05-29-introduction-to-bpmn/noun_90573_300.jpg" /></div>
+
+  <div style="text-align: center;">
+    <b>Executable</b>
+  </div>
+
+  <div style="text-align: center;">
+    Diagrams that contain sufficient detail and information that enables the execution of the model by software (Business Process Management Suites).
+  </div>
+
+  <p><br /></p>
+
+  <p>In some environments, having very detailed models with precise instructions of how the work should happen, allows to use them to drive the work itself by importing them in tools that can execute those instructions.&nbsp;</p>
+
+  <p>However, the focus of this book is to show how the Business Process Modeling Notation is used for representing business processes for "high-level" analysis purposes.</p>
+
+  <p style="text-align: center;"><img alt="TimelineBPMN" src="{{ site.url }}/images/2015-05-29-introduction-to-bpmn/TimelineBPMN.png" /><br /></p>
+
+  <h3>History of BPMN<br /></h3>
+
+  <p>In August 2001, 35 organizations formed the BPMI (Business Process Management Institute) Notation Working Group and BPMI.org. Their objective was to create a single notation for process modeling, since at that time, there were many notations and tools for that purpose. They published the first version of BPMN in 2004.</p>
+
+  <p>With the growing popularity of BPMN, BPMI.org was acquired by OMG (Object Management Group), home of the popular UML (Unified Modeling Language).&nbsp;<br /></p>
+
+  <p>In 2006, the process of formally adopt BMPN as an OMG standard finished. Two years later, a minor update was issued (BPMN 1.1), and a year later, another version with some corrections (BPMN 1.2).<br /></p>
+
+  <p>The notation from BPMN 1.2 to BPMN 2.0 didn’t change a lot. The two main motivations for BPMN 2.0 were to provide an official interchange format based on XML (eXtensible Markup Language) for process models and to make those models executable in a process engine.<br /></p>
+
+  <p>After two beta versions, BPMN 2.0 was completed in 2010 and released to the public in January 2011.<br /></p>
+
+  <h3>More about modeling<br /></h3>
+
+  <p>One common mistake is assuming that there’s always only <b>ONE</b> correct model.</p>
+
+  <p>When you make a model, you're always choosing what to include and what to exclude. You may want to show different levels of detail or focus on certain areas, but generally, there’s often a tendency to capture more detail than necessary.<br /></p>
+
+  <p>For example, consider how to model the scheduling of an appointment for a medical checkup. The first step could be request for the patient information, then check for an available date, and finally, register the appointment. But what if we like to schedule more than one appointment, or if there’s no availability, and at the end, should we print or email a confirmation, or both?<br /></p>
+
+  <p>BPMN is flexible, meaning it can handle many situations and requirements. So instead of worrying about developing the correct model, you should be worrying about using the notation in a correct way.<br /></p>
+  <hr />
+
+  <p><i>WE ALWAYS NEED TO THINK ABOUT WHO WILL USE THE MODEL AND FOR WHAT PURPOSE.</i><br /></p>
+  <hr />
+
+  <p>&nbsp;</p>
+  <hr />
+
+  <div class="sidebar">
+    <div style="text-align: center;">
+      <i>THERE IS</i>
+    </div>
+
+    <div style="text-align: center;">
+      <i><b>HARDLY EVER</b></i>
+    </div>
+
+    <div style="text-align: center;">
+      <i>ONLY ONE</i>
+    </div>
+
+    <div style="text-align: center;">
+      <i><b>CORRECT</b></i>
+    </div>
+
+    <div style="text-align: center;">
+      <i>MODEL</i>
+    </div>
+  </div>
+  <hr />
+
+  <p>&nbsp;</p>
+
+  <h3>Good BPMN models</h3>
+
+  <p>To create a good BPMN model, it must be:<br /></p>
+
+  <div style="text-align: center;"><img alt="noun_16259_300" src="{{ site.url }}/images/2015-05-29-introduction-to-bpmn/noun_16259_300.jpg" /></div>
+
+  <div style="text-align: center;">
+    <b>Valid</b>
+  </div>
+
+  <div style="text-align: center;">
+    The model should follow the rules of the BPMN specification.
+  </div>
+
+  <div style="text-align: center;"><img alt="noun_30721_300" src="{{ site.url }}/images/2015-05-29-introduction-to-bpmn/noun_30721_300.jpg" /></div>
+
+  <div style="text-align: center;">
+    <b>Accurate</b>
+  </div>
+
+  <div style="text-align: center;">
+    The model should reflect the actual process without any erroneous or biased view.
+  </div>
+
+  <div style="text-align: center;"><img alt="noun_30176_300" src="{{ site.url }}/images/2015-05-29-introduction-to-bpmn/noun_30176_300.jpg" /></div>
+
+  <div style="text-align: center;">
+    <b>Clear</b>
+  </div>
+
+  <div style="text-align: center;">
+    The model should be unambiguous and easy to understand. It should not depend on any other documentation.
+  </div>
+
+  <div style="text-align: center;"><img alt="noun_19501_300" src="{{ site.url }}/images/2015-05-29-introduction-to-bpmn/noun_19501_300.jpg" /></div>
+
+  <div style="text-align: center;">
+    <b>Complete</b>
+  </div>
+
+  <div style="text-align: center;">
+    The model should be as simple as possible, but it should indicate how the process starts, its significant events and its end states.
+  </div>
+
+  <p><br /></p>
+
+  <p>A good BPMN model <b>DOES NOT</b> show:<br /></p>
+
+  <div style="text-align: center;"><img alt="noun_25092_300" src="{{ site.url }}/images/2015-05-29-introduction-to-bpmn/noun_25092_300.jpg" /></div>
+
+  <div style="text-align: center;">
+    <b>Why</b>
+  </div>
+
+  <div style="text-align: center;">
+    A process are performed.
+  </div>
+
+  <div style="text-align: center;"><img alt="noun_59623_300" src="{{ site.url }}/images/2015-05-29-introduction-to-bpmn/noun_59623_300.jpg" /></div>
+
+  <div style="text-align: center;">
+    <b>When</b>
+  </div>
+
+  <div style="text-align: center;">
+    A process is performed.
+  </div>
+
+  <div style="text-align: center;"><img alt="noun_80937_300" src="{{ site.url }}/images/2015-05-29-introduction-to-bpmn/noun_80937_300.jpg" /></div>
+
+  <div style="text-align: center;">
+    <b>How</b>
+  </div>
+
+  <div style="text-align: center;">
+    The steps of a process are performed.
+  </div>
+
+  <h3>Basic elements and diagrams<br /></h3>
+
+  <p>BPMN uses a set of graphical elements to describe a process. Together, and refined with attributes and properties, these elements create diagrams for organizations of all sizes and domains.</p>
+
+  <p>However, there’s only four key elements in BPMN:<br /></p>
+
+  <div style="text-align: center;"><img alt="basic_activity" src="{{ site.url }}/images/2015-05-29-introduction-to-bpmn/basic_activity.jpg" /></div>
+
+  <div style="text-align: center;">
+    <b>Activity</b>
+  </div>
+
+  <div style="text-align: center;">
+    The steps to perform a process.
+  </div>
+
+  <div style="text-align: center;"><img alt="basic_gateway" src="{{ site.url }}/images/2015-05-29-introduction-to-bpmn/basic_gateway.jpg" /></div>
+
+  <div style="text-align: center;">
+    <b>Gateway</b>
+  </div>
+
+  <div style="text-align: center;">
+    Used to control the flow in a process.
+  </div>
+
+  <div style="text-align: center;"><img alt="basic_event" src="{{ site.url }}/images/2015-05-29-introduction-to-bpmn/basic_event.jpg" /></div>
+
+  <div style="text-align: center;">
+    <b>Event</b>
+  </div>
+
+  <div style="text-align: center;">
+    Something that happens in a process.
+  </div>
+
+  <div style="text-align: center;"><img alt="basic_flow" src="{{ site.url }}/images/2015-05-29-introduction-to-bpmn/basic_flow.jpg" /></div>
+
+  <div style="text-align: center;">
+    <b>Flow</b>
+  </div>
+
+  <div style="text-align: center;">
+    Used to show the order of the activities of the process.
+  </div>
+
+  <p><br /></p>
+
+  <p>On a higher level, BPMN allows yo to model four different aspects of business process in four diagrams:<br /></p>
+
+  <div style="text-align: center;"><img alt="basic_bpd" src="{{ site.url }}/images/2015-05-29-introduction-to-bpmn/basic_bpd.jpg" /></div>
+
+  <div style="text-align: center;">
+    <b>Business Process</b>
+  </div>
+
+  <div style="text-align: center;">
+    Focuses on the activities and events &nbsp;of a process.
+  </div>
+
+  <div style="text-align: center;">
+    <br />
+  </div>
+
+  <div style="text-align: center;"><img alt="basic_collaboration" src="{{ site.url }}/images/2015-05-29-introduction-to-bpmn/basic_collaboration.jpg" /></div>
+
+  <div style="text-align: center;">
+    <b>Collaboration</b>
+  </div>
+
+  <div style="text-align: center;">
+    Focuses on the sequence of activities, events and messages between participants of a process.
+  </div>
+
+  <div style="text-align: center;">
+    <br />
+  </div>
+
+  <div style="text-align: center;"><img alt="basic_conversation" src="{{ site.url }}/images/2015-05-29-introduction-to-bpmn/basic_conversation.jpg" /></div>
+
+  <div style="text-align: center;">
+    <b>Conversation</b>
+  </div>
+
+  <div style="text-align: center;">
+    Focuses on the message exchange between participants of a process.
+  </div>
+
+  <div style="text-align: center;">
+    <br />
+  </div>
+
+  <div style="text-align: center;"><img alt="basic_choreography" src="{{ site.url }}/images/2015-05-29-introduction-to-bpmn/basic_choreography.jpg" /></div>
+
+  <div style="text-align: center;">
+    <b>Choreography</b>
+  </div>
+
+  <div style="text-align: center;">
+    Focuses on the interactions between participants.
+  </div>
+
+  <p><br /></p>
+
+  <h3>Tokens</h3>
+
+  <p>The concept of a token is used to represent the behavior of a model. It’s simple, you just imagine a token moving along the diagram, executing the process along its way from start to end.</p>
+
+  <p>Let’s consider a simple registration process:<br /></p>
+
+  <p style="text-align: center;"><img alt="1.1.TokenProcess" src="{{ site.url }}/images/2015-05-29-introduction-to-bpmn/1.1.TokenProcess.jpg" /><br /></p>
+
+  <p>In this example, the start event (represented by the circle at the beginning of the diagram), generates the token:</p>
+
+  <p style="text-align: center;"><img alt="1.1.1.TokenProcess" src="{{ site.url }}/images/2015-05-29-introduction-to-bpmn/1.1.1.TokenProcess.jpg" /><br /></p>
+
+  <p>The token then flows to the activity <i>Register User Information</i>, causing the activity start:<br /></p>
+
+  <p style="text-align: center;"><img alt="1.1.2.TokenProcess" src="{{ site.url }}/images/2015-05-29-introduction-to-bpmn/1.1.2.TokenProcess.jpg" /><br /></p>
+
+  <p>When a token arrives at an activity, the activity starts. This beginning and execution is called an <b>INSTANCE</b> of the activity. A new instance is created when a token arrives at an activity.</p>
+
+  <p>When the activity finishes its work, it emits a token that travels through the flow to the <i>Send Confirmation</i> activity:<br /></p>
+
+  <p style="text-align: center;"><img alt="1.1.3.TokenProcess" src="{{ site.url }}/images/2015-05-29-introduction-to-bpmn/1.1.3.TokenProcess.jpg" /><br /></p>
+
+  <p style="text-align: center;"><img alt="1.1.4.TokenProcess" src="{{ site.url }}/images/2015-05-29-introduction-to-bpmn/1.1.4.TokenProcess.jpg" /><br /></p>
+
+  <p>Once the confirmation is sent, the token reaches the end event (represented by the circle at the end of the diagram) and the process completes:<br /></p>
+
+  <p style="text-align: center;"><img alt="1.1.5.TokenProcess" src="{{ site.url }}/images/2015-05-29-introduction-to-bpmn/1.1.5.TokenProcess.jpg" /><br /></p>
+
+  <p style="text-align: center;"><img alt="1.1.6.TokenProcess" src="{{ site.url }}/images/2015-05-29-introduction-to-bpmn/1.1.6.TokenProcess.jpg" /><br /></p>
+
+  <p>Each of the elements in a BPMN diagram handles the flow of a token in an unique, and in some cases, complex way.</p>
+  
+  <p>&nbsp;</p>
+  
+  <p>This content of this post is the first chapter of my book <b>The BPMN Graphic Handbook</b>. You can buy it here:</p>
+  <div class="book-links">
+		<a href="http://www.amazon.com/dp/B00XD1S8UC" target="_blank">Amazon</a
+		><a href="https://itunes.apple.com/us/book/id993260938" target="_blank">Itunes</a
+		><a href="http://store.kobobooks.com/Search/Query?fcmedia=Book&query=9781513001623" target="_blank">Kobo</a
+		><a href="http://www.barnesandnoble.com/s/2940152192018" target="_blank">B&amp;N</a
+		><a href="http://www.scribd.com/book/264662067" target="_blank">Scribd</a
+		><a href="http://www.inktera.com/store/title/94a70978-9ef0-4e7b-a51f-bd0ac1e49dec" target="_blank">Page Foundry</a
+		><a href="https://leanpub.com/thebpmngraphichandbook" target="_blank">LeanPub</a>
+	</div>
+	<p>&nbsp;</p>
