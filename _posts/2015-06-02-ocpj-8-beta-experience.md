@@ -86,7 +86,7 @@ Based on my experience, here's a breakdown of the topics I got, so you can make 
 * Know all the constructors of the Locale class
 * Know which resource bundle is loaded depending on the locale set.
  
-I created my own material to study. I put it online at [http://eherrera.net/ocpj8-notes/](http://eherrera.net/ocpj8-notes/]) for all planning to take this exam.
+I created my own material to study. I put it online at [http://eherrera.net/ocpj8-notes/](http://eherrera.net/ocpj8-notes/) for all planning to take this exam.
 
 Based on this notes, I'll create a study guide. It's going to be huge book, so even tough the exam won't be available until around September-October 2015, I'll start right now.
 

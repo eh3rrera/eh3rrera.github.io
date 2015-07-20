@@ -153,7 +153,7 @@ title: Java SE 8 Programmer II - Advanced Java Class Design
 <p>A nested class or member inner class is a non-static class that is created inside a class but outside a method.</p>
 <pre><code class="hljs java"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">OuterClass</span> </span>{
    <span class="hljs-comment">// Nested class</span>
-   <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">NestedClass</span> </span>{
+   <span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">NestedClass</span> </span>{
        <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">print</span><span class="hljs-params">()</span> </span>{ 
          System.out.println(<span class="hljs-string">"Message from nested class"</span>); 
        }
@@ -203,7 +203,7 @@ title: Java SE 8 Programmer II - Advanced Java Class Design
 this.x = 1
 Test.this.x = 10
 </code></pre><h3 id="anonymous-inner-class">Anonymous Inner Class</h3>
-<p>Anonymous Inner classes are classes without name (but not without type) used to override a method of class or interface. They can&#39;y have constructors.</p>
+<p>Anonymous Inner classes are classes without name (but not without type) used to override a method of class or interface. They can&#39;t have constructors.</p>
 <pre><code class="hljs java"><span class="hljs-class"><span class="hljs-keyword">interface</span> <span class="hljs-title">Animal</span> </span>{  
   <span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">eat</span><span class="hljs-params">()</span></span>;  
 }  
