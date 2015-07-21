@@ -25,10 +25,10 @@ title: Java SE 8 Programmer II - Generics and Collections
 }
 </code></pre>
 <p>Type variables are really parameters that provide information to the compiler so it can check types. In the example above, class <em>Test</em> works with an object of type T, the same types that takes method <em>m</em>. Here&#39;s how we will use it:</p>
-<pre><code class="hljs java">Test&lt;String&gt; t1 = <span class="hljs-keyword">new</span> T&lt;&gt;();
+<pre><code class="hljs java">Test&lt;String&gt; t1 = <span class="hljs-keyword">new</span> Test&lt;&gt;();
 t1.m(<span class="hljs-string">"a"</span>);
 
-Test&lt;Integer&gt; t2 = <span class="hljs-keyword">new</span> T&lt;&gt;();
+Test&lt;Integer&gt; t2 = <span class="hljs-keyword">new</span> Test&lt;&gt;();
 t2.m(<span class="hljs-number">1</span>);
 </code></pre>
 <p>Notice that the generic parameter on the right is optional, it can be inferred by the compiler using the reference declaration.</p>

@@ -84,7 +84,7 @@ title: Java SE 8 Programmer II - Exceptions and Assertions
 }
 </code></pre>
 <p>The multi-catch clause specifies the types of exceptions that the block can handle, and each exception type is separated with a vertical bar (|). In this case, the catch parameter is implicitly final. So in the example, the catch parameter ex is final and therefore you cannot assign any values to it within the catch block.</p>
-<p>A restriction when using the multi-catch clause is that you can use related exceptions (subclasses) in the same clause because it is redundant, the exception would already be caught by an alternative. For example, the following is invalid, since ArrayIndexOutOfBoundsException is a subclass of Exception:</p>
+<p>A restriction when using the multi-catch clause is that you can't use related exceptions (subclasses) in the same clause because it is redundant, the exception would already be caught by an alternative. For example, the following is invalid, since ArrayIndexOutOfBoundsException is a subclass of Exception:</p>
 <pre><code class="hljs java"><span class="hljs-keyword">try</span> {  
   <span class="hljs-keyword">int</span> arr[] = <span class="hljs-keyword">new</span> <span class="hljs-keyword">int</span>[<span class="hljs-number">5</span>];  
   arr[<span class="hljs-number">10</span>] = <span class="hljs-number">20</span>;  

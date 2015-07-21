@@ -39,7 +39,7 @@ String s = <span class="hljs-keyword">null</span>;
    console = System.console();
    <span class="hljs-keyword">if</span> (console != <span class="hljs-keyword">null</span>)
    {
-      <span class="hljs-keyword">if</span>((passwd = cons.readPassword(<span class="hljs-string">"[%s]"</span>, <span class="hljs-string">"Password:"</span>)) != <span class="hljs-keyword">null</span>) {
+      <span class="hljs-keyword">if</span>((passwd = console.readPassword(<span class="hljs-string">"[%s]"</span>, <span class="hljs-string">"Password:"</span>)) != <span class="hljs-keyword">null</span>) {
         java.util.Arrays.fill(passwd, <span class="hljs-string">' '</span>);
       }
    }

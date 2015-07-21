@@ -76,7 +76,7 @@ DoubleStream <span class="hljs-title">mapToDouble</span><span class="hljs-params
 <p>The methods are:</p>
 <p><code>Optional&lt;T&gt;    findAny()</code>
 This is a short-circuiting terminal operation that returns an Optional representing some element of the stream. This doesn&#39;t guarantee to return the first element of a sorted stream.</p>
-<p><code>Optional&lt;T&gt;    findAny()</code>
+<p><code>Optional&lt;T&gt;    findFirst()</code>
 This is a short-circuiting terminal operation that returns the first element of the stream. If the stream has no order, then any element may be returned.</p>
 <p><code>boolean anyMatch(Predicate&lt;? super T&gt; predicate)</code>
 This is a short-circuiting terminal operation that returns whether any elements of this stream match the provided predicate.  If the stream is empty then false is returned and the predicate is not evaluated.</p>
@@ -87,7 +87,7 @@ This is a short-circuiting terminal operation that returns whether no elements o
 <p>A short-circuiting terminal operation basically means that there&#39;s no need to process the entire stream to return a result. As soon as an element that fits the predicate is found or that a result can be inferred, the result is return.</p>
 <p>Here&#39;s an example:</p>
 <pre><code class="hljs java">Optional&lt;Integer&gt; first = Stream.of(<span class="hljs-number">1</span>, <span class="hljs-number">10</span>, <span class="hljs-number">5</span>, <span class="hljs-number">3</span>, <span class="hljs-number">13</span>, <span class="hljs-number">20</span>).filter(i -&gt; i % <span class="hljs-number">2</span> == <span class="hljs-number">0</span>).findFirst(); <span class="hljs-comment">//returns 2</span>
-Optional&lt;Integer&gt; any = Stream.of(<span class="hljs-number">1</span>, <span class="hljs-number">10</span>, <span class="hljs-number">5</span>, <span class="hljs-number">3</span>, <span class="hljs-number">13</span>, <span class="hljs-number">20</span>).filter(i -&gt; i % <span class="hljs-number">2</span> == <span class="hljs-number">0</span>).findFirst(); <span class="hljs-comment">//can return 2</span>
+Optional&lt;Integer&gt; any = Stream.of(<span class="hljs-number">1</span>, <span class="hljs-number">10</span>, <span class="hljs-number">5</span>, <span class="hljs-number">3</span>, <span class="hljs-number">13</span>, <span class="hljs-number">20</span>).filter(i -&gt; i % <span class="hljs-number">2</span> == <span class="hljs-number">0</span>).findAny(); <span class="hljs-comment">//can return 10 or 20</span>
 <span class="hljs-keyword">boolean</span> any2 = Stream.of(<span class="hljs-number">1</span>, <span class="hljs-number">10</span>, <span class="hljs-number">5</span>, <span class="hljs-number">3</span>, <span class="hljs-number">13</span>, <span class="hljs-number">20</span>).anyMatch(i -&gt; i % <span class="hljs-number">3</span> == <span class="hljs-number">0</span>); <span class="hljs-comment">//returns true</span>
 <span class="hljs-keyword">boolean</span> all = Stream.of(<span class="hljs-number">1</span>, <span class="hljs-number">10</span>, <span class="hljs-number">5</span>, <span class="hljs-number">3</span>, <span class="hljs-number">13</span>, <span class="hljs-number">20</span>).allMatch(i -&gt; i % <span class="hljs-number">2</span> == <span class="hljs-number">0</span>); <span class="hljs-comment">//returns false</span>
 <span class="hljs-keyword">boolean</span> none = Stream.of(<span class="hljs-number">1</span>, <span class="hljs-number">10</span>, <span class="hljs-number">5</span>, <span class="hljs-number">3</span>, <span class="hljs-number">13</span>, <span class="hljs-number">20</span>).noneMatch(i -&gt; i % <span class="hljs-number">6</span> == <span class="hljs-number">0</span>); <span class="hljs-comment">//returns true</span>
@@ -227,7 +227,7 @@ good bye
 <p>Streams have the following method:</p>
 <pre><code class="hljs java">collect(Collector&lt;? <span class="hljs-keyword">super</span> T,A,R&gt; collector)
 </code></pre>
-<p>This method performs a mutable reduction operation on the elements of this stream using a {Collector}(<a href="https://docs.oracle.com/javase/8/docs/api/java/util/stream/Collector.html">https://docs.oracle.com/javase/8/docs/api/java/util/stream/Collector.html</a>).</p>
+<p>This method performs a mutable reduction operation on the elements of this stream using a <a href="https://docs.oracle.com/javase/8/docs/api/java/util/stream/Collector.html">Collector</a>.</p>
 <p>A mutable reduction operation accumulates (or collects) input elements into a mutable result container, such as a Collection or StringBuilder, as it processes the elements in the stream.</p>
 <p>A collect operation requires three functions: </p>
 <ul>
