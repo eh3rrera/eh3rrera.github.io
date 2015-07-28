@@ -32,10 +32,10 @@ LocalTime lt1 = LocalTime.of(<span class="hljs-number">14</span>, <span class="h
 LocalTime lt2 = LocalTime.parse(<span class="hljs-string">"14:05:00"</span>);
 </code></pre>
 <p>You can use standard getters to obtain values from the classes:</p>
-<pre><code class="hljs java"><span class="hljs-keyword">int</span> m = LocalDate.getDayOfMonth();
-<span class="hljs-keyword">int</span> y = LocalDate.getYear();
-<span class="hljs-keyword">int</span> h = LocalTime.getHour();
-<span class="hljs-keyword">int</span> min = LocalTime.getMinute();
+<pre><code class="hljs java"><span class="hljs-keyword">int</span> m = LocalDate.now().getDayOfMonth();
+<span class="hljs-keyword">int</span> y = LocalDate.now().getYear();
+<span class="hljs-keyword">int</span> h = LocalTime.now().getHour();
+<span class="hljs-keyword">int</span> min = LocalTime.now().getMinute();
 </code></pre>
 <p>You can also modify the object values by using the <em>with</em> methods instead of using setters (because the classes are immutable, which also means that you don&#39;t actually modify a class, a new one is returned):</p>
 <pre><code class="hljs java">LocalDateTime thePast = dt.withDayOfYear(<span class="hljs-number">90</span>).withHour(<span class="hljs-number">21</span>);
@@ -52,8 +52,8 @@ LocalDateTime dt = dt.minusYears(<span class="hljs-number">10</span>);
 Instant epochNow = Instant.ofEpochSecond(<span class="hljs-number">1000000</span>);
 </code></pre>
 <p>It also has get, plus and minus methods:</p>
-<pre><code class="hljs java"><span class="hljs-keyword">long</span> s = Instant.getEpochSecond();
-<span class="hljs-keyword">int</span> n = Instant.getNano();
+<pre><code class="hljs java"><span class="hljs-keyword">long</span> s = now.getEpochSecond();
+<span class="hljs-keyword">int</span> n = now.getNano();
 Instant twoSecondsAfter = now.plusSeconds(<span class="hljs-number">2</span>);
 Instant twoSecondsBefore = now.minusSeconds(<span class="hljs-number">2</span>);
 </code></pre>
@@ -65,7 +65,7 @@ Period periodTwoMonths = Period.ofMonths(<span class="hljs-number">2</span>);
 Period period20142015 = Period.between(LocalDate.of( <span class="hljs-number">2014</span>, Month.JANUARY, <span class="hljs-number">1</span>), LocalDate.of( <span class="hljs-number">2015</span>, Month.JANUARY, <span class="hljs-number">1</span>));
 </code></pre>
 <p>It also has get, plus and minus methods:</p>
-<pre><code class="hljs java"><span class="hljs-keyword">int</span> y = Instant.getYears();
+<pre><code class="hljs java"><span class="hljs-keyword">int</span> y = period.getYears();
 Period newPeriod = period.plusDays(<span class="hljs-number">2</span>).minusMonths(<span class="hljs-number">1</span>);
 </code></pre>
 <p>You can modify the values of dates using periods:</p>
@@ -90,7 +90,7 @@ Duration d2 = Duration.between(LocalTime.NOON, LocalTime.MIDNIGHT);
 <pre><code class="hljs java">ZoneId id = ZoneId.of(<span class="hljs-string">"Europe/Paris"</span>);
 </code></pre>
 <p><a href="https://docs.oracle.com/javase/8/docs/api/java/time/ZoneOffset.html">ZoneOffset</a> is the period of time representing a difference between Greenwich/UTC and a time zone.</p>
-<pre><code class="hljs java">ZoneOffset offset = ZoneOffset.of(<span class="hljs-string">"-6:00"</span>);
+<pre><code class="hljs java">ZoneOffset offset = ZoneOffset.of(<span class="hljs-string">"-06:00"</span>);
 </code></pre>
 <p><a href="https://docs.oracle.com/javase/8/docs/api/java/time/ZonedDateTime.html">ZonedDateTime</a> is a date and time with a fully qualified time zone. You should use this class if you want to represent a date and time without relying on the context of a specific server.  </p>
 <pre><code class="hljs java">ZonedDateTime zdt1 = ZonedDateTime.parse(<span class="hljs-string">"2014-12-03T10:15:300[Europe/Paris]"</span>);<span class="hljs-comment">//2014-12-03T10:15:300Z[Europe/Dublin]</span>

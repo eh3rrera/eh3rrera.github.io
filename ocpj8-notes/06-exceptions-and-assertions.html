@@ -69,7 +69,7 @@ title: Java SE 8 Programmer II - Exceptions and Assertions
 <span class="hljs-keyword">catch</span>(ArrayIndexOutOfBoundsException e) {
   e.printStackTrace();
 }  
-<span class="hljs-keyword">catch</span>(ArithmeticException, e) {
+<span class="hljs-keyword">catch</span>(ArithmeticException e) {
   e.printStackTrace();
 }
 </code></pre>
@@ -79,7 +79,7 @@ title: Java SE 8 Programmer II - Exceptions and Assertions
   arr[<span class="hljs-number">10</span>] = <span class="hljs-number">20</span>;  
   <span class="hljs-keyword">int</span> r = arr[<span class="hljs-number">10</span>]/<span class="hljs-number">10</span>;
 }  
-<span class="hljs-keyword">catch</span>(ArrayIndexOutOfBoundsException|ArithmeticException, ex) {
+<span class="hljs-keyword">catch</span>(ArrayIndexOutOfBoundsException|ArithmeticException ex) {
   ex.printStackTrace();
 }
 </code></pre>
@@ -90,7 +90,7 @@ title: Java SE 8 Programmer II - Exceptions and Assertions
   arr[<span class="hljs-number">10</span>] = <span class="hljs-number">20</span>;  
   <span class="hljs-keyword">int</span> r = arr[<span class="hljs-number">10</span>]/<span class="hljs-number">10</span>;
 }  
-<span class="hljs-keyword">catch</span>(ArrayIndexOutOfBoundsException|Exception, ex) { <span class="hljs-comment">// compile-time error</span>
+<span class="hljs-keyword">catch</span>(ArrayIndexOutOfBoundsException|Exception ex) { <span class="hljs-comment">// compile-time error</span>
   ex.printStackTrace();
 }
 </code></pre>
