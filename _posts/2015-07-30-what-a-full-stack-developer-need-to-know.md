@@ -1,6 +1,6 @@
 ---
 layout: post
-title: What a full-stack developer need to know?
+title: What a full-stack developer needs to know?
 description: Do you want to be a full-stack developer? Then these are the technologies and tools you should know
 categories:
   - development
