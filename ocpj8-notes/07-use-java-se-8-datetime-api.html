@@ -103,7 +103,7 @@ ZonedDateTime zdt2 = ZonedDateTime.now(ZoneId.of(<span class="hljs-string">"Euro
 OffsetTime ot = OffsetTime.ofInstant(Intant.now(),ZoneId.of(<span class="hljs-string">"America/Los_Angeles"</span>)); <span class="hljs-comment">//22:42:20.101-07:00</span>
 </code></pre>
 <p><a href="http://docs.oracle.com/javase/8/docs/api/java/time/Clock.html">Clock</a> gives us the ability to get the current date/time from the system clock with a specific timezone:</p>
-<pre><code class="hljs java">Clock <span class="hljs-keyword">default</span> = Clock.systemDefaultZone();
+<pre><code class="hljs java">Clock <span class="hljs-keyword">defaultZone</span> = Clock.systemDefaultZone();
 Clock clock = Clock.system(ZoneId.of(<span class="hljs-string">"Europe/Italy"</span>));
 </code></pre>
 <h3 id="formatting">Formatting</h3>

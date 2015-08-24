@@ -287,7 +287,6 @@ James
 <p>In Java 8, collections have methods that return a stream, for example, <em>List</em> and <em>Set</em> support the new methods <code>stream()</code> and  <code>parallelStream()</code> to either create a sequential or a parallel stream.</p>
 <p>But we don&#39;t have to create collections in order to work with streams:</p>
 <pre><code class="hljs java">Stream.of(<span class="hljs-string">"a1"</span>, <span class="hljs-string">"a2"</span>, <span class="hljs-string">"a3"</span>)
-    .findFirst()
     .forEach(System.out::println);
 </code></pre>
 <p><code>Stream.of()</code> will create a stream from object references.</p>
