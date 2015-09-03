@@ -1,0 +1,860 @@
+---
+layout: post
+title: Building a mini Twitter clone with Spark
+description: This tutorial will walk you through the steps of creating a mini Twitter clone using Spark, Freemarker, Spring, and HSQLDB to show you how to build a simple but complete web application.
+code: true
+category:
+  - java
+---
+
+<div class="notification"><em>The complete code of this application is available on <a href="https://github.com/eh3rrera/minitwit" target="_blank">GitHub</a>. </em></div>
+
+<p>&nbsp;</p>
+
+<h2 id="what-you-will-learn">What you will learn</h2>
+<p>In this tutorial, you will learn how to create a web application using <a href="http://sparkjava.com" target="_blank">Spark</a> (the web microframework, not Apache Spark) and <a href="http://freemarker.org/" target="_blank">Freemarker</a> on the view layer, <a href="http://projects.spring.io/spring-framework/" target="_blank">Spring</a> for dependency injection and data access, and <a href="http://hsqldb.org/" target="_blank">HSQLDB</a> as the database.</p>
+
+<p>Particularly, you’ll learn:</p>
+
+<ul>
+  <li>How to structure a Web application with Spark</li>
+  <li>How to handle post requests with Spark</li>
+  <li>How to create a master template in Freemarker</li>
+  <li>How to integrate Spring with Spark</li>
+  <li>How to use HSQLBD as an in-memory database</li>
+</ul>
+
+<p>Among other things. So let’s get started.</p>
+
+<h2 id="whats-in-a-name">What’s in a name?</h2>
+
+<p>The application we’re going to build for this tutorial is a <em>mini</em> clone of <a href="https://twitter.com" target="_blank">Twitter</a>.</p>
+
+<p>Why <em>mini</em>?</p>
+
+<p>To keep things simple, we’ll only implement the following functionality:</p>
+
+<ul>
+  <li>Log in / Log out</li>
+  <li>Registration</li>
+  <li>User’s timeline / Public timeline</li>
+  <li>Follow / Unfollow</li>
+</ul>
+
+<p>There won’t be any:</p>
+
+<ul>
+  <li>Favorites</li>
+  <li>Retweets</li>
+  <li>Direct messages</li>
+  <li>Notifications</li>
+  <li>Recommendations</li>
+</ul>
+
+<p>And all the other things that are the reason we have come to love Twitter.</p>
+
+<p>All of this work (including the name) is based on the <a href="http://github.com/mitsuhiko/flask/tree/master/examples/minitwit/" target="_blank">minitwit</a> example for the <a href="http://flask.pocoo.org/" target="_blank">Flask</a> Python web microframework written by <a href="http://www.pocoo.org/team/#armin-ronacher" target="_blank">Armin Ronacher</a>.</p>
+
+<h2 id="minitwit">minitwit</h2>
+
+<p>Here are some screenshots of the application:</p>
+
+<p>
+	<img class="img-bordered" src="/images/2015-09-03-spark-minitwit/sign_in.png" alt="Sign in" />
+	<div style="text-align:center"><em>Sign in</em></div>
+</p>
+
+<p>
+	<img class="img-bordered" src="/images/2015-09-03-spark-minitwit/sign_up.png" alt="Sign up" />
+	<div style="text-align:center"><em>Sign up</em></div>
+</p>
+
+<p>
+	<img class="img-bordered" src="/images/2015-09-03-spark-minitwit/my_timeline.png" alt="My Timeline" />
+	<div style="text-align:center"><em>My Timeline</em></div>
+</p>
+
+<p>
+	<img class="img-bordered" src="/images/2015-09-03-spark-minitwit/other_user_timeline.png" alt="Other User's Timeline" />
+	<div style="text-align:center"><em>Other User's Timeline</em></div>
+</p>
+
+<p>
+	<img class="img-bordered" src="/images/2015-09-03-spark-minitwit/public_timeline.png" alt="Public Timeline" />
+	<div style="text-align:center"><em>Public Timeline</em></div>
+</p>
+
+<p>As you can see, this is a very simple application.</p>
+
+<p>One nice feature is that it’s also very easy to run. You only need two things installed:</p>
+
+<ul>
+  <li>Java 8</li>
+  <li>Maven 3</li>
+</ul>
+
+<p>Just clone or download the repository on <a href="https://github.com/eh3rrera/minitwit" target="_blank">GitHub</a>, go to the root directory, and execute the following Maven command:</p>
+
+<pre><code class="language-bash">mvn compile exec:java</code></pre>
+
+<p>Then, open your browser at <em>http://localhost:4557</em>.</p>
+
+<p>The application uses an embedded in-memory database, meaning that everything you do is not persisted after the application is terminated. The advantage is that you don’t need a database installed to run the application, and in the way the code is structured, it can be changed to use any other relational database easily (more on this later).</p>
+
+<p>The database has some dummy users and messages already inserted. You can use user001/user001 as a user/password combination to log into the application, or user002/user002, or user003/user003 until user010/user010, or sign up yourself. If your e-mail address has an associated Gravatar image, this will be used as your profile image.</p>
+
+<p>You can go and try it now to learn more about how the application works.</p>
+
+<p>Ready?</p>
+
+<p>Now let’s dive into the technical part.</p>
+
+<h2 id="code-organization">Code Organization</h2>
+
+<p>The code is organized into the following packages:</p>
+
+<p>
+	<img class="img-bordered" src="/images/2015-09-03-spark-minitwit/package_organization.png" alt="Code Package Organization" />
+	<div style="text-align:center"><em>Packages of the project in Eclipse IDE</em></div>
+</p>
+
+<ul>
+  <li>
+    <p><strong>src/main/java</strong></p>
+
+    <ul>
+      <li>
+        <p><em>com.minitwit</em><br />
+  Base package, contains the main class of the application.</p>
+      </li>
+      <li>
+        <p><em>com.minitwit.config</em><br />
+  Contains the classes that set up the database and web routes.</p>
+      </li>
+      <li>
+        <p><em>com.minitwit.dao</em><br />
+  Contains the interfaces that define the functionality to access the database using the Data Access Object (DAO) pattern.</p>
+      </li>
+      <li>
+        <p><em>com.minitwit.dao.impl</em><br />
+  Contains the classes that implement the functionality to access the HSQLDB database.</p>
+      </li>
+      <li>
+        <p><em>com.minitwit.model</em><br />
+  Contains the POJO classes that represent the model of the application.</p>
+      </li>
+      <li>
+        <p><em>com.minitwit.service.impl</em><br />
+  Contains the class that acts as a facade to access the DAOs from the presentation layer.</p>
+      </li>
+      <li>
+        <p><em>com.minitwit.util</em><br />
+  Contains utility classes for password hashes and Gravatar images.</p>
+      </li>
+    </ul>
+  </li>
+  <li>
+    <p><strong>src/main/resources</strong></p>
+
+    <ul>
+      <li>
+        <p><em>public</em><br />
+  Contains the static files used by the web application (currently, only the CSS style sheet).</p>
+      </li>
+      <li>
+        <p><em>spark/template/freemarker</em><br />
+  Contains the Freemarker templates</p>
+      </li>
+      <li>
+        <p><em>sql</em><br />
+  Contains the SQL initialization scripts for the database.</p>
+      </li>
+    </ul>
+  </li>
+</ul>
+
+<p>Now that we know how the code is structured, let’s see how the project is set up with Maven.</p>
+
+<h2 id="pomxml">pom.xml</h2>
+
+<p>Let’s start by listing the project’s dependencies (the latest versions at the time of the project creation were used):</p>
+
+<ul>
+  <li>Java 8. The latest version of Spark runs on Java 8.</li>
+  <li>Spark 2.2. Web microframework.</li>
+  <li>Spark Freemarker 2.3.23. Library that handles the integration between Spark and Freemarker.</li>
+  <li>Spring 4.2.0. Used for dependency injection and as a JDBC framework.</li>
+  <li>HSQLDB 2.3.3. Used as a database.</li>
+  <li>DBCP 2.1.1. Used for the pool connection to the database.</li>
+  <li>jBCrypt 0.4. Used to hash the user’s password.</li>
+  <li>Commons Bean Utils 1.9.2. Used to populate a POJO model from a map of request parameters.</li>
+</ul>
+
+<p>It’s a good practice to keep the dependency versions as properties so they can be easily changed or for the case that more than one library of the same project uses the same version (like Spring for example).</p>
+
+<p>So here are the properties:</p>
+
+<pre><code class="language-xml">
+&lt;properties&gt;
+    &lt;jdk.version&gt;1.8&lt;/jdk.version&gt;
+    &lt;spark.version&gt;2.2&lt;/spark.version&gt;
+    &lt;spark.freemarker.version&gt;2.0.0&lt;/spark.freemarker.version&gt;
+    &lt;freemarker.version&gt;2.3.23&lt;/freemarker.version&gt;
+    &lt;spring.version&gt;4.2.0.RELEASE&lt;/spring.version&gt;
+    &lt;hsqldb.version&gt;2.3.3&lt;/hsqldb.version&gt;
+    &lt;dbcp.version&gt;2.1.1&lt;/dbcp.version&gt;
+    &lt;jbcrypt.version&gt;0.4&lt;/jbcrypt.version&gt;
+    &lt;commons.beanutils.version&gt;1.9.2&lt;/commons.beanutils.version&gt;
+&lt;/properties&gt;
+
+</code></pre>
+
+<p>And here are the dependencies:</p>
+
+<pre><code class="language-xml">
+&lt;dependencies&gt;
+    &lt;!-- Spark Java --&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;com.sparkjava&lt;/groupId&gt;
+        &lt;artifactId&gt;spark-core&lt;/artifactId&gt;
+        &lt;version&gt;${spark.version}&lt;/version&gt;
+    &lt;/dependency&gt;
+    
+    &lt;!-- Spark Freemarker --&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;com.sparkjava&lt;/groupId&gt;
+        &lt;artifactId&gt;spark-template-freemarker&lt;/artifactId&gt;
+        &lt;version&gt;${spark.freemarker.version}&lt;/version&gt;
+    &lt;/dependency&gt;
+    
+    &lt;!-- Freemarker --&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.freemarker&lt;/groupId&gt;
+        &lt;artifactId&gt;freemarker&lt;/artifactId&gt;
+        &lt;version&gt;${freemarker.version}&lt;/version&gt;
+    &lt;/dependency&gt;
+
+    &lt;!-- Spring Core --&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.springframework&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-core&lt;/artifactId&gt;
+        &lt;version&gt;${spring.version}&lt;/version&gt;
+    &lt;/dependency&gt;
+
+    &lt;!-- Spring Context --&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.springframework&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-context&lt;/artifactId&gt;
+        &lt;version&gt;${spring.version}&lt;/version&gt;
+    &lt;/dependency&gt;
+
+    &lt;!-- Spring JDBC --&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.springframework&lt;/groupId&gt;
+        &lt;artifactId&gt;spring-jdbc&lt;/artifactId&gt;
+        &lt;version&gt;${spring.version}&lt;/version&gt;
+    &lt;/dependency&gt;
+
+    &lt;!-- HyperSQL DB --&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.hsqldb&lt;/groupId&gt;
+        &lt;artifactId&gt;hsqldb&lt;/artifactId&gt;
+        &lt;version&gt;${hsqldb.version}&lt;/version&gt;
+    &lt;/dependency&gt;
+
+    &lt;!--  Connection pool --&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;org.apache.commons&lt;/groupId&gt;
+        &lt;artifactId&gt;commons-dbcp2&lt;/artifactId&gt;
+        &lt;version&gt;${dbcp.version}&lt;/version&gt;
+    &lt;/dependency&gt;
+	
+    &lt;!-- Password hashes --&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;de.svenkubiak&lt;/groupId&gt;
+        &lt;artifactId&gt;jBCrypt&lt;/artifactId&gt;
+        &lt;version&gt;${jbcrypt.version}&lt;/version&gt;
+    &lt;/dependency&gt;
+	
+    &lt;!-- Populate bean from request --&gt;
+    &lt;dependency&gt;
+        &lt;groupId&gt;commons-beanutils&lt;/groupId&gt;
+        &lt;artifactId&gt;commons-beanutils&lt;/artifactId&gt;
+        &lt;version&gt;${commons.beanutils.version}&lt;/version&gt;
+    &lt;/dependency&gt;	
+&lt;/dependencies&gt;
+
+</code></pre>
+
+<p>Now let’s configure two plugins. </p>
+
+<p>The first is to ensure that Maven compiles and runs the application using Java 8. This is done with the <code>maven-compiler-plugin</code>.</p>
+
+<p>The second plugin will be used to easily run the application from the command line. We can execute any Java class with Maven by using the following command:</p>
+
+<pre><code class="language-bash">mvn exec:java -Dexec.mainClass="com.example.MainClass" -Dexec.args="arg0 arg1 arg2"</code></pre>
+
+<p>As you can see, to use this command, you should know the package and name of the class to execute as well as the parameters it takes. Hopefully, you can declare this information in the pom.xml file with <code>exec-maven-plugin</code>, so you can run the program with just:</p>
+
+<pre><code class="language-bash">mvn exec:java</code></pre>
+
+<p>So this is how it looks the plugin section of the pom.xml file:</p>
+
+<pre><code class="language-xml">
+&lt;build&gt;
+    &lt;plugins&gt;
+        &lt;plugin&gt;
+            &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;
+            &lt;artifactId&gt;maven-compiler-plugin&lt;/artifactId&gt;
+            &lt;configuration&gt;
+                &lt;source&gt;${jdk.version}&lt;/source&gt;
+                &lt;target&gt;${jdk.version}&lt;/target&gt;
+            &lt;/configuration&gt;
+        &lt;/plugin&gt;
+	
+        &lt;plugin&gt;
+            &lt;groupId&gt;org.codehaus.mojo&lt;/groupId&gt;
+            &lt;artifactId&gt;exec-maven-plugin&lt;/artifactId&gt;
+            &lt;version&gt;1.2.1&lt;/version&gt;
+            &lt;executions&gt;
+                &lt;execution&gt;
+                    &lt;goals&gt;
+                        &lt;goal&gt;java&lt;/goal&gt;
+                    &lt;/goals&gt;
+                &lt;/execution&gt;
+            &lt;/executions&gt;
+            &lt;configuration&gt;
+                &lt;mainClass&gt;com.minitwit.App&lt;/mainClass&gt;
+                &lt;arguments&gt;&lt;/arguments&gt;
+            &lt;/configuration&gt;
+        &lt;/plugin&gt;
+    &lt;/plugins&gt;
+&lt;/build&gt;
+
+</code></pre>
+
+<p>Now let’s take a deeper look to the frameworks used starting with Spring.</p>
+
+<h2 id="using-spring">Using Spring</h2>
+<p>Spring is a framework that provides support for dependency injection, transaction management, and data access, among other things, to reduce the “plumbing” required to build Java applications.</p>
+
+<p>Spring manages dependencies through the concept of an <em>Application Context</em>, a sort of a central registry used to manage the life cycle of the objects (<em>beans</em>, in Spring terminology) of an application.</p>
+
+<p>There are two main ways of configuring beans in Spring:</p>
+
+<ul>
+  <li>XML</li>
+  <li>Annotations</li>
+</ul>
+
+<p>This application takes the second approach.</p>
+
+<p>The main class (and starting point) is <code>com.minitwit.App</code>:</p>
+
+<pre><code class="language-java">
+@Configuration
+@ComponentScan({ &quot;com.minitwit&quot; })
+public class App {
+    public static void main(String[] args) {
+    	AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(App.class);
+    	new WebConfig(ctx.getBean(MiniTwitService.class));
+        ctx.registerShutdownHook();
+    }
+}
+
+</code></pre>
+
+<p>This class has two important annotations:</p>
+
+<ul>
+  <li><code>@Configuration</code>. This annotation makes the <code>App</code> class say to Spring <em>“Hey, I’m a special class, I hold some configuration information for you”</em>.</li>
+  <li><code>ComponentScan({"com.minitwit"})</code>. This annotation takes as an argument a list of packages where Spring will look for annotated classes to add to its configuration. In this case, there’s just one package, <code>com.minitwit</code>.</li>
+</ul>
+
+<p>Inside the <code>com.minitwit</code> package, we can find the following annotated classes:</p>
+
+<ul>
+  <li><em>com.minitwit.config.DatabaseConfig</em>:</li>
+</ul>
+
+<pre><code class="language-java">
+@Configuration
+public class DatabaseConfig {
+    @Bean
+    public DataSource dataSource() {
+        EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
+        EmbeddedDatabase db = builder
+                .setType(EmbeddedDatabaseType.HSQL)
+                .addScript(&quot;sql/create-db.sql&quot;)
+                .addScript(&quot;sql/insert-data.sql&quot;)
+                .build();
+        return db;
+    }
+}
+
+</code></pre>
+
+<p>In this class we can find a method annotated with <code>@Bean</code>. This annotation adds the object returned by the method to Spring’s application context, making it available to others beans.</p>
+
+<p>This class configures the datasource for our application. It uses Spring support to use HSQLDB as an embedded database (in-memory database). A good tutorial about Spring embedded databases can be found <a href="http://www.mkyong.com/spring/spring-embedded-database-examples/" target="_blank">here</a>. If we were to use another database, this will be the place to configure the access information (datasource) for that other database.</p>
+
+<ul>
+  <li><em>com.minitwit.service.impl.MiniTwitService</em>:</li>
+</ul>
+
+<pre><code class="language-java">
+@Service
+public class MiniTwitService {
+    @Autowired
+    private UserDao userDao;
+	
+    @Autowired
+    private MessageDao messageDao;
+
+    // Methods...
+}
+
+</code></pre>
+
+<p>This extract of the class shows two other important annotations, <code>@Service</code> and <code>@Autowired</code>.</p>
+
+<p>Just as <code>@Bean</code> marks a method so it can be used by Spring, <code>@Service</code> marks a class as a “service” to be added to Spring’s application context.</p>
+
+<p>On the other hand, <code>@Autowired</code> is an annotation that tells Spring where to inject an object for you. So instead of coding something like:</p>
+
+<pre><code class="language-java">
+private UserDao userDao = new UserDao();
+</code></pre>
+
+<p>Spring instantiates the object (and its dependencies) and set it for you. This is the concept of dependency injection. Of course, the only requirement is that the objects to be injected are managed by Spring.</p>
+
+<ul>
+  <li><em>com.minitwit.dao.impl.UserDaoImpl</em>:</li>
+</ul>
+
+<pre><code class="language-java">
+@Repository
+public class UserDaoImpl implements UserDao {
+	
+    private NamedParameterJdbcTemplate template;
+
+    @Autowired
+    public UserDaoImpl(DataSource ds) {
+        template = new NamedParameterJdbcTemplate(ds);
+    }
+
+    // Methods
+}
+
+</code></pre>
+<ul>
+  <li><em>com.minitwit.dao.impl.MessageDaoImpl</em>:</li>
+</ul>
+
+<pre><code class="language-java">
+@Repository
+public class MessageDaoImpl implements MessageDao {
+	
+    // ...
+    private NamedParameterJdbcTemplate template;
+
+    @Autowired
+    public MessageDaoImpl(DataSource ds) {
+        template = new NamedParameterJdbcTemplate(ds);
+    }
+    // Methods
+}
+
+</code></pre>
+
+<p>These classes are based on the DAO pattern to abstract the persistence implementation details in the application. If you want to use another database, or an ORM like <a href="http://hibernate.org/" target="_blank">Hibernate</a>, just create another implementation of the interfaces <code>com.minitwit.dao.UserDao</code> and <code>com.minitwit.dao.MessageDao</code>.</p>
+
+<p>Also, these classes are annotated with <code>@Repository</code> instead of <code>@Service</code>. <code>@Repository</code> is recommended for any class that fulfills the role of a DAO or a repository. Spring uses <code>@Component</code> as a generic stereotype for any managed component. <code>@Repository</code> (for persistence layer classes), <code>@Service</code> (for services), and <code>@Controller</code> (for the presentation layer) are specializations of <code>@Component</code>.</p>
+
+<p><br />
+Going back to <code>com.minitwit.App</code>, the <code>main</code> method creates a Spring application context of type  <code>AnnotationConfigApplicationContext</code>, passing as an argument the <code>App</code> class itself so Spring can read the annotations on this class and scan the package <code>com.minitwit</code> for other classes with Spring annotations:</p>
+
+<pre><code class="language-java">
+public static void main(String[] args) {
+    AnnotationConfigApplicationContext ctx = new AnnotationConfigApplicationContext(App.class);
+    new WebConfig(ctx.getBean(MiniTwitService.class));
+    ctx.registerShutdownHook();
+}
+
+</code></pre>
+
+<p>The next line creates an instance of <code>com.minitwit.config.WebConfig</code> (which holds the web routes configuration) passing as an argument a bean of type <code>MiniTwitService</code>. This bean has dependencies to the DAOs that in turn depend on the datasource to HSQLDB to work. As you can see, with some simple annotations, Spring creates all these dependencies for us, making the code simpler.</p>
+
+<p>At some point, the application context has to be closed. We can’t just close it at this point with something like <code>ctx.close()</code>, because the access to the in-memory database will be lost (remember it  was created through the Spring embedded database classes).</p>
+
+<p>Luckely, there’s a method, <code>registerShutdownHook()</code>, that register a shutdown hook with the JVM runtime, closing this context on JVM shutdown (when we close or terminate the program). This is perfect for an application that just waits to listen for connections until is terminated, like this one.</p>
+
+<p>This class is just the starting point of the application. The best part is what happens inside <code>com.minitwit.config.WebConfig</code>.</p>
+
+<h2 id="spark">Spark</h2>
+<p><code>com.minitwit.config.WebConfig</code> holds the web routes configuration.</p>
+
+<p>Its constructor takes an instance of <code>com.minitwit.service.impl.MiniTwitService</code> that is used to execute the business logic of the application:</p>
+
+<pre><code class="language-java">
+public WebConfig(MiniTwitService service) {
+    this.service = service;
+    staticFileLocation(&quot;/public&quot;);
+    setupRoutes();
+}
+
+</code></pre>
+
+<p><code>MiniTwitService</code> is stateless (it doesn’t store any client state), thus it can be safely saved as an instance variable so it can be shared across all client requests.</p>
+
+<p>In the next line, a static file location (where the CSS style sheet is located) is specified a finally, a method to set up the web routes is called.</p>
+
+<p>The application responds to the following routes:</p>
+
+<ul>
+  <li><em>/</em><br />
+For authenticated users, it presents the user’s timeline, containing her own messages and the ones from the users she follows. If the user is not authenticated, it’s redirected to the public timeline.</li>
+  <li><em>/public</em><br />
+It presents a timeline with messages from all users of the application.</li>
+  <li><em>/login</em><br />
+As a <em>get</em> request, it presents the sign in form. If the user is already authenticated, this route redirects to the user’s timeline. As a <em>post</em> request, it performs the actual sign in.</li>
+  <li><em>/register</em><br />
+As a <em>get</em> request, it presents the sign up form. If the user is already authenticated, this route redirects to the user’s timeline. As a <em>post</em> request, it performs the actual registration.</li>
+  <li><em>/t/:username</em><br />
+It presents the timeline of the given user. If the user doesn’t exist, a 404 status with an error message is returned.</li>
+  <li><em>/t/:username/follow</em><br />
+Adds the current (authenticated) user as a follower of the given user. If the user doesn’t exist, a 404 status with an error message is returned. If the user is not authenticated, this route redirects to the login page.</li>
+  <li><em>/t/:username/unfollow</em><br />
+Removes the current (authenticated) user as a follower of the given user. If the user doesn’t exist, a 404 status with an error message is returned. If the user is not authenticated, this route redirects to the login page.</li>
+</ul>
+
+<p>Take for example, the route that presents the user’s timeline:</p>
+
+<pre><code class="language-java">
+get(&quot;/&quot;, (req, res) -&gt; {
+        User user = getAuthenticatedUser(req);
+        Map&lt;String, Object&gt; map = new HashMap&lt;&gt;();
+        map.put(&quot;pageTitle&quot;, &quot;Timeline&quot;);
+        map.put(&quot;user&quot;, user);
+        List&lt;Message&gt; messages = service.getUserFullTimelineMessages(user);
+        map.put(&quot;messages&quot;, messages);
+        return new ModelAndView(map, &quot;timeline.ftl&quot;);
+}, new FreeMarkerEngine());
+
+</code></pre>
+
+<p>First, it gets the authenticated user with a method that just retrieves it from the session:</p>
+
+<pre><code class="language-java">
+private User getAuthenticatedUser(Request request) {
+    return request.session().attribute(USER_SESSION_ID);
+}
+
+</code></pre>
+
+<p>Then, it creates a <code>Map</code> that will contain the variables used by the Freemarker template.</p>
+
+<p>Notice how the service is called to get the timeline messages. This service is just a thin facade for the user and message DAOs. For example, here’s the content of the <code>MessageDaoImpl.getUserFullTimelineMessages(User)</code> method:</p>
+
+<pre><code class="language-java">
+@Override
+public List&lt;Message&gt; getUserFullTimelineMessages(User user) {
+    Map&lt;String, Object&gt; params = new HashMap&lt;String, Object&gt;();
+    params.put(&quot;id&quot;, user.getId());
+        
+    String sql = &quot;select message.*, user.* from message, user &quot; +
+        &quot;where message.author_id = user.user_id and ( &quot; +
+        &quot;user.user_id = :id or &quot; +
+        &quot;user.user_id in (select followee_id from follower &quot; +
+                                    &quot;where follower_id = :id))&quot; +
+        &quot;order by message.pub_date desc&quot;;
+    List&lt;Message&gt; result = template.query(sql, params, messageMapper);
+		
+    return result;
+}
+
+// Other methods...
+
+private RowMapper&lt;Message&gt; messageMapper = (rs, rowNum) -&gt; {
+    Message m = new Message();
+		
+    m.setId(rs.getInt(&quot;message_id&quot;));
+    m.setUserId(rs.getInt(&quot;author_id&quot;));
+    m.setUsername(rs.getString(&quot;username&quot;));
+    m.setText(rs.getString(&quot;text&quot;));
+    m.setPubDate(rs.getTimestamp(&quot;pub_date&quot;));
+    m.setGravatar(GravatarUtil.gravatarURL(rs.getString(&quot;email&quot;), GRAVATAR_DEFAULT_IMAGE_TYPE, GRAVATAR_SIZE));
+		
+    return m;
+};
+
+</code></pre>
+
+<p>Using Spring’s <code>NamedParameterJdbcTemplate</code> class, the query is executed with some parameters passed in a <code>Map</code>. A <code>RowMapper</code> instance creates <code>Message</code> objects from the returned <code>ResultSet</code>.</p>
+
+<p>The schema of the database is actually very simple (it’s located in <em>src/main/resource/sql</em>):</p>
+
+<pre><code class="language-sql">
+create table user (
+  user_id integer primary key GENERATED BY DEFAULT AS IDENTITY(START WITH 100),
+  username varchar(50) not null,
+  email varchar(50) not null,
+  pw varchar(255) not null
+);
+
+create table follower (
+  follower_id integer,
+  followee_id integer
+);
+
+create table message (
+  message_id integer primary key GENERATED BY DEFAULT AS IDENTITY(START WITH 100),
+  author_id integer not null,
+  text varchar(160) not null,
+  pub_date timestamp
+);
+
+</code></pre>
+
+<p>One table stores user information, another table stores message information (with a reference to the user’s table), and a third table stores the following relationship between two users.</p>
+
+<p>The user profile image is handled by Gravatar. The <code>com.minitwit.util.GravatarUtil</code> class builds the URL to get the image from the user’s e-mail. You can know more about how this URL is constructed in this <a href="https://en.gravatar.com/site/implement/images/" target="_blank">link</a>.</p>
+
+<p>Back to the user’s timeline route configuration, in the last step, the map with all the variables is passed to the Freemarker template.</p>
+
+<p>Most routes check if the user is authenticated or if a given user exists, either to redirect to the appropriate page or to send an error. To keep things clean, this is done in a before filter. Here’s an example from the <em>/t/:username/follow</em> route:</p>
+
+<pre><code class="language-java">
+before(&quot;/t/:username/follow&quot;, (req, res) -&gt; {
+    String username = req.params(&quot;:username&quot;);
+    User authUser = getAuthenticatedUser(req);
+    User profileUser = service.getUserbyUsername(username);
+    if(authUser == null) {
+        res.redirect(&quot;/login&quot;);
+        halt();
+    } else if(profileUser == null) {
+        halt(404, &quot;User not Found&quot;);
+    }
+});
+
+</code></pre>
+
+<p>First, the code checks if there’s an authenticated user. If there isn’t one, the user is redirected to the login page. Then, it checks if the user to be followed exists. If the user doesn’t exist, an error is returned. Notice that the use of <code>halt()</code> is necessary in both cases to prevent the request to continue to the route handler.</p>
+
+<p>Another example worth mentioning is a POST route. This is the code for the registration handler:</p>
+
+<pre><code class="language-java">
+post(&quot;/register&quot;, (req, res) -&gt; {
+    Map&lt;String, Object&gt; map = new HashMap&lt;&gt;();
+    User user = new User();
+    try {
+        MultiMap&lt;String&gt; params = new MultiMap&lt;String&gt;();
+        UrlEncoded.decodeTo(req.body(), params, &quot;UTF-8&quot;, -1);
+        BeanUtils.populate(user, params);
+    } catch (Exception e) {
+        halt(501);
+        return null;
+    }
+    String error = user.validate();
+    if(StringUtils.isEmpty(error)) {
+        User existingUser = service.getUserbyUsername(user.getUsername());
+        if(existingUser == null) {
+            service.registerUser(user);
+            res.redirect(&quot;/login?r=1&quot;);
+            halt();
+        } else {
+            error = &quot;The username is already taken&quot;;
+        }
+    }
+    map.put(&quot;error&quot;, error);
+    map.put(&quot;username&quot;, user.getUsername());
+    map.put(&quot;email&quot;, user.getEmail());
+    return new ModelAndView(map, &quot;register.ftl&quot;);
+}, new FreeMarkerEngine());
+
+</code></pre>
+
+<p>One way to access POST parameters in Spark is with the method <code>Request.body()</code>. This method returns a <code>String</code> like the following:</p>
+
+<pre><code class="language-java">
+username=user050&amp;email=user@mail.com&amp;password=12345
+</code></pre>
+
+<p>Fortunately, the jetty server that comes with Spark has a class to parse this type of URLs, <code>UrlEncoded.decodeTo(String, MultiMap, String, int)</code>, which takes four parameters:</p>
+
+<ul>
+  <li>The string with the parameters to read</li>
+  <li>An instance of <code>org.eclipse.jetty.util.MultiMap</code> (that extends from  <code>HashMap</code>) where the parameters will be stored</li>
+  <li>The encoding of the string (most of the times <code>UTF-8</code>)</li>
+  <li>The maximum numbers of keys to store in the map (<code>-1</code> to read them all)</li>
+</ul>
+
+<p>Once the parameters are stored in the map, the method <code>BeanUtils.populate(Object, Map)</code> is used to set the properties of the object from the map. The only restriction is that the keys of the map (the parameters’ name) must be the identical to the property names of the object.</p>
+
+<p>If the object is populated successfully, the next step is to validate the information sent by the user. The knowledge of how to validate the information should be in the model object itself. Here’s the code of the <code>validate()</code> method:</p>
+
+<pre><code class="language-java">
+public String validate() {
+    String error = null;
+	
+    if(StringUtils.isEmpty(username)) {
+        error = &quot;You have to enter a username&quot;;
+    } else if(!EMAIL_ADDRESS_REGEX.matcher(email).matches()) {
+        error = &quot;You have to enter a valid email address&quot;;
+    } else if(StringUtils.isEmpty(password)) {
+        error = &quot;You have to enter a password&quot;;
+    } else if(!password.equals(password2)) {
+        error = &quot;The two passwords do not match&quot;;
+    }
+	
+    return error;
+}
+
+</code></pre>
+
+<p>The only validation that can’t be done inside this method (because it would need a reference to the service and that’s not recommended) is the one about the username already taken:</p>
+
+<pre><code class="language-java">
+User existingUser = service.getUserbyUsername(user.getUsername());
+if(existingUser == null) {
+    service.registerUser(user);
+    res.redirect("/login?r=1");
+    halt();
+} else {
+    error = "The username is already taken";
+}
+</code></pre>
+
+<p>If everything is correct, the user is registered and redirected to the sign in page, with a flag set to show a message about the success of the operation.</p>
+
+<p>If there’s an error, a map with the error message and the values entered by the user is sent to the Freemarker template to present this information.</p>
+
+<h2 id="freemarker">Freemarker</h2>
+<p>Freemarker is used as the template mechanism to generate the HTML pages of the application.</p>
+
+<p>Thanks to the <a href="https://github.com/perwendel/spark-template-engines/tree/master/spark-template-freemarker" target="_blank">Spark-Freemarker library</a>, we just have to wrap the template’s parameters into a map and return a <code>ModelAndView</code> object pointing to the template file. For example, here’s the code to present the login page:</p>
+
+<pre><code class="language-java">
+get(&quot;/login&quot;, (req, res) -&gt; {
+        Map&lt;String, Object&gt; map = new HashMap&lt;&gt;();
+        if(req.queryParams(&quot;r&quot;) != null) {
+            map.put(&quot;message&quot;, &quot;You were successfully registered and can login now&quot;);
+        }
+        return new ModelAndView(map, &quot;login.ftl&quot;);
+}, new FreeMarkerEngine());
+
+</code></pre>
+
+<p>The application only uses four templates:</p>
+
+<ul>
+  <li><em>login.ftl</em><br />
+For the login page</li>
+  <li><em>register.ftl</em><br />
+For the registration page</li>
+  <li><em>timeline.ftl</em><br />
+For the public and user’s timeline pages</li>
+  <li>masterTemplate.ftl<br />
+Contains the main layout of the application</li>
+</ul>
+
+<p>Most web applications use the same layout (for example, a header, a content area, and a footer) for all their pages. It would be impractical to repeat the code of this layout in all the pages (what if something changes? you’d have to replicate this change in all the pages). Many template libraries include some sort of extending or including mechanism so the layout information is contained in just one file.</p>
+
+<p>In the case of Freemarker, it contains an <a href="http://freemarker.org/docs/ref_directive_include.html" target="_blank">include</a> directive, but it may not be appropiate in all cases. For this kind of job, a combination of the <a href="http://freemarker.org/docs/ref_directive_macro.html" target="_blank">macro</a> and <a href="http://freemarker.org/docs/ref_directive_import.html" target="_blank">import</a> directives is better suited.</p>
+
+<p>Here’s the content of <code>masterTemplate.ftl</code>:</p>
+
+<pre><code class="language-xml">
+&lt;#macro masterTemplate title=&quot;Welcome&quot;&gt;
+    &lt;!DOCTYPE html
+            PUBLIC &quot;-//W3C//DTD XHTML 1.0 Transitional//EN&quot;
+            &quot;http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd&quot;&gt;
+    &lt;html xmlns=&quot;http://www.w3.org/1999/xhtml&quot;&gt;
+    &lt;head&gt;
+        &lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; charset=UTF-8&quot;&gt;&lt;/meta&gt;
+        &lt;title&gt;${title} | MiniTwit&lt;/title&gt;
+        &lt;link rel=&quot;stylesheet&quot; type=&quot;text/css&quot; href=&quot;/css/style.css&quot;&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+	&lt;div class=&quot;page&quot;&gt;
+  		&lt;h1&gt;MiniTwit&lt;/h1&gt;
+	  	&lt;div class=&quot;navigation&quot;&gt;
+	  	&lt;#if user??&gt;
+	    	&lt;a href=&quot;/&quot;&gt;my timeline&lt;/a&gt; |
+	    	&lt;a href=&quot;/public&quot;&gt;public timeline&lt;/a&gt; |
+	    	&lt;a href=&quot;/logout&quot;&gt;sign out [${user.username}]&lt;/a&gt;
+	  	&lt;#else&gt;
+		    &lt;a href=&quot;/public&quot;&gt;public timeline&lt;/a&gt; |
+		    &lt;a href=&quot;/register&quot;&gt;sign up&lt;/a&gt; |
+		    &lt;a href=&quot;/login&quot;&gt;sign in&lt;/a&gt;
+	  	&lt;/#if&gt;
+	  	&lt;/div&gt;
+	  	&lt;div class=&quot;body&quot;&gt;
+	  		&lt;#nested /&gt;
+	  	&lt;/div&gt;
+	  	&lt;div class=&quot;footer&quot;&gt;
+		    MiniTwit &amp;mdash; A Spark Application
+	  	&lt;/div&gt;
+	&lt;/div&gt;
+    &lt;/body&gt;
+    &lt;/html&gt;
+&lt;/#macro&gt;
+
+</code></pre>
+
+<p>A macro defines a template fragment that allows parameters with default values (like <code>${title}</code>) that can be used as a user-defined directive. It can contain a <code>nested</code> element that will be executed in the context where the macro is called.</p>
+
+<p>To use this master template, we have to import it with the <code>import</code> directive and provide the content that will be replaced by the <code>nested</code> element. For example, here’s the content of <em>login.ftl</em>:</p>
+
+<pre><code class="language-xml">
+&lt;#import &quot;masterTemplate.ftl&quot; as layout /&gt;
+
+&lt;@layout.masterTemplate title=&quot;Sign In&quot;&gt;
+    &lt;h2&gt;Sign In&lt;/h2&gt;
+    &lt;#if message??&gt;
+    	&lt;div class=&quot;success&quot;&gt;
+    		${message}
+    	&lt;/div&gt;
+    &lt;/#if&gt;
+    &lt;#if error??&gt;
+    	&lt;div class=&quot;error&quot;&gt;
+    		&lt;strong&gt;Error:&lt;/strong&gt; ${error}
+    	&lt;/div&gt;
+    &lt;/#if&gt;
+    &lt;form action=&quot;/login&quot; method=&quot;post&quot;&gt;
+	   &lt;dl&gt;
+	     &lt;dt&gt;Username:
+	     &lt;dd&gt;&lt;input type=&quot;text&quot; name=&quot;username&quot; size=&quot;30&quot; maxlength=&quot;50&quot; value=&quot;${username!}&quot;&gt;
+	     &lt;dt&gt;Password:
+	     &lt;dd&gt;&lt;input type=&quot;password&quot; name=&quot;password&quot; size=&quot;30&quot;&gt;
+	   &lt;/dl&gt;
+	   &lt;div class=&quot;actions&quot;&gt;&lt;input type=&quot;submit&quot; value=&quot;Sign In&quot;&gt;&lt;/div&gt;
+	 &lt;/form&gt;
+&lt;/@layout.masterTemplate&gt;
+
+</code></pre>
+
+<p>See how the master template is imported and referenced with the identifier <code>layout</code>, and how the value of the <code>title</code> parameter is provided.</p>
+
+<p>The HTML generated by this <em>user-directive</em> will be placed where the master template defines the <code>nested</code> element:</p>
+
+<pre><code class="language-xml">
+...
+&lt;/div&gt;
+&lt;div class="body"&gt;
+    &lt;#nested /&gt;
+&lt;/div&gt;
+&lt;div class="footer"&gt;
+...
+</code></pre>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>Now you know how the internals of the application work.</p>
+
+<p>I hope this overview had helped you to understand how to integrate frameworks like Spring and Freemarker with Spark to build a complete web application. I’m sure you can now make modifications (like message pagination or using another database) by yourself without trouble.</p>
+
+<p>I tried to follow good development practices, but this application shows only one approach to develop a web application with Spark. It may not be the simplest one (after all, the original <a href="http://github.com/mitsuhiko/flask/tree/master/examples/minitwit/" target="_blank">minitwit</a> was made in just one file, which is also possible to do with the Spark framework) but it is flexible and can be tested easily.</p>
+
+<p>In the end, I hope this tutorial can serve as a starting point for your web development issues. Have fun!</p>
+	<p>&nbsp;</p>
