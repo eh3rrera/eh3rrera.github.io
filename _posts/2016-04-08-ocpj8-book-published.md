@@ -1,6 +1,6 @@
 ---
 layout: post
-title: OCPJ8 Book is published!
+title: My OCPJ8 Book is published!
 description: I finally publish my OCPJ8 book
 categories:
   - java
