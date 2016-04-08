@@ -17,9 +17,9 @@ title: Java SE 8 Programmer II - Java Class Design
 <h2 id="implement-encapsulation">Implement encapsulation</h2>
 <p>Encapsulation means keeping the internal workings of your code safe from other programs that use it, allowing only what you choose to be accessed. This makes the code that uses the encapsulated code much simpler and easier to maintain since much of the complexity of the latter is hidden.</p>
 <p>The main benefit of encapsulation is that it protects a class from being used in a way that it wasn&#39;t meant to be. By controlling the way the code is used, it can only ever do what you want it to do. </p>
-<p>For example, if we set a variable like this:</p>
+<p>For example, if we set variables like this:</p>
 <pre><code class="hljs java">car.model = 2015;
-</code></pre><p>We can&#39;t prevent an invalid assignment like this:</p>
+</code></pre><p>We can&#39;t prevent something invalid like this:</p>
 <pre><code class="hljs java">car.model = 2343242;
 </code></pre><p>To implement encapsulation, we set up the class so only its methods can refer to its instance variables. External code will access these private instance variables only through public get/set methods. This is a convention used in reusable components called JavaBeans. The rules are:</p>
 <ul>
@@ -75,7 +75,7 @@ title: Java SE 8 Programmer II - Java Class Design
 <pre><code class="hljs java">car.setModel(<span class="hljs-number">2343242</span>);
 </code></pre>
 <p>We&#39;ll get a default and valid value that will protect the class from being used in a way it wasn&#39;t meant to be.</p>
-<p>Encapsulation can also be used with constructors and methods of a class. The key thing is to restrict the access to any member of the class that can break things when something changes or that doesn&#39;t want to be exposed.</p>
+<p>Encapsulation  can be also used with constructors and methods of a class. The key thing is to restrict the access to any member of the class that can break things when something changes or that doesn&#39;t want to be exposed.</p>
 <p>&nbsp;</a>
 
 
@@ -149,13 +149,13 @@ title: Java SE 8 Programmer II - Java Class Design
  <span class="hljs-keyword">private</span> <span class="hljs-type">Toy</span> toy; 
 }
 </code></pre>
-<p>Favoring composition over inheritance is a popular object-oriented design principle that helps to create flexible and maintainable code. For example, composition facilitates testing. If one class is composed of another class, you can easily create a mock object representing the composed class.</p>
+<p>Favoring composition over inheritance is a popular object oriented design principle that helps to create flexible and maintainable code. For example, composition facilitates testing. If one class is composed of another class, you can easily create a mock object representing the composed class.</p>
 <p>&nbsp;</a>
 
 
 
 <h2 id="implement-polymorphism">Implement polymorphism</h2>
-<p>With inheritance, you can take advantage of polymorphism. Polymorphism is based on the fact that you can use a variable of a superclass type to hold a reference to an object whose class is any of its subclasses, for example:</p>
+<p>With inheritance, you can take advantage of polymorphism. Polymorphism is based in the fact that you can use a variable of a superclass type to hold a reference to an object whose class is any of its subclasses, for example:</p>
 <pre><code class="hljs java">Animal animal = <span class="hljs-keyword">new</span> Dog();
 </code></pre>
 <p>This way, polymorphism allows the program to act differently based on the object performing the action. For example:</p>
@@ -222,7 +222,7 @@ The general contract of hashCode is:</p>
 Returns a string representation of the object. In general, the <code>toString</code> method returns a string that &quot;textually represents&quot; this object. The result should be a concise but informative representation that is easy for a person to read. It is recommended that all subclasses override this method.
 The <code>toString</code> method for class <code>Object</code> returns a string consisting of the name of the class of which the object is an instance, the at-sign character &#39;@&#39;, and the unsigned hexadecimal representation of the hash code of the object. In other words, this method returns a string equal to the value of:</p>
 <p> <code>getClass().getName() + &#39;@&#39; + Integer.toHexString(hashCode())</code></p>
-<p> The following is an example of an implementation of these methods:</p>
+<p> The following is an example of an implementation for these methods:</p>
 <pre><code class="hljs java"> <span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Person</span> </span>{
    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> String lastName;
    <span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> String firstName;
@@ -431,7 +431,7 @@ Richard M
 </code></pre>
 <p>The characteristics of a static nested class are:</p>
 <ul>
-<li>Nested static classes don&#39;t need a reference to their outer class (the enclosing class)</li>
+<li>Nested static classes don&#39;t need a reference of their outer class (the enclosing class)</li>
 <li>Only static members of the outer class are accessible in a nested static class</li>
 </ul>
 <p>&nbsp;</p>
