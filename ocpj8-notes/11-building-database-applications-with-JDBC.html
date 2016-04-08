@@ -30,13 +30,13 @@ title: Java SE 8 Programmer II - Building Database Applications with JDBC
 <p>The DriverManager class tracks the loaded JDBC drivers and creates the database connections. Before JDBC 4.0, the Driver class was loaded with this code:</p>
 <pre><code class="hljs java">Class.forName(<span class="hljs-string">"com.jw.client.JWDriver"</span>);
 </code></pre>
-<p>From JDBC 4.0 this is done automatically. This registers the driver with the DriverManager. This way, when a program creates a database connection with the <code>DriverManager.getConnection()</code> method, the DriverManager in turn calls the <code>Driver.connect()</code> method. Every JDBC driver must implement the java.sql.Driver interface. So, the JDBC driver&#39;s <code>connect()</code> method checks whether the driver URL is correct, and then, returns the Connection within its <code>connect()</code> method.</p>
+<p>From JDBC 4.0 this is done automatically. This registers the driver with the DriverManager. This way, when a program creates a database connection with the <code>DriverManager.getConnection()</code> method, the DriverManager, in turn, calls the <code>Driver.connect()</code> method. Every JDBC driver must implement the java.sql.Driver interface. So, the JDBC driver&#39;s <code>connect()</code> method checks whether the driver URL is correct, and then, returns the Connection within its <code>connect()</code> method.</p>
 <p>&nbsp;</p>
 
 
 <h2 id="identify-the-components">Identify the components required to connect to a database using the DriverManager class including the JDBC URL</h2>
 <p>When working with JDBC, the first thing you need to do is to establish a connection with a data source (like a DBMS). One way to this is to use the class <a href="https://docs.oracle.com/javase/8/docs/api/java/sql/DriverManager.html">DriverManager</a>.</p>
-<p>DriverManager connects an application to a data source by using a database URL. When this class first attempts to establish a connection, it automatically loads any JDBC 4.0 drivers found within the class path.</p>
+<p>DriverManager connects an application to a data source by using a database URL. When this class first attempts to establish a connection, it automatically loads any JDBC 4.0 drivers found within the classpath.</p>
 <p>A database URL varies depending on the DBMS used. For example, for MySQL it looks like this:</p>
 <pre><code>jdbc:mysql://localhost:3306/data
 </code></pre><p>Where localhost is the name of the server that is hosting the database, 3306 is the port number and data is the name of the database.</p>
@@ -53,7 +53,7 @@ Connection conn = DriverManager.getConnection(<span class="hljs-string">"jdbc:my
 
 
 <h2 id="submit-queries-and-read-results">Submit queries and read results from the database including creating statements, returning result sets, iterating through the results, and properly closing result sets, statements, and connections</h2>
-<p>To process a SQL statement with JDBC you have to:</p>
+<p>To process an SQL statement with JDBC you have to:</p>
 <ol>
 <li>Establishing a connection.</li>
 <li>Create a statement.</li>
@@ -89,7 +89,7 @@ List&lt;User&gt; users = <span class="hljs-keyword">new</span> ArrayList&lt;&gt;
 <li><code>executeQuery()</code>. Returns one ResultSet object.</li>
 <li><code>executeUpdate()</code>. Returns an integer representing the number of rows affected by the SQL statement. Use this method if you are using INSERT, DELETE, or UPDATE SQL statements.</li>
 </ul>
-<p>With a ResultSet object, you can access the data. It acts like a cursor, pointing  to one row of data and positioned before the first row at the beginning. Then you call for example, the method <code>next()</code> to move the cursor forward by one row and you can get the data with getter methods that either take the column index (the first column is 1) or the column name. There are getter methods for a lot of types, for example:</p>
+<p>With a ResultSet object, you can access the data. It acts as a cursor, pointing  to one row of data and positioned before the first row at the beginning. Then you call, for example, the method <code>next()</code> to move the cursor forward by one row and you can get the data with getter methods that either take the column index (the first column is 1) or the column name. There are getter methods for a lot of types, for example:</p>
 <pre><code class="hljs java"><span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">getInt</span><span class="hljs-params">(<span class="hljs-keyword">int</span> columnIndex)</span></span>;
 <span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">getInt</span><span class="hljs-params">(String columnName)</span></span>;
 
@@ -102,7 +102,7 @@ List&lt;User&gt; users = <span class="hljs-keyword">new</span> ArrayList&lt;&gt;
 <span class="hljs-function">BigDecimal <span class="hljs-title">getBigDecimal</span><span class="hljs-params">(<span class="hljs-keyword">int</span> columnIndex)</span></span>;
 <span class="hljs-function">BigDecimal <span class="hljs-title">getBigDecimal</span><span class="hljs-params">(String columnName)</span></span>;
 </code></pre>
-<p>When you are finished,, call the method <code>Statement.close()</code> to immediately release the resources it&#39;s using. When you call this method, its ResultSet objects are also closed. If you&#39;re not going to need the connection anymore, you should also close the connection with <code>Connection.close()</code>. You can use a try-with-resources statement to automatically close Connection, Statement, and ResultSet objects, regardless of whether a SQLException has been thrown. Or you can close them manually in the finally block like this:</p>
+<p>When you are finished, call the method <code>Statement.close()</code> to immediately release the resources it&#39;s using. When you call this method, its ResultSet objects are also closed. If you&#39;re not going to need the connection anymore, you should also close the connection with <code>Connection.close()</code>. You can use a try-with-resources statement to automatically close Connection, Statement, and ResultSet objects, regardless of whether an SQLException has been thrown. Or you can close them manually in the finally block like this:</p>
 <pre><code class="hljs java"><span class="hljs-keyword">try</span> {
   Connection con = ...
   Statement stmt = ...

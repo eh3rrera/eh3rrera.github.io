@@ -19,12 +19,12 @@ title: Java SE 8 Programmer II - Generics and Collections
 
 
 <h2 id="create-and-use-a-generic-class">Create and use a generic class</h2>
-<p>Generics introduce the concept of type variable. Type variable are delimited by angle brackets and follow the class (or the interface) name:</p>
+<p>Generics introduce the concept of a type variable. Type variables are delimited by angle brackets and follow the class (or the interface) name:</p>
 <pre><code class="hljs java"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Test</span>&lt;<span class="hljs-title">T</span>&gt; </span>{
   <span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">m</span><span class="hljs-params">(T arg)</span> </span>{ <span class="hljs-javadoc">/** Do something with the argument of type T */</span> }
 }
 </code></pre>
-<p>Type variables are really parameters that provide information to the compiler so it can check types. In the example above, class <em>Test</em> works with an object of type T, the same types that takes method <em>m</em>. Here&#39;s how we will use it:</p>
+<p>Type variables are parameters that provide information to the compiler so it can check types. In the example above, class <em>Test</em> works with an object of type T, the same type that takes method <em>m</em>. Here&#39;s how we will use it:</p>
 <pre><code class="hljs java">Test&lt;String&gt; t1 = <span class="hljs-keyword">new</span> Test&lt;&gt;();
 t1.m(<span class="hljs-string">"a"</span>);
 
@@ -159,8 +159,8 @@ l.add(<span class="hljs-keyword">new</span> Cat());
   <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> </span>{
       Deque&lt;Integer&gt; d = <span class="hljs-keyword">new</span> ArrayDeque();
 
-      <span class="hljs-comment">//Add elements</span>
-      d.add(<span class="hljs-number">1</span>); <span class="hljs-comment">//add element at tail</span>
+    <span class="hljs-comment">//Add elements</span>
+    d.add(<span class="hljs-number">1</span>); <span class="hljs-comment">//add element at tail</span>
     d.addFirst(<span class="hljs-number">2</span>); <span class="hljs-comment">//add element at head</span>
     d.addLast (<span class="hljs-number">3</span>); <span class="hljs-comment">//add element at tail</span>
 
@@ -184,11 +184,11 @@ l.add(<span class="hljs-keyword">new</span> Cat());
 
 
 <h2 id="use-java-util-comparator">Use java.util.Comparator and java.lang.Comparable interfaces</h2>
-<p><code>compareTo(obj)</code> is from the <a href="http://docs.oracle.com/javase/8/docs/api/java/lang/Comparable.html">Comparable</a> interface and is called on one object, to compare it to another object, so the object to be compared has to implement this interface.</p>
+<p><code>compareTo(obj)</code> is the method of the <a href="http://docs.oracle.com/javase/8/docs/api/java/lang/Comparable.html">Comparable</a> interface that is called on one object, to compare it to another object, so the object to be compared has to implement this interface.</p>
 <pre><code class="hljs java">String s = <span class="hljs-string">"hello"</span>;
 <span class="hljs-keyword">int</span> result = s.compareTo(<span class="hljs-string">"world"</span>);
 </code></pre>
-<p><code>compare(obj1, obj2)</code> is from the <a href="http://docs.oracle.com/javase/8/docs/api/java/util/Comparator.html">Comparator</a> interface and is called on some object to compare two other objects, so an utility class has to implement this interface to be used somewhere else.</p>
+<p><code>compare(obj1, obj2)</code> is the method of the <a href="http://docs.oracle.com/javase/8/docs/api/java/util/Comparator.html">Comparator</a> interface that is called on some object to compare two other objects, so a utility class has to implement this interface to be used somewhere else.</p>
 <pre><code class="hljs java">Comparator&lt;String&gt; comp = <span class="hljs-keyword">new</span> MyComparator&lt;&gt;();
 <span class="hljs-keyword">int</span> result = comp.compare(<span class="hljs-string">"hello"</span>, <span class="hljs-string">"world"</span>);
 </code></pre>
@@ -290,7 +290,7 @@ James
     .forEach(System.out::println);
 </code></pre>
 <p><code>Stream.of()</code> will create a stream from object references.</p>
-<p>Besides regular object streams, Java 8 brings special kinds of streams for working with the primitive data types, sucha as <em>IntStream</em>, <em>LongStream</em> and <em>DoubleStream</em>.</p>
+<p>Besides regular object streams, Java 8 brings special kinds of streams for working with the primitive data types, such as <em>IntStream</em>, <em>LongStream</em> and <em>DoubleStream</em>.</p>
 <p><em>IntStreams</em> for example, can replace the regular for loop using <code>IntStream.range()</code>:</p>
 <pre><code class="hljs java">IntStream.range(<span class="hljs-number">1</span>, <span class="hljs-number">10</span>)
     .forEach(System.out::println);
@@ -356,7 +356,7 @@ l.stream().forEach(i -&gt; System.out.println(i));
 <h2 id="filter-a-collection">Filter a collection by using lambda expressions</h2>
 <p>The way to filter collections is through the use of a <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Predicate.html">Predicate</a>, which is basically something that returns a boolean value.</p>
 <p><em>Predicate</em> is a functional interface, which means that wherever an implementation of this interface is expected, we can pass a lambda expression.</p>
-<p>For example, consider a list with objects of this class:</p>
+<p>For example, consider a list of objects of this class:</p>
 <pre><code class="hljs java"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Person</span> </span>{
     <span class="hljs-keyword">private</span> <span class="hljs-keyword">int</span> age;
     <span class="hljs-keyword">private</span> String name;

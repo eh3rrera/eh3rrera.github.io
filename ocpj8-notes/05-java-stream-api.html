@@ -68,7 +68,7 @@ DoubleStream <span class="hljs-title">mapToDouble</span><span class="hljs-params
 
 
 <h2 id="search-for-data">Search for data by using search methods of the Stream classes including findFirst, findAny, anyMatch, allMatch, noneMatch</h2>
-<p>We hava two types of methods in the Stream API to search for data:</p>
+<p>We have two types of methods in the Stream API to search for data:</p>
 <ul>
 <li>findXXX methods. Take no arguments and return an Optional object with the result, or an empty Optional if nothing is found.</li>
 <li>XXXMatch methods. Take a Predicate and return a boolean if an element in the stream returns true by applying the Predicate.</li>
@@ -79,12 +79,12 @@ This is a short-circuiting terminal operation that returns an Optional represent
 <p><code>Optional&lt;T&gt;    findFirst()</code>
 This is a short-circuiting terminal operation that returns the first element of the stream. If the stream has no order, then any element may be returned.</p>
 <p><code>boolean anyMatch(Predicate&lt;? super T&gt; predicate)</code>
-This is a short-circuiting terminal operation that returns whether any elements of this stream match the provided predicate.  If the stream is empty then false is returned and the predicate is not evaluated.</p>
+This is a short-circuiting terminal operation that returns whether any elements of this stream match the provided predicate.  If the stream is empty, then false is returned and the predicate is not evaluated.</p>
 <p><code>boolean allMatch(Predicate&lt;? super T&gt; predicate)</code>
-This is a short-circuiting terminal operation that returns whether all elements of this stream match the provided predicate.  If the stream is empty then true is returned and the predicate is not evaluated.</p>
+This is a short-circuiting terminal operation that returns whether all elements of this stream match the provided predicate.  If the stream is empty, then true is returned and the predicate is not evaluated.</p>
 <p><code>boolean noneMatch(Predicate&lt;? super T&gt; predicate)</code>
-This is a short-circuiting terminal operation that returns whether no elements of this stream match the provided predicate.  If the stream is empty then true is returned and the predicate is not evaluated.</p>
-<p>A short-circuiting terminal operation basically means that there&#39;s no need to process the entire stream to return a result. As soon as an element that fits the predicate is found or that a result can be inferred, the result is return.</p>
+This is a short-circuiting terminal operation that returns whether no elements of this stream match the provided predicate.  If the stream is empty, then true is returned and the predicate is not evaluated.</p>
+<p>A short-circuiting terminal operation basically means that there&#39;s no need to process the entire stream to return a result. As soon as an element that fits the predicate is found or that a result can be inferred, the result is returned.</p>
 <p>Here&#39;s an example:</p>
 <pre><code class="hljs java">Optional&lt;Integer&gt; first = Stream.of(<span class="hljs-number">1</span>, <span class="hljs-number">10</span>, <span class="hljs-number">5</span>, <span class="hljs-number">3</span>, <span class="hljs-number">13</span>, <span class="hljs-number">20</span>).filter(i -&gt; i % <span class="hljs-number">2</span> == <span class="hljs-number">0</span>).findFirst(); <span class="hljs-comment">//returns 2</span>
 Optional&lt;Integer&gt; any = Stream.of(<span class="hljs-number">1</span>, <span class="hljs-number">10</span>, <span class="hljs-number">5</span>, <span class="hljs-number">3</span>, <span class="hljs-number">13</span>, <span class="hljs-number">20</span>).filter(i -&gt; i % <span class="hljs-number">2</span> == <span class="hljs-number">0</span>).findAny(); <span class="hljs-comment">//can return 10 or 20</span>
@@ -174,7 +174,7 @@ Terminal operation that returns an OptionalInt describing the minimum element of
 Terminal operation that returns an OptionalInt describing the minimum element of the stream, or an empty optional if this stream is empty.</p>
 <p><code>OptionalDouble average()</code>
 Terminal operation that returns an OptionalDouble describing the arithmetic mean of elements of the stream, or an empty optional if this stream is empty.</p>
-<p>Except for <code>average()</code> that always returns an OptionalDouble, the other methods return a long and OptionalLong for LongStream, and a dobule and OptionalDouble for DoubleStream.</p>
+<p>Except for <code>average()</code> that always returns an OptionalDouble, the other methods return a long and OptionalLong for LongStream, and a double and OptionalDouble for DoubleStream.</p>
 <p>Here&#39;s an example:</p>
 <pre><code class="hljs java">OptionalInt max = IntStream.of(<span class="hljs-number">1</span>, <span class="hljs-number">34</span>, <span class="hljs-number">667</span>, <span class="hljs-number">3</span>, <span class="hljs-number">32</span>, <span class="hljs-number">23</span>).max(); <span class="hljs-comment">// max() returns 667</span>
 
@@ -304,7 +304,7 @@ Map&lt;Boolean, List&lt;String&gt;&gt; upperLower = letters.stream()
 <pre><code class="hljs java">&lt;R&gt; <span class="hljs-function">Stream&lt;R&gt; <span class="hljs-title">flatMap</span><span class="hljs-params">(Function&lt;? <span class="hljs-keyword">super</span> T,? extends Stream&lt;? extends R&gt;&gt; mapper)</span></span>
 </code></pre>
 <p>This method returns a stream consisting of the results of replacing each element of the original stream with the content of the stream produced by the provided function (if the function returns null, an empty stream is used, instead).</p>
-<p>This method is commonly used in one to many relationships to flatten all the elements into a new stream.</p>
+<p>This method is commonly used in one&dash;to&dash;many relationships to flatten all the elements into a new stream.</p>
 <p>For example, consider the following classes:</p>
 <pre><code class="hljs java"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Student</span> </span>{
   <span class="hljs-keyword">private</span> <span class="hljs-keyword">int</span> id;

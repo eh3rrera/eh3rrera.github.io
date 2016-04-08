@@ -145,7 +145,7 @@ ExecutorService es3 = Executors.newScheduledThreadPool(<span class="hljs-number"
 executorService.shutdown();
 </code></pre>
 <h4 id="submit-runnable-">submit(Runnable)</h4>
-<p>This method takes a Runnable, but returns a Future object. This object returns null when the Runnable has finished executing:</p>
+<p>This method takes a Runnable but returns a Future object. This object returns null when the Runnable has finished executing:</p>
 <pre><code class="hljs java">Future future = executorService.submit(<span class="hljs-keyword">new</span> Runnable() {
     <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">run</span><span class="hljs-params">()</span> </span>{
         System.out.println(<span class="hljs-string">"A task"</span>);
@@ -165,7 +165,7 @@ System.out.println(future.get()); <span class="hljs-comment">//Blocks until the 
 executorService.shutdown();
 </code></pre>
 <h4 id="invokeany-collection-extends-callable-t-">invokeAny(Collection&lt;? extends Callable&lt;T&gt;&gt;)</h4>
-<p>This method executes the given tasks returning the result of one that has completed successfully. You have no guarantee about which of the Callable&#39;s results you&#39;ll get, just one of the ones that finish. When one of the tasks complete or throws an exception, the rest are cancelled. For example:</p>
+<p>This method executes the given tasks returning the result of one that has completed successfully. You have no guarantee about which of the Callable&#39;s results you&#39;ll get, just one of the ones that finish. When one of the tasks complete or throws an exception, the rest are canceled. For example:</p>
 <pre><code class="hljs java">List&lt;Callable&lt;String&gt;&gt; callables = <span class="hljs-keyword">new</span> ArrayList&lt;Callable&lt;String&gt;&gt;();
 callables.add(<span class="hljs-keyword">new</span> Callable&lt;String&gt;() {
     <span class="hljs-function"><span class="hljs-keyword">public</span> String <span class="hljs-title">call</span><span class="hljs-params">()</span> </span>{
@@ -267,9 +267,9 @@ executorService.shutdown();
 <h3 id="starvation">Starvation</h3>
 <p>Lock starvation occurs when a thread, having lesser priority than other ones, is constantly waiting for a lock, never able to take it because other thread(s) with higher priority are constantly acquiring the lock.</p>
 <h3 id="livelock">Livelock</h3>
-<p>A LiveLock is like a deadlock in the sense that two (or more) threads are blocking each others. But with the livelock, each thread is waiting &quot;actively&quot;, trying to resolve the problem on its own. A live lock occurs when the combination of these processes&#39; efforts to resolve the problem makes it impossible for them to ever terminate. For example, if two threads detect a deadlock, and try to &quot;step aside&quot; for each other, without care they will end up being stuck in a loop always &quot;stepping aside&quot; and never managing to move forwards.</p>
+<p>A LiveLock is like a deadlock in the sense that two (or more) threads are blocking each others. But with the livelock, each thread is waiting &quot;actively&quot;, trying to resolve the problem on its own. A live lock occurs when the combination of these processes&#39; efforts to resolve the problem makes it impossible for them to ever terminate. For example, if two threads detect a deadlock, and try to &quot;step aside&quot; for each other, without proper care, they will end up being stuck in a loop always &quot;stepping aside&quot; and never managing to move forwards.</p>
 <h3 id="race-conditions">Race conditions</h3>
-<p>A race condition is the situation where two threads compete for the same resource and they try to change it at the same time, doing it in a way that causes unexpected results. The problem happens when for example, one thread checks if the value is X, then do something that depends on that value and another thread does something to the value in between the check and the do.</p>
+<p>A race condition is a situation where two threads compete for the same resource and they try to change it at the same time, doing it in a way that causes unexpected results. The problem happens when for example, one thread checks if the value is X, then do something that depends on that value and another thread does something to the value in between the check and the do.</p>
 <p>&nbsp;</p>
 
 
@@ -283,7 +283,7 @@ executorService.shutdown();
     <span class="hljs-keyword">this</span>.n = <span class="hljs-keyword">this</span>.n + <span class="hljs-number">1</span>;
 }
 </code></pre>
-<p>The increment of variable n is vulnerable to concurrency. We can use the synchronized keyword to fix this. We can for example synchronize the method:</p>
+<p>The increment of variable n is vulnerable to concurrency. We can use the synchronized keyword to fix this. We can, for example, synchronize the method:</p>
 <pre><code class="hljs java"><span class="hljs-keyword">int</span> n = <span class="hljs-number">0</span>;
 
 <span class="hljs-function"><span class="hljs-keyword">synchronized</span> <span class="hljs-keyword">void</span> <span class="hljs-title">m</span><span class="hljs-params">()</span> </span>{
@@ -299,7 +299,7 @@ executorService.shutdown();
   }
 }
 </code></pre>
-<p>Internally, Java uses a so monitor or lock in order to manage synchronization. This monitor is bound to an object. For synchronized instance methods, the lock is on the instance of the corresponding object. For static methods, it&#39;s the class. For synchronized blocks, the object can be specified (the example use this to refer to the instance the method belongs to). Only the thread that acquires the lock has access to the method (or block).</p>
+<p>Internally, Java uses a so monitor or lock to manage synchronization. This monitor is bound to an object. For synchronized instance methods, the lock is on the instance of the corresponding object. For static methods, it&#39;s the class. For synchronized blocks, the object can be specified (the example use this to refer to the instance the method belongs to). Only the thread that acquires the lock has access to the method (or block).</p>
 <h3 id="java-util-concurrent-atomic">java.util.concurrent.atomic</h3>
 <p><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/atomic/package-summary.html">java.concurrent.atomic</a> contains classes to perform atomic operations. With an atomic operation, you can safely perform the operation in parallel on multiple threads without using the synchronized keyword or locks.</p>
 <p>We have for example:</p>
@@ -309,7 +309,7 @@ executorService.shutdown();
 <li>DoubleAdder and LongAdder, where one or more variables together maintain an initially zero sum of the corresponding type.</li>
 <li>DoubleAccumulator and LongAccumulator, where one or more variables together maintain a running value of the corresponding type updated using a supplied binary operator.</li>
 </ul>
-<p>The syncrhonized example above can be changed to use an AtomicInteger in this way:</p>
+<p>The synchronized example above can be changed to use an AtomicInteger in this way:</p>
 <pre><code class="hljs java">AtomicInteger n = <span class="hljs-keyword">new</span> AtomicInteger(); <span class="hljs-comment">// creates an AtomicInteger with the initial value 0.</span>
 
 <span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">m</span><span class="hljs-params">()</span> </span>{
@@ -366,7 +366,7 @@ System.out.println(acc.getThenReset()); <span class="hljs-comment">//acc contain
 
 <h2 id="use-java-util-concurrent-collections">Use java.util.concurrent collections and classes including CyclicBarrier and CopyOnWriteArrayList</h2>
 <h3 id="blockingqueue">BlockingQueue</h3>
-<p>The <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/BlockingQueue.html">BlockingQueue</a> interface represents a thread-safe queue. Generally, a thread produce objects, while another thread consume them.</p>
+<p>The <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/BlockingQueue.html">BlockingQueue</a> interface represents a thread-safe queue. Generally, a thread produces objects, while another thread consumes them.</p>
 <p>A BlockingQueue has four forms of methods:</p>
 <table border="1">
 <thead>
@@ -545,7 +545,7 @@ String a = deque.takeFirst();
 <p>The <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ConcurrentMap.html">ConcurrentMap</a> interface represents a Map that can handle concurrent access.</p>
 <p>The implementation of the ConcurrentMap is:</p>
 <ul>
-<li>(ConcurrentHashMap](<a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ConcurrentHashMap.html">https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ConcurrentHashMap.html</a>). A hash table supporting full concurrency of retrievals and high expected concurrency for updates. </li>
+<li><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ConcurrentHashMap.html">ConcurrentHashMap</a>. A hash table supporting full concurrency of retrievals and high expected concurrency for updates. </li>
 </ul>
 <p>Since it extends form Map, it has the same methods as a normal map and some others for concurrent access:</p>
 <pre><code class="hljs java">ConcurrentMap&lt;String, String&gt; concurrentMap = <span class="hljs-keyword">new</span> ConcurrentHashMap&lt;&gt;();
@@ -612,7 +612,7 @@ ConcurrentNavigableMap subMap = map.subMap(<span class="hljs-string">"2"</span>,
 <li>Another waiting thread times out while waiting at the CyclicBarrier</li>
 <li>The <code>CyclicBarrier.reset()</code> method is called by some external thread.</li>
 </ul>
-<p>When you create a CyclicBarrier you specify how many threads are to wait at it, before releasing them:</p>
+<p>When you create a CyclicBarrier you specify how many threads wait for it, before releasing them:</p>
 <pre><code class="hljs java">CyclicBarrier barrier = <span class="hljs-keyword">new</span> CyclicBarrier(<span class="hljs-number">2</span>);
 </code></pre>
 <p>The CyclicBarrier supports a barrier action, which is a Runnable that is executed once the last thread arrives. You pass tit in its constructor:</p>
@@ -627,8 +627,8 @@ barrier.await(<span class="hljs-number">10</span>, TimeUnit.SECONDS);
 <p>You can see a complete example in the <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CyclicBarrier.html">javadoc</a>.</p>
 <h3 id="copyonwritearraylist">CopyOnWriteArrayList</h3>
 <p>The <a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CopyOnWriteArrayList.html">CopyOnWriteArrayList</a> class is a thread-safe variant of ArrayList in which all mutative operations (add, set, and so on) are implemented by making a fresh copy of the underlying array.</p>
-<p>The iterator of CopyOnWriteArrayList is fail-safe and doesn&#39;t throw a ConcurrentModificationException even if underlying CopyOnWriteArrayList is modified once the iteration begins, because the iterator is operating on separate copy of ArrayList. For that reason, all the updates made on CopyOnWriteArrayList are not available to the iterator. However, element-changing operations on iterators themselves (remove, set, and add) are not supported. These methods throw an UnsupportedOperationException.</p>
-<p>With CopyOnWriteArrayList, there is no lock on read, so this operation is faster. Because of this, CopyOnWriteArrayList is most useful when you have few updates and inserts and many concurrent reads than using for example, <code>Collections.synchronizedList(arrayList)</code>.</p>
+<p>The iterator of CopyOnWriteArrayList is fail-safe and doesn&#39;t throw a ConcurrentModificationException even if underlying CopyOnWriteArrayList is modified once the iteration begins, because the iterator is operating on a separate copy of ArrayList. For that reason, all the updates made on CopyOnWriteArrayList are not available to the iterator. However, element-changing operations on iterators themselves (remove, set, and add) are not supported. These methods throw an UnsupportedOperationException.</p>
+<p>With CopyOnWriteArrayList, there is no lock on read, so this operation is faster. Because of this, CopyOnWriteArrayList is most useful when you have few updates and inserts and many concurrent reads than using, for example, <code>Collections.synchronizedList(arrayList)</code>.</p>
 <p>&nbsp;</p>
 
 
@@ -781,7 +781,7 @@ System.out.println(commonPool.getParallelism());
               BiFunction&lt;U, ? <span class="hljs-keyword">super</span> T, U&gt; accumulator,
               BinaryOperator&lt;U&gt; combiner)</span></span>;
 </code></pre>
-<p>Here, the identity element is both an initial seed value for the reduction and a default result if there are no input elements. The accumulator function takes a partial result and the next element, and produces a new partial result. The combiner function combines two partial results to produce a new partial (or the final) result. Example:</p>
+<p>Here, the identity element is both an initial seed value for the reduction and a default result if there are no input elements. The accumulator function takes a partial result and the next element and produces a new partial result. The combiner function combines two partial results to produce a new partial (or the final) result. Example:</p>
 <pre><code class="hljs java"><span class="hljs-keyword">int</span> sum = numbers.parallelStream()
                   .reduce(<span class="hljs-number">0</span>, 
                     (sum, x) -&gt; sum + x,

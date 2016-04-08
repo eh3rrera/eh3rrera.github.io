@@ -28,7 +28,7 @@ title: Java SE 8 Programmer II - Exceptions and Assertions
 <li>Prints the stack trace (Hierarchy of methods where the exception occurred).</li>
 <li>Causes the program to terminate.</li>
 </ol>
-<p>But if exception is handled by in a try-catch block, the normal flow of the application is maintained and rest of the code is executed.</p>
+<p>But if an exception is handled by in a try-catch block, the normal flow of the application is maintained and rest of the code is executed.</p>
 <p>If you want to manually throw an exception, use the throw keyword:</p>
 <pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Test</span> </span>{  
    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">boolean</span> <span class="hljs-title">validateName</span><span class="hljs-params">(String name)</span> </span>{
@@ -95,7 +95,7 @@ title: Java SE 8 Programmer II - Exceptions and Assertions
 }
 </code></pre>
 <h3 id="finally">Finally</h3>
-<p>A finally block is always executed whether exception is handled or not. It&#39;s an optional block, and if there&#39;s one, it goes after a try or catch block. This means the following blocks are both valid:</p>
+<p>A finally block is always executed whether an exception is handled or not. It&#39;s an optional block, and if there&#39;s one, it goes after a try or catch block. This means the following blocks are both valid:</p>
 <pre><code class="hljs java"><span class="hljs-keyword">try</span> {
   <span class="hljs-comment">// code that might throw an exception </span>
 } <span class="hljs-keyword">catch</span>(Exception e) {
@@ -235,7 +235,7 @@ javac -source 1.7 Test.java
 javac -source 7 Test.java
 javac Test.java
 </code></pre><p>The compilation will fail if assert is used as an identifier.</p>
-<p>So compilation is the first step to use assertions. But to execute the assertion checks, you have to enable them with:</p>
+<p>So compilation is the first step to using assertions. But to execute the assertion checks, you have to enable them with:</p>
 <pre><code>java -ea com.example.Test
 </code></pre><p>or</p>
 <pre><code>java -enableassertions com.example.Test

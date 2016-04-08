@@ -36,7 +36,7 @@ title: Java SE 8 Programmer II - Advanced Java Class Design
   }
 }
 </code></pre>
-<p>If an abstract class has static members, you can use them with a class reference (AbstractClass.staticMethod()) as you would with any other class.</p>
+<p>If an abstract class has static members, you can use them with a class reference (<code>AbstractClass.staticMethod()</code>) as you would with any other class.</p>
 <p>Abstract classes are similar to interfaces. However, with abstract classes, you can declare fields that are not static and final, and define public, protected, and private concrete methods. With interfaces, all fields are automatically public, static, and final, and all methods that you declare or define are public. In addition, you can extend only one class, whether or not it is abstract, whereas you can implement any number of interfaces.</p>
 <p>Use abstract classes when:</p>
 <ul>
@@ -55,9 +55,9 @@ title: Java SE 8 Programmer II - Advanced Java Class Design
 
 
 <h2 id="develop-code-that-uses-final-keyword">Develop code that uses final keyword</h2>
-<p>The final keyword can be used in variables, methods and classes.</p>
+<p>The final keyword can be used in variables, methods, and classes.</p>
 <h3 id="final-variable">Final Variable</h3>
-<p>If you make a variable final, you cannot change the value of final variable (sort of a constant) after is initialized. It can only be initialized in the constructor or when it&#39;s declared. If it&#39;s static, it will be initialized in a static block or when it&#39;s declared.</p>
+<p>If you make a variable final, you cannot change its value after is initialized. It can only be initialized in the constructor or when it&#39;s declared. If it&#39;s static, it will be initialized in a static block or when it&#39;s declared.</p>
 <p>If the variable holds an object, it cannot be assigned to other objects, but the attributes of that object can be changed.</p>
 <pre><code class="hljs java"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Car</span> </span>{  
  <span class="hljs-keyword">final</span> <span class="hljs-keyword">int</span> speed = <span class="hljs-number">70</span>; 
@@ -96,7 +96,7 @@ title: Java SE 8 Programmer II - Advanced Java Class Design
 <h2 id="create-inner-classes">Create inner classes including static inner class, local class, nested class, and anonymous inner class</h2>
 <p>An inner class is a class declared inside another class.</p>
 <h3 id="static-inner-class">Static Inner Class</h3>
-<p>A inner class declared with the static keyword becomes a static inner class, for example:</p>
+<p>An inner class declared with the static keyword becomes a static inner class, for example:</p>
 <pre><code class="hljs java"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">OuterClass</span> </span>{
    <span class="hljs-comment">// Static nested class</span>
    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">NestedStaticClass</span> </span>{
@@ -111,7 +111,7 @@ title: Java SE 8 Programmer II - Advanced Java Class Design
        <span class="hljs-comment">// create instance of nested Static class</span>
        OuterClass.NestedStaticClass sc = <span class="hljs-keyword">new</span> OuterClass.NestedStaticClass();
 
-       <span class="hljs-comment">// call non static method of nested static class</span>
+       <span class="hljs-comment">// call nonstatic method of nested static class</span>
        sc.print();
     }
 }
@@ -167,7 +167,7 @@ title: Java SE 8 Programmer II - Advanced Java Class Design
        <span class="hljs-comment">// create instance of nested Static class</span>
        OuterClass.NestedClass nc = oc.<span class="hljs-keyword">new</span> NestedClass();
 
-       <span class="hljs-comment">// call non static method of nested static class</span>
+       <span class="hljs-comment">// call nonstatic method of nested static class</span>
        sc.print();
     }
 }
@@ -203,7 +203,7 @@ title: Java SE 8 Programmer II - Advanced Java Class Design
 this.x = 1
 Test.this.x = 10
 </code></pre><h3 id="anonymous-inner-class">Anonymous Inner Class</h3>
-<p>Anonymous Inner classes are classes without name (but not without type) used to override a method of class or interface. They can&#39;t have constructors.</p>
+<p>Anonymous Inner classes are classes without a name (but not without type) used to override a method of class or interface. They can&#39;t have constructors.</p>
 <pre><code class="hljs java"><span class="hljs-class"><span class="hljs-keyword">interface</span> <span class="hljs-title">Animal</span> </span>{  
   <span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">eat</span><span class="hljs-params">()</span></span>;  
 }  
@@ -249,7 +249,7 @@ Test.this.x = 10
 <p>You can refer to the constants in the enum like this:</p>
 <pre><code class="hljs java">Colors color = Colors.BLUE;
 </code></pre>
-<p>Enums extend from <code>java.lang.Enum</code> implicitly, so they cannot extend another class. But they can implement an interface and override any method like normal class.</p>
+<p>Enums extend from <code>java.lang.Enum</code> implicitly, so they cannot extend another class. But they can implement an interface and override any method like a normal class.</p>
 <p>You can specify values of enum constants at the creation time, but you need to define a constructor for this and, optionally, a method to get these values, for example:</p>
 <pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-keyword">enum</span> Colors {
     RED(<span class="hljs-string">"#ff0000"</span>),
@@ -304,7 +304,7 @@ Test.this.x = 10
 
 <h2 id="develop-code-that-declares">Develop code that declares, implements and/or extends interfaces and use the atOverride annotation</h2>
 <h3 id="interfaces">Interfaces</h3>
-<p>An interface is like an abstract class, except that it cannot contain an implementation of the methods, only their signature (return type, name, parameters and exceptions).</p>
+<p>An interface is like an abstract class, except that it cannot contain an implementation of the methods, only their signature (return type, name, parameters, and exceptions).</p>
 <p>An interface is declared using the interface keyword. Just like classes, an interface can be declared public or with package scope (no access modifier).</p>
 <pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">interface</span> <span class="hljs-title">Vehicle</span> </span>{
     <span class="hljs-keyword">public</span> String serie = <span class="hljs-string">"XXX"</span>;
@@ -320,7 +320,7 @@ Test.this.x = 10
 }
 </code></pre>
 <p>A class that implements an interface must implement all the methods declared in the interface. The only exception is default methods. Java 8 introduces this feature, which provides the flexibility to allow an interface to define an implementation which will be used as default in the situation where a class fails to provide an implementation for that method.</p>
-<p>This is made by adding the keyword <code>default</code> before the method&#39;s access modifier and adding the implementation inside interface:</p>
+<p>This is made by adding the keyword <code>default</code> before the method&#39;s access modifier and adding its implementation inside the interface itself:</p>
 <pre><code class="hljs java"><span class="hljs-class"><span class="hljs-keyword">interface</span> <span class="hljs-title">Vehicle</span> </span>{
     <span class="hljs-function"><span class="hljs-keyword">default</span> <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">start</span><span class="hljs-params">()</span> </span>{
         System.out.println(<span class="hljs-string">"Default start"</span>);
@@ -415,7 +415,7 @@ Test.this.x = 10
 <p>A lambda expression has the following syntax:</p>
 <pre><code>parameter -&gt; expression body
 </code></pre><ul>
-<li>The type declaration is optional.  Compiler can inference the same from value of the parameter.</li>
+<li>The type declaration is optional. The compiler can inference the type from the value of the parameter.</li>
 <li>Parentheses around the parameter are optional. The parentheses are required only for multiple parameters.</li>
 <li>Curly braces in the expression body are optional. - The braces are required only if the expression body contains more than one statement.</li>
 <li>A return keyword in the expression body is optional. The compiler automatically returns a value if the expression body has a single expression to return the value. </li>

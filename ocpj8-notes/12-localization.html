@@ -23,11 +23,11 @@ title: Java SE 8 Programmer II - Localization
 <li>Images and sounds</li>
 <li>Layouts</li>
 </ul>
-<p>Even in countries with the same languages you can find differences, for example, American English vs British English.</p>
+<p>Even in countries with the same languages, you can find differences, for example, American English vs. British English.</p>
 <p>So the benefits of localization are:</p>
 <ul>
 <li>With the addition of localized data, the same executable can run worldwide.</li>
-<li>Textual elements, such as status messages and the GUI component labels, are not hardcoded in the program. Instead they are stored outside the source code and retrieved dynamically.</li>
+<li>Textual elements, such as status messages and the GUI component labels, are not hardcoded in the program. Instead, they are stored outside the source code and retrieved dynamically.</li>
 <li>Support for new languages does not require recompilation.</li>
 <li>Culturally-dependent data, such as dates and currencies, appear in formats that conform to the end user&#39;s region and language.</li>
 </ul>
@@ -138,7 +138,7 @@ language=java
 
 <h2 id="build-a-resource-bundle">Build a resource bundle for each locale and load a resource bundle in an application</h2>
 <p><a href="http://docs.oracle.com/javase/8/docs/api/java/util/ResourceBundle.html">java.util.ResourceBundle</a> class is used to store texts in key/pair values and components that are locale sensitive.</p>
-<p>Resource bundles can share a common base name, but names can also have additional components that identify their locales. For example, if the base name of resource bundles is &quot;MyBundle&quot;, we can have a &quot;MyBundle_en&quot; for the english locale and &quot;MyBundle_es&quot; for a spanish locale. We can even have different resources for different countries, for example, &quot;MyBundle_fr_CA&quot; for canadian french:</p>
+<p>Resource bundles can share a common base name, but names can also have additional components that identify their locales. For example, if the base name of resource bundles is &quot;MyBundle&quot;, we can have a &quot;MyBundle_en&quot; for the English locale and &quot;MyBundle_es&quot; for a Spanish locale. We can even have different resources for different countries, for example, &quot;MyBundle_fr_CA&quot; for Canadian French:</p>
 <pre><code>MyBundle.properties
 MyBundle_en.properties
 MyBundle_es.properties

@@ -73,7 +73,7 @@ Period newPeriod = period.plusDays(<span class="hljs-number">2</span>).minusMont
 </code></pre>
 <h3 id="duration">Duration</h3>
 <p>A duration is similar to a period but its precision is based on hours, minutes, seconds, milliseconds. </p>
-<p>A duration can be created using an amount of seconds or minutes or hours or by specifying an start and end times:</p>
+<p>A duration can be created using an amount of seconds or minutes or hours or by specifying start and end times:</p>
 <pre><code class="hljs java">Duration d2 = Duration.ofSeconds(<span class="hljs-number">10</span>, <span class="hljs-number">50</span>); <span class="hljs-comment">// 10 seconds and 50 nanoseconds</span>
 Duration d2 = Duration.between(LocalTime.NOON, LocalTime.MIDNIGHT);
 </code></pre>
@@ -82,7 +82,7 @@ Duration d2 = Duration.between(LocalTime.NOON, LocalTime.MIDNIGHT);
 
 
 
-<h2 id="work-with-dates-and-times-across">Work with dates and times across timezones and manage changes resulting from daylight savings including Format date and times values</h2>
+<h2 id="work-with-dates-and-times-across">Work with dates and times across time zones and manage changes resulting from daylight savings including Format date and times values</h2>
 <h3 id="timezones">Timezones</h3>
 <p>Time zones are defined by their offset from Coordinated Universal Time (UTC) and correspond to a region in which the time is the same.</p>
 <p>Time zones can be referred to by two identifiers: abbreviated, for example, &quot;PLT&quot; and longer, for example, &quot;Europe/Paris&quot;.
@@ -97,7 +97,7 @@ Duration d2 = Duration.between(LocalTime.NOON, LocalTime.MIDNIGHT);
 ZonedDateTime zdt2 = ZonedDateTime.now(ZoneId.of(<span class="hljs-string">"Europe/Paris"</span>));
 </code></pre>
 <p><a href="https://docs.oracle.com/javase/8/docs/api/java/time/OffsetDateTime.html">OffsetDateTime</a> is an immutable representation of a date-time with an offset from UTC/Greenwich, for example &#39;2000-12-31T10:15:30+01:00&#39;.</p>
-<p>OffsetDateTime, ZonedDateTime and Instant all store an instant on the timeline to a nanosecond precision. Instant is the simplest, just representing the instant. OffsetDateTime adds to the instant the offset from UTC/Greenwich, which allows the local date-time to be obtained. ZonedDateTime adds full timezone data.</p>
+<p>OffsetDateTime, ZonedDateTime, and Instant all store an instant on the timeline to a nanosecond precision. Instant is the simplest, just representing the instant. OffsetDateTime adds to the instant the offset from UTC/Greenwich, which allows the local date-time to be obtained. ZonedDateTime adds full timezone data.</p>
 <p><a href="https://docs.oracle.com/javase/8/docs/api/java/time/OffsetTime.html">OffsetTime</a> is a time with an offset from UTC/Greenwich in the ISO-8601 calendar system, such as &#39;08:45:21+05:00&#39;.</p>
 <pre><code class="hljs java">OffsetDateTime odt = OffsetDateTime.of(LocaDateTime.now(),ZoneOffset.of(<span class="hljs-string">"-4"</span>)); <span class="hljs-comment">//2015-05-22T23:42:20.101-06:00</span>
 OffsetTime ot = OffsetTime.ofInstant(Intant.now(),ZoneId.of(<span class="hljs-string">"America/Los_Angeles"</span>)); <span class="hljs-comment">//22:42:20.101-07:00</span>

@@ -13,7 +13,7 @@ title: Java SE 8 Programmer II - Java I/O Fundamentals
 
 <h2 id="read-and-write-data-from-the-console">Read and write data from the console</h2>
 <h3 id="console-object">Console object</h3>
-<p>Access to the console depends upon the underlying platform and also upon the way in which the java program is invoked. If it&#39;s started from the command line without redirecting the standard input and output streams then its console will exist. If it&#39;s stated for example by a background job scheduler or an IDE, it&#39;s most likely that it will be no access to the console.</p>
+<p>Access to the console depends upon the underlying platform and also upon the way in which the Java program is invoked. If it&#39;s started from the command line without redirecting the standard input and output streams, then its console will exist. If it&#39;s stated for example by a background job scheduler or an IDE, it&#39;s most likely that it will be no access to the console.</p>
 <p>If there&#39;s a console,  it will be available with the <code>System.console()</code> method. If it&#39;s not available, an invocation of that method will return null.</p>
 <p>Reading a line of text from the console:</p>
 <pre><code class="hljs java">Console console = <span class="hljs-keyword">null</span>;
@@ -175,13 +175,13 @@ OutputStream fos3 = <span class="hljs-keyword">new</span> FileOutputStream(<span
 </code></pre>
 <p>The other versions of the <code>write()</code> method are:
 <code>write(byte[] bytes)</code>. It writes all the bytes in the byte array to the OutputStream.
-<code>write(byte[] bytes, int offset, int length)</code>. It writes length number of bytes starting from offset from the byte array to the OutputStream.</p>
+<code>write(byte[] bytes, int offset, int length)</code>. It writes to the OutputStream length number of bytes starting from an offset of the byte array.</p>
 <p><a href="https://docs.oracle.com/javase/8/docs/api/java/io/BufferedReader.html">BufferedReader</a></p>
 <p>BufferedReader provides buffering to a character-input stream. Rather than read one byte at a time, BufferedReader reads a larger block at a time. 
 To add buffering to an InputStream just wrap it in a BufferedInputStream:</p>
 <pre><code class="hljs java">Reader r = <span class="hljs-keyword">new</span> BufferedReader(<span class="hljs-keyword">new</span> FileReader(<span class="hljs-string">"c:\\file.txt"</span>));
 </code></pre>
-<p>The BufferedReader creates a byte array internally and fill it by calling the <code>read()</code> or <code>readLine()</code> methods on the underlying Reader. You can set the buffer size to use internally, for example to 1024 bytes, like this:</p>
+<p>The BufferedReader creates a byte array internally and fills it by calling the <code>read()</code> or <code>readLine()</code> methods on the underlying Reader. You can set the buffer size to use internally, for example to 1024 bytes, like this:</p>
 <pre><code class="hljs java">Reader r = <span class="hljs-keyword">new</span> BufferedReader(<span class="hljs-keyword">new</span> FileReader(<span class="hljs-string">"c:\\file.txt"</span>), <span class="hljs-number">1024</span>);
 </code></pre>
 <p><a href="https://docs.oracle.com/javase/8/docs/api/java/io/BufferedWriter.html">BufferedWriter</a></p>

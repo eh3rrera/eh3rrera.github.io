@@ -14,12 +14,12 @@ title: Java SE 8 Programmer II - Lambda Built-in Functional Interfaces
 
 
 <h2 id="use-the-built-in-interfaces">Use  the built-in interfaces included in the java.util.function package such as Predicate, Consumer, Function, and Supplier</h2>
-<p>Functional interfaces provide target types for lambda expressions and method references. Each functional interface has a single abstract method, called the functional method for that functional interface, to which the lambda expression&#39;s parameter and return types are matched or adapted.</p>
+<p>Functional interfaces provide target types for lambda expressions and method references. Each functional interface has a single abstract method, called <i>functional method</i> for that functional interface, to which the lambda expression&#39;s parameter and return types are matched or adapted.</p>
 <h3 id="predicate">Predicate</h3>
 <p>A predicate is a statement that may be true or false depending on the values of its variables. It can be thought of as a function that returns a value that is either true or false.</p>
-<p>In java 8, a <em>Predicate</em> is a functional interface that can be used anywhere you need to evaluate a boolean condition. Since it&#39;s a functional interface, you can pass a lambda expression wherever a <em>Predicate</em> is expected.</p>
+<p>In Java 8, a <em>Predicate</em> is a functional interface that can be used anywhere you need to evaluate a boolean condition. Since it&#39;s a functional interface, you can pass a lambda expression wherever a <em>Predicate</em> is expected.</p>
 <p>See the <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Predicate.html">API</a> to know the methods of this interface.</p>
-<p>Here&#39;s an example. First we see how the interface with an anonymous class:</p>
+<p>Here&#39;s an example. First, we see how the interface with an anonymous class:</p>
 <pre><code class="hljs java">Predicate&lt;String&gt; isALongWord = <span class="hljs-keyword">new</span> Predicate&lt;String&gt;() {
     <span class="hljs-annotation">@Override</span>
     <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">boolean</span> <span class="hljs-title">test</span><span class="hljs-params">(String t)</span> </span>{
@@ -76,7 +76,7 @@ String s = <span class="hljs-string">"successfully"</span>
 <p>Basically, what <em>Consumer</em> does is executing the assigned lambda expression. The side-effect here, it&#39;s the updating of the product&#39;s price, so the output is:</p>
 <pre><code>5.9
 </code></pre><h3 id="function">Function</h3>
-<p>This functional interface represents a function that accepts one argument and produces a result. One use for example, it&#39;s  to convert or transform from one object to another. Since it&#39;s a functional interface, you can pass a lambda expression wherever a <em>Function</em> is expected.</p>
+<p>This functional interface represents a function that accepts one argument and produces a result. One use, for example, it&#39;s  to convert or transform from one object to another. Since it&#39;s a functional interface, you can pass a lambda expression wherever a <em>Function</em> is expected.</p>
 <p>See the <a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Function.html">API</a> to know the methods of this interface.</p>
 <p>Here&#39;s an example:</p>
 <pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Test</span> </span>{
@@ -122,8 +122,8 @@ String s = <span class="hljs-string">"successfully"</span>
 
 <h2 id="develop-code-that-uses-primitive">Develop code that uses primitive versions of functional interfaces</h2>
 <p>Due to the way generics are implemented, parameters of the functional interfaces (for example, <em>Predicate&lt;T&gt;</em>) can be bound only to reference types (like <em>String</em>, objects, etc).</p>
-<p>If you want to use primitive types with these functional interfaces, Java use a mechanism called autoboxing to automatically convert a primitive to its corresponding wrapper type (for example, int to <em>Integer</em>) and vice versa.</p>
-<p>But since boxed values use more memory, this comes with a performance cost. For this reason, Java provides specialized versions of the functional interfaces in order to avoid autoboxing operations when the inputs or outputs are primitives.</p>
+<p>If you want to use primitive types with these functional interfaces, Java uses a mechanism called autoboxing to automatically convert a primitive to its corresponding wrapper type (for example, int to <em>Integer</em>) and vice versa.</p>
+<p>But since boxed values use more memory, this comes with a performance cost. For this reason, Java provides specialized versions of the functional interfaces to avoid autoboxing operations when the inputs or outputs are primitives.</p>
 <p>For example, instead of using</p>
 <pre><code class="hljs java">Predicate&lt;Integer&gt; p = i -&gt; i &gt; <span class="hljs-number">10</span>;
 </code></pre>
@@ -150,7 +150,7 @@ The <em>Function</em> interface also has variants for the output parameter like 
 <li>Function&lt;T,R&gt;</li>
 <li>UnaryOperator&lt;T&gt;</li>
 </ul>
-<p>Represent an operation that takes one argument. But there are versions of these interfaces that take two arguments called. These are the binary versions. They have the same semantics, the only difference is the number of arguments. Note there is no binary version of <em>Supplier</em>. This is due to the fact that a <em>Supplier</em> takes no arguments.</p>
+<p>Represent an operation that takes one argument. But there are versions of these interfaces that take two arguments called. These are the binary versions. They have the same semantics, the only difference is the number of arguments. Note there is no binary version of <em>Supplier</em>. This is because a <em>Supplier</em> takes no arguments.</p>
 <p>Here&#39;s a summary of the binary versions of the functional interfaces along with their primitive versions and a link to their javadoc:</p>
 <p><strong>BiPredicate&lt;L, R&gt;</strong><br>(No primitive versions)</p>
 <p><strong>BiConsumer&lt;T, U&gt;</strong><br><a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/ObjIntConsumer.html">ObjIntConsumer&lt;T&gt;</a>. Operation that accepts an Object-valued and an int-valued argument and returns no result.<br><a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/ObjLongConsumer.html">ObjLongConsumer&lt;T&gt;</a>. Operation that accepts an Object-valued and a long-valued argument and returns no result.<br><a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/ObjDoubleConsumer.html">ObjDoubleConsumer&lt;T&gt;</a>. Operation that accepts an Object-valued and a double-valued argument and returns no result.</p>
