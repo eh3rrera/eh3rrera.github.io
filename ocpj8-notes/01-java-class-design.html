@@ -17,9 +17,9 @@ title: Java SE 8 Programmer II - Java Class Design
 <h2 id="implement-encapsulation">Implement encapsulation</h2>
 <p>Encapsulation means keeping the internal workings of your code safe from other programs that use it, allowing only what you choose to be accessed. This makes the code that uses the encapsulated code much simpler and easier to maintain since much of the complexity of the latter is hidden.</p>
 <p>The main benefit of encapsulation is that it protects a class from being used in a way that it wasn&#39;t meant to be. By controlling the way the code is used, it can only ever do what you want it to do. </p>
-<p>For example, if we set variables like this:</p>
+<p>For example, if we set a variable like this:</p>
 <pre><code class="hljs java">car.model = 2015;
-</code></pre><p>We can&#39;t prevent something invalid like this:</p>
+</code></pre><p>We can&#39;t prevent an invalid assignment like this:</p>
 <pre><code class="hljs java">car.model = 2343242;
 </code></pre><p>To implement encapsulation, we set up the class so only its methods can refer to its instance variables. External code will access these private instance variables only through public get/set methods. This is a convention used in reusable components called JavaBeans. The rules are:</p>
 <ul>
