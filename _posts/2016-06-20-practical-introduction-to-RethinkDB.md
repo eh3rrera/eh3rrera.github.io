@@ -9,6 +9,7 @@ categories:
 ---
 
 There's a tutorial writing contest in [hack.guides()](http://tutorials.pluralsight.com/contest/). Basically, you have to write a tutorial using one (or more) of the following APIs:
+
 - [Amazon Alexa](https://developer.amazon.com/public/solutions/alexa/alexa-skills-kit)
 - [Fanout](https://fanout.io/)
 - [HelloSign](https://www.hellosign.com/api)
