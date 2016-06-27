@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Building a real-time application with React, React Router, Horizon.io, and OAuth
+title: Building an application with React and Horizon.io
 description: I wrote an article about React and Horizon.io in hack.guides()
 categories:
   - react
