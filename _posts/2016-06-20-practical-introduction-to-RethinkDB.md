@@ -29,3 +29,12 @@ You can read it [here](http://tutorials.pluralsight.com/nosql-databases/a-practi
 First, I explain the basics of RethinkDB and at then end, there a simple application as an example of how to develop a real-time application using [Node.js](https://nodejs.org/en/), [RethinkDB's changefeeds](http://rethinkdb.com/docs/changefeeds/javascript/) and [Socket.IO](http://socket.io/).
 
 [This](https://github.com/eh3rrera/rethinkdb-example) is the Github repository for the application and if you have any questions, don't hesitate to contact me.
+
+
+**Update**
+
+The following companies has joined the contest:
+
+- [Pusher](https://pusher.com/developers)
+- [Tierion](https://tierion.com/docs)
+- [Twilio](https://www.twilio.com/api)
