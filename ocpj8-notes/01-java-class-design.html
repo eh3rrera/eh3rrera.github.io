@@ -101,7 +101,7 @@ permalink: /:path/:basename
   public void bark() { <span class="hljs-comment">/* Do something */</span> }
 }
 </code></pre>
-<p>So now <em>Dog</em> has two methods, <code>eat()</code> that is inherited from <em>Dog</em> and <code>bark()</code> that is specific to the <em>Dog</em> class. <em>Animal</em> still has one method, inheritance only works from the superclasses to the subclasses.</p>
+<p>So now <em>Dog</em> has two methods, <code>eat()</code> that is inherited from <em>Animal</em> and <code>bark()</code> that is specific to the <em>Dog</em> class. <em>Animal</em> still has one method, inheritance only works from the superclasses to the subclasses.</p>
 <p>Not everything can be inherited, and this depends directly from the used visibility modifiers.</p>
 <p>When a subclass extends a superclass in Java, all protected and public attributes and methods of the superclass are inherited by the subclass. Attributes and methods with default (package) access modifiers can be accessed by subclasses only if the subclass is located in the same package as the superclass. Private attributes and methods of the superclass are not inherited.</p>
 <table border="1">
