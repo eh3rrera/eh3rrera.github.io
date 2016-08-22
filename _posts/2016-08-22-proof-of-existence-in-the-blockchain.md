@@ -12,6 +12,7 @@ categories:
   - article
 ---
 
+I wrote another tutorial for the [hack.guides() contest](http://tutorials.pluralsight.com/contest/). This time it's about building a [Proof of Existence](https://proofofexistence.com/)-like app with Tierion, RethinkDB, PubNub, and a Node.js stack.
 
 You can read it [here](http://tutorials.pluralsight.com/interesting-apis/proof-of-existence-in-the-blockchain-with-tierion-rethinkdb-and-pubnub) and the source code of the app is available on [Github](https://github.com/eh3rrera/blockchain-proof-existence).
 
