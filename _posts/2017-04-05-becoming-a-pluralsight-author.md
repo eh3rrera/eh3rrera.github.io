@@ -177,77 +177,77 @@ So I thought, how can I create that contrast so the viewers could have that *aha
 
 With all this in mind, I start the video with the following slide, where I present myself and the topic:
 
-![First slide]({{ site.url }}/images/2017-04-05-becoming-pluralsight-author/01.jpg)
+![First slide]({{ site.url }}/images/2017-04-05-becoming-pluralsight-author/01.png)
 
 Then, I mention I won't be talking about Apache Spark (as they have the same name, it's very common for people to confuse them). I choose to make another slide to keep the presentation moving, but I could have used the first slide also:
 
-![Second slide]({{ site.url }}/images/2017-04-05-becoming-pluralsight-author/02.jpg)
+![Second slide]({{ site.url }}/images/2017-04-05-becoming-pluralsight-author/02.png)
 
 This is my opening.
 
 Next, the point of the talk:
 
-![Third slide]({{ site.url }}/images/2017-04-05-becoming-pluralsight-author/03.jpg)
+![Third slide]({{ site.url }}/images/2017-04-05-becoming-pluralsight-author/03.png)
 
 In the middle of this slide, I introduce another one with the phrase *Use the right tool for the job* because I want it to stick to the mind of the viewer, it will help me create the contrast of *what is* against *what could be*:
 
-![Fourth slide]({{ site.url }}/images/2017-04-05-becoming-pluralsight-author/04.jpg)
+![Fourth slide]({{ site.url }}/images/2017-04-05-becoming-pluralsight-author/04.png)
 
 In the next slides, the hero and its world are presented:
 
-![Fifht slide]({{ site.url }}/images/2017-04-05-becoming-pluralsight-author/05.jpg)
+![Fifht slide]({{ site.url }}/images/2017-04-05-becoming-pluralsight-author/05.png)
 
 Notice the rule of three. Also, notice that I didn't use bullet points, it's better to use images. By the way, I got the icons from [The Noun Project](https://thenounproject.com/).
 
 However, instead of presenting the points all at once, it could have been better to animate the icons so they appear at the appropriate time. The same applies to the following slides:
 
-![Slide]({{ site.url }}/images/2017-04-05-becoming-pluralsight-author/06.jpg)
+![Slide]({{ site.url }}/images/2017-04-05-becoming-pluralsight-author/06.png)
 
-![Slide]({{ site.url }}/images/2017-04-05-becoming-pluralsight-author/07.jpg)
+![Slide]({{ site.url }}/images/2017-04-05-becoming-pluralsight-author/07.png)
 
-![Slide]({{ site.url }}/images/2017-04-05-becoming-pluralsight-author/08.jpg)
+![Slide]({{ site.url }}/images/2017-04-05-becoming-pluralsight-author/08.png)
 
 You should use callouts (in Camtasia/ScreenFlow) to bring attention to something in the screen:
 
-![Slide]({{ site.url }}/images/2017-04-05-becoming-pluralsight-author/09.jpg)
+![Slide]({{ site.url }}/images/2017-04-05-becoming-pluralsight-author/09.png)
 
 And we reach the demo, which was about building a microservice to generate QR images. I set the demo expectations on this slide:
 
-![Slide]({{ site.url }}/images/2017-04-05-becoming-pluralsight-author/10.jpg)
+![Slide]({{ site.url }}/images/2017-04-05-becoming-pluralsight-author/10.png)
 
 Looking back, I would have been better to highlight the `Compare with Spring Boot` point just before the comparison, not at the very beginning.
 
 Anyway, in the demo, instead of highlighting the important parts with mouse movements or something like that, it's better to use callouts:
 
-![Demo]({{ site.url }}/images/2017-04-05-becoming-pluralsight-author/11.jpg)
+![Demo]({{ site.url }}/images/2017-04-05-becoming-pluralsight-author/11.png)
 
 Later on, I explained the code I used to generate the QR code, however, the reviewer said that this was not necessary since the goal was to learn about Spark I should keep the demo focused on that:
 
-![Demo]({{ site.url }}/images/2017-04-05-becoming-pluralsight-author/12.jpg)
+![Demo]({{ site.url }}/images/2017-04-05-becoming-pluralsight-author/12.png)
 
 Next, for the core of the app, I chose a copy-paste approach, since typing the code would take a lot of time (remember that the video should be less than ten minutes). There's no really one guideline about code, you can just show the code (like the code to generate the QR code), copy-paste it as you explained (like here), or type it (maybe editing out typing errors and speeding up the video a little bit):
 
-![Demo]({{ site.url }}/images/2017-04-05-becoming-pluralsight-author/13.jpg)
+![Demo]({{ site.url }}/images/2017-04-05-becoming-pluralsight-author/13.png)
 
 All right. Now, the villain attacks. I show the microframework build with Spring Boot saying something like it can also be done in that framework with another style (annotations) and even with fewer lines of code:
 
-![Demo]({{ site.url }}/images/2017-04-05-becoming-pluralsight-author/14.jpg)
+![Demo]({{ site.url }}/images/2017-04-05-becoming-pluralsight-author/14.png)
 
 But the hero fights back. Look at the start up time and all those dependencies:
 
-![Demo]({{ site.url }}/images/2017-04-05-becoming-pluralsight-author/15.jpg)
+![Demo]({{ site.url }}/images/2017-04-05-becoming-pluralsight-author/15.png)
 
 And the hero wins:
 
-![Demo]({{ site.url }}/images/2017-04-05-becoming-pluralsight-author/16.jpg)
+![Demo]({{ site.url }}/images/2017-04-05-becoming-pluralsight-author/16.png)
 
 Now, to end part two, let's show the point of the story:
 
-![Slide]({{ site.url }}/images/2017-04-05-becoming-pluralsight-author/17.jpg)
+![Slide]({{ site.url }}/images/2017-04-05-becoming-pluralsight-author/17.png)
 
 I was running out of time so my last slide comprises the entire Part Three, relates the story to the audience, summarize the benefits, and call to action:
 
-![Slide]({{ site.url }}/images/2017-04-05-becoming-pluralsight-author/18.jpg)
+![Slide]({{ site.url }}/images/2017-04-05-becoming-pluralsight-author/18.png)
 
 ## Final tips
 
