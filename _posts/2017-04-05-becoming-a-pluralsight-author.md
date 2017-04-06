@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Becoming a Pluralsight author
+title: Becoming a Pluralsight Author
 description: In this article, I share my experience on passing the Pluralsight audition
 categories:
   - pluralsight
@@ -57,16 +57,16 @@ The second week I was busy doing other things, but I spent the entire last week 
 And here's the result:
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/feuYzhOA0mE" frameborder="0" allowfullscreen></iframe>
-
+  
 However, after two and a half weeks of sending the video for review and still not receiving an answer, I sent a follow-up email. The editor replied telling me that the video was good enough to get a do-over and it was still being reviewed.
 
 *Great, at least I was not rejected immediately*, I thought. So imagine my surprise when the next day I saw an email in my inbox with the subject *Congratulations and Welcome to Pluralsight*.
 
 The reviewer mentioned four points on which I can improve my presentation (which I'll discuss in a moment), but overall they liked, especially the comparison with [Spring Boot](https://projects.spring.io/spring-boot/).
 
-So far, everyone at Pluralsight has been amazing and I'm on my way to create my first course about exceptions and the basics of error handling in Java, to be released in June/July this year (to be followed by a more advanced second part and then some courses about JBoss).
+So far, everyone at Pluralsight has been amazing and I'm on my way to create my first course about exceptions and the basics of error handling in Java, to be released in June/July this year (to be followed by a more advanced second part and then probably some courses about JBoss).
 
-Now that you know the story, let me tell you what you'll need and give you some tips to record your audition video.
+Now that you know the story, let me tell you what you'll need to audition and give you some tips to record your video.
 
 ## Recording Software
 
@@ -81,7 +81,6 @@ Now about the audio, for the audition video, you can use the microphone from you
 However, I'll recommend you use the best microphone available, even if that means you have to purchase new equipment because sooner or later you'll have to get this right.
 
 For our needs, we basically have two types of microphones:
-
 - Dynamic
 - Condenser
 
@@ -94,7 +93,6 @@ You can choose either a dynamic or condenser mic according to your needs, but I 
 Having said that, you don't need an expensive microphone or preamp to sound good. In fact, better (and expensive) equipment only reveal the flaws on your recording environment. Watch [this](https://www.youtube.com/watch?v=6xBFBSdk5B8&t=2s) and [this](https://www.youtube.com/watch?v=i5d2auTFmQw) to understand my point. Oh and let's not forget [this one](https://www.youtube.com/watch?v=IDYULeMGaSE).
 
 Any mic between $200 and $300 USD (maybe less) will do the job. In my opinion, these are excellent choices:
-
 - [Electrovoice RE320](https://www.amazon.com/EV-RE320-Variable-D-Instrument-Microphone/dp/B00KCN83VI) (dynamic)
 - [Rode NT1](https://www.amazon.com/Rode-NT1KIT-Condenser-Microphone-Cardioid/dp/B00GGGQK56) (condenser, don't confuse it with the NT1**A**, it's a different mic)
 
@@ -110,7 +108,7 @@ About the preamp, there's a guideline that says that you should spend the same a
 
 I don't record the audio directly in Camtasia/ScreenFlow, I record the video first and the audio second in another program. I use [Audacity](http://www.audacityteam.org/) which is free and cross-platform. Some other good (and paid) options are [Adobe Audition](https://www.adobe.com/products/audition.html) and [Reaper](http://www.reaper.fm/).
 
-Finally, once you have recorded your audio, a great tool to level your volume and reduce noise and hum (if any) is [Auphonic](https://auphonic.com/). It has a web version to process up to 2 hours of audio per month for free.
+Finally, once you have recorded your audio, a great tool to level your volume and reduce noise and hum is [Auphonic](https://auphonic.com/). It has a web version to process up to 2 hours of audio per month for free.
 
 Now, the most important part, how to structure your presentation.
 
@@ -122,14 +120,14 @@ Because that's the easy part. You can learn all about microphones and how to use
 
 How you teach, how you approach a topic and create a learning experience, that's the difficult part and one that cannot be learned so easy.
 
-I'll analyze my audition video to give you some tips, but ultimately, every person has a teaching style that needs to develop.
+I'm still learning, but I'll analyze my audition video to give you some tips. Ultimately, every person has a teaching style that needs to develop.
 
 First, I want to mention two books that I think are **REQUIRED** reading for anyone teaching something:
 
 - [Resonate: Present Visual Stories that Transform Audiences by Nancy Duarte](https://www.amazon.com/Resonate-Present-Stories-Transform-Audiences/dp/0470632011)
 - [Badass: Making Users Awesome by Kathy Sierra](https://www.amazon.com/Badass-Making-Awesome-Kathy-Sierra/dp/1491919019)
 
-It will be helpful to watch a lot of TED talks and Pluralsight courses to get a feeling of what a good presentation/course is too(if you've read Kathy Sierra's book you know what I'm talking about).
+It will be helpful to watch a lot of TED talks and Pluralsight courses to get a feeling of what a good presentation/course is too (if you've read Kathy Sierra's book you know what I'm talking about).
 
 The audition video must be no longer than 10 minutes, so you'll need to choose a topic that can be taught at that time.
 
@@ -171,7 +169,7 @@ PART THREE
 
 In my video, the hero is Spark and the villain is Spring Boot.
 
-In Resonate (there's a [TED talk](https://www.ted.com/talks/nancy_duarte_the_secret_structure_of_great_talks) about it also), Nancy Duarte talks about how we can take the viewers (users, learners, etc.) from what is (the status quo, the problem) to what it could be (a better future), constantly showing that gap and with a big contrast.
+In Resonate (there's a [TED talk](https://www.ted.com/talks/nancy_duarte_the_secret_structure_of_great_talks) also), Nancy Duarte talks about how we can take the viewers (users, learners, etc.) from what is (the status quo, the problem) to what it could be (a better future), constantly showing that gap and with a big contrast.
 
 So I thought, how can I create that contrast so the viewers could have that *aha* moment when they realize that for certain task, using a microframework like Spark is better. It occurred to me that by comparing the start time and size of the JAR files, I create that contrast.
 
@@ -183,7 +181,7 @@ Then, I mention I won't be talking about Apache Spark (as they have the same nam
 
 ![Second slide]({{ site.url }}/images/2017-04-05-becoming-pluralsight-author/02.png)
 
-This is my opening.
+This was my opening.
 
 Next, the point of the talk:
 
