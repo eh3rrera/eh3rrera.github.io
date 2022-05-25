@@ -43,5 +43,7 @@ On the other hand, I'll keep working with Pluralsight. I've sent a proposal for 
 
 If you have questions or comments, don't hesitate to contact me via [email](mailto:&#101;&#115;&#116;&#101;&#98;&#97;&#110;&#104;&#98;&#50;&#64;&#121;&#97;&#104;&#111;&#111;&#46;&#99;&#111;&#109;&#46;&#109;&#120;) or [Twitter](https://twitter.com/eh3rrera).
 
+---
 
-
+### Updates
+**2022-05-24**. Today I added content of module 01 - Introduction to Reactive Programming. I always start slow, but the rest of the modules should come faster.
